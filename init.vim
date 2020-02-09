@@ -3,6 +3,7 @@ call plug#begin('~/.local/share/nvim/plugged')
 Plug 'vim-airline/vim-airline'	
 Plug 'vim-airline/vim-airline-themes'
 Plug 'dracula/vim', { 'as': 'dracula' }
+Plug '~/.fzf'
 call plug#end()
 
 set title                 " Muestra el nombre del archivo en la ventana de la terminal

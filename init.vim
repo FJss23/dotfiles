@@ -1,4 +1,3 @@
-" Plugins a descargar
 call plug#begin('~/.local/share/nvim/plugged')
 Plug 'vim-airline/vim-airline'	
 Plug 'vim-airline/vim-airline-themes'
@@ -26,6 +25,15 @@ color onedark
 let g:airline#extensions#tabline#enabled = 1          " Mostrar los buffers abiertos como pestañas
 let g:airline#extensions#tabline#fnamemod = ':t'      " Muestra solo el nombre del archibo
 
+map <F2> :NERDTreeToggle<CR>
+map <Space> <Leader>
 
+nnoremap <C-p> :FZF<CR>
 
+set hidden
+set nobackup
+set nowritebackup
+set cmdheight=2
+set updatetime=300
+set signcolumn=yes
 

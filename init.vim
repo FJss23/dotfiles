@@ -1,6 +1,6 @@
 call plug#begin('~/.local/share/nvim/plugged')
-" Plug 'vim-airline/vim-airline'	
-" Plug 'vim-airline/vim-airline-themes'
+Plug 'vim-airline/vim-airline'	
+Plug 'vim-airline/vim-airline-themes'
 " Plug '~/.fzf'
 " Plug 'junegunn/fzf.vim'
 " Plug 'neoclide/coc.nvim', {'branch':'release'}
@@ -16,13 +16,15 @@ call plug#end()
 
 set title                 " Muestra el nombre del archivo en la ventana de la terminal
 set mouse=a               " Permite la integracion del mouse
-" set termguicolors         " Activa true colors en la terminal
+set termguicolors         " Activa true colors en la terminal
 set number		  " Activa el numero de linea
 
 let g:seoul256_background = 234
 colo seoul256
 
 :imap jj <Esc>
+
+let g:airline_theme = 'base16'
 
 " let g:airline#extensions#tabline#enabled = 1          " Mostrar los buffers abiertos como pestañas
 " let g:airline#extensions#tabline#fnamemod = ':t'      " Muestra solo el nombre del archibo

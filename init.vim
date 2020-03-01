@@ -1,5 +1,5 @@
 call plug#begin('~/.local/share/nvim/plugged')
-Plug 'vim-airline/vim-airline'	
+Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 " Plug '~/.fzf'
 " Plug 'junegunn/fzf.vim'
@@ -11,7 +11,8 @@ Plug 'jiangmiao/auto-pairs'
 " Plug 'preservim/nerdtree'
 " Plug 'prettier/vim-prettier', {'do':'npm install'}
 Plug 'mattn/emmet-vim'
-Plug 'junegunn/seoul256.vim'
+Plug 'arcticicestudio/nord-vim'
+" Plug 'junegunn/seoul256.vim'
 call plug#end()
 
 set title                 " Muestra el nombre del archivo en la ventana de la terminal
@@ -19,12 +20,10 @@ set mouse=a               " Permite la integracion del mouse
 set termguicolors         " Activa true colors en la terminal
 set number		  " Activa el numero de linea
 
-let g:seoul256_background = 234
-colo seoul256
-
+colorscheme nord
 :imap jj <Esc>
 
-let g:airline_theme = 'base16'
+let g:airline_solarized_bg='dark'
 
 " map <F2> :NERDTreeToggle<CR>
 map <Space> <Leader>

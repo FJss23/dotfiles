@@ -9,10 +9,10 @@ Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
 Plug 'jiangmiao/auto-pairs'
 " Plug 'preservim/nerdtree'
-" Plug 'prettier/vim-prettier', {'do':'npm install'}
+Plug 'prettier/vim-prettier', {'do':'npm install'}
 Plug 'mattn/emmet-vim'
 Plug 'arcticicestudio/nord-vim'
-" Plug 'junegunn/seoul256.vim'
+Plug 'sheerun/vim-polyglot'
 call plug#end()
 
 set title                 " Muestra el nombre del archivo en la ventana de la terminal
@@ -24,7 +24,23 @@ colorscheme nord
 :imap jj <Esc>
 
 let g:airline_solarized_bg='dark'
-
+" using prettier with <Leader>p
 " map <F2> :NERDTreeToggle<CR>
 map <Space> <Leader>
 
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-h> <C-w>h
+nnoremap <C-l> <C-w>l
+
+nnoremap H gT
+nnoremap L gt
+
+let g:prettier#autoformat = 0
+let g:prettier#autoformat_require_pragma = 0
+" when running at every change you may want to disable quickfix
+
+autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.md,*.vue,*.yaml,*.html PrettierAsync
+
+nnoremap zz :update<cr>
+inoremap zz <Esc>:update<cr>gi

@@ -24,8 +24,7 @@ colorscheme nord
 :imap jj <Esc>
 
 let g:airline_solarized_bg='dark'
-" using prettier with <Leader>p
-" map <F2> :NERDTreeToggle<CR>
+
 map <Space> <Leader>
 
 nnoremap <C-j> <C-w>j
@@ -44,3 +43,9 @@ autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.gra
 
 nnoremap zz :update<cr>
 inoremap zz <Esc>:update<cr>gi
+
+inoremap ><Tab> ><Esc>F<lyt>o</<C-r>"><Esc>O<Space>
+
+nnoremap <Leader>e A
+nnoremap <Leader>b _i
+inoremap <Tab>e <Esc>ea

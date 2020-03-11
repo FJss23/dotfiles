@@ -34,6 +34,7 @@ nnoremap <C-l> <C-w>l
 
 nnoremap H gT
 nnoremap L gt
+nnoremap f $
 
 let g:prettier#autoformat = 0
 let g:prettier#autoformat_require_pragma = 0
@@ -44,8 +45,7 @@ autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.gra
 nnoremap zz :update<cr>
 inoremap zz <Esc>:update<cr>gi
 
-inoremap ><Tab> ><Esc>F<lyt>o</<C-r>"><Esc>O<Space>
-
-nnoremap <Leader>e A
-nnoremap <Leader>b _i
+nnoremap <Leader>f A
+nnoremap <Leader>0 _i
 inoremap <Tab>e <Esc>ea
+:iab xx {

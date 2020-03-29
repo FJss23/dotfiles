@@ -1,2 +1,2 @@
-# nvim-config
-Current config of NeoVim
+# Dotfiles
+WIP

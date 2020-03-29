@@ -2,7 +2,7 @@ call plug#begin('~/.local/share/nvim/plugged')
 
 " Syntax highlight
 Plug 'posva/vim-vue'
-Plug 'tomasiser/vim-code-dark'
+Plug 'kaicataldo/material.vim'
 
 " Usability
 Plug 'itchyny/lightline.vim'
@@ -18,7 +18,6 @@ Plug 'junegunn/fzf.vim'
 
 " Intellisense and Lint
 " Plug 'dense-analysis/ale'
-Plug 'neovim/nvim-lsp'
 call plug#end()
 
 set title                 				" Muestra el nombre del arcqqhivo en la ventana de la terminal
@@ -28,11 +27,8 @@ set number		  				" Activa el numero de linea
 set noshowmode		 				" Elimina la visualizacion del modo activo
 
 syntax on
-colorscheme codedark					" Activa el theme
-
-let g:lightline = {					
-      \ 'colorscheme': 'powerlineish',
-      \ }						" Activa el theme de la barra de estado
+colorscheme material					" Activa el theme
+let g:lightline = { 'colorscheme': 'material_vim' }
 
 let g:prettier#autoformat = 0				" Desactivamos opciones para farmetar cuando se guarda
 let g:prettier#autoformat_require_pragma = 0
@@ -41,7 +37,6 @@ let g:prettier#autoformat_require_pragma = 0
 map <Space> <Leader>
 nnoremap zz :update<cr>
 inoremap zz <Esc>:update<cr>gi
-nnoremap <Leader>f A
 nnoremap <Leader>0 _i
 inoremap <Tab>e <Esc>ea
 nnoremap qq :q<cr>
@@ -63,16 +58,34 @@ nnoremap f $
 vnoremap f $
 nnoremap 0 _
 vnoremap 0 _
-nnoremap <C-p> :Files<CR>
-nnoremap <C-g> :Rg<CR>
-nnoremap <Leader>b :buffers<CR>
+
+" Search a file 
+nnoremap <Leader>f :Files<CR>
+" Search word in current file
+nnoremap <Leader>r :Rg<CR>
+" List buffers
+nnoremap <Leader>b :Buffers<CR>
+" List of history search
+nnoremap <Leader>h :History<CR>
+" Files under a git project
+nnoremap <Leader>g :GFiles<CR>
+" Files under a git project unstaged 
+nnoremap <Leader>s :GFiles?<CR>
+" Lines in loaded buffers
+nnoremap <Leader>l :Lines<CR>
+" Lines under the current buffer
+nnoremap <Leader>c :Blines<CR>
+" Tags in the project
+nnoremap <Leader>t :Tags<CR>
+" Tags in the current buffer
+nnoremap <Leader>n :BTags<CR>
+" Marks
+nnoremap <Leader>m :Marks<CR>
+" Open a new terminal
 nnoremap <Leader>c :term<CR>
+" Edit a new file
 nnoremap <Leader>e :e<Space>
-nnoremap <Leader>m :b<Space>
+" Close the current buffer
 nnoremap <Leader>d :db
 
 autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.md,*.vue,*.yaml,*.html PrettierAsync
-
-
-vim.cmd('packadd nvim-lsp')
-require'nvim_lsp'.gopls.setup{}

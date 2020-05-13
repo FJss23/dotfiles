@@ -1,45 +1,105 @@
 {
-    "workbench.iconTheme": "file-icons",
-    "editor.formatOnSave": true,
-    "vim.hlsearch": true,
-    "vim.leader": "<space>",
-    "vim.normalModeKeyBindingsNonRecursive": [
+  "workbench.iconTheme": "file-icons",
+  "editor.formatOnSave": true,
+  "vim.hlsearch": true,
+  "vim.incsearch": true,
+  "vim.useSystemClipboard": true,
+  "vim.useCtrlKeys": true,
+  "vim.leader": "<space>",
+  "vim.handleKeys": {
+    "<C-a>": false,
+    "<C-f>": false
+  },
+  "vim.normalModeKeyBindingsNonRecursive": [
+    {
+      "before": ["z", "z"],
+      "commands": [
         {
-            "before": [
-                "z",
-                "z"
-            ],
-            "commands": [
-                ":w!"
-            ]
+          "command": "workbench.action.files.save"
+        }
+      ]
+    },
+    {
+      "before": [":"],
+      "commands": ["workbench.action.showCommands"]
+    },
+    {
+      "before": ["q", "q"],
+      "commands": [":q"]
+    },
+    {
+      "before": ["<leader>", "f"],
+      "commands": [
+        {
+          "command": "workbench.action.quickOpen"
+        }
+      ]
+    },
+    {
+      "before": ["-"],
+      "commands": [
+        {
+          "command": "breadcrumbs.toggleToOn",
+          "when": "!config.breadcrumbs.enabled"
         },
         {
-            "before": [
-                ":"
-            ],
-            "commands": [
-                "workbench.action.showCommands",
-            ]
+          "command": "breadcrumbs.focusAndSelect",
+          "when": "breadcrumbsPossible"
+        }
+      ]
+    },
+    {
+      "before": ["<leader>", "<leader>"],
+      "commands": [
+        {
+          "command": "workbench.action.openPreviousEditorFromHistory"
         },
         {
-            "before": [
-                "q",
-                "q"
-            ],
-            "commands": [
-                ":q"
-            ]
+          "command": "workbench.action.acceptSelectedQuickOpenItem"
         }
-    ],
-    "vim.insertModeKeyBindings": [
+      ]
+    }
+  ],
+  "vim.insertModeKeyBindings": [
+    {
+      "before": ["j", "j"],
+      "after": ["<Esc>"]
+    }
+  ],
+  "vim.visualModeKeyBindingsNonRecursive": [
+    {
+      "before": ["<leader>"],
+      "commands": [
         {
-            "before": [
-                "j",
-                "j"
-            ],
-            "after": [
-                "<Esc>"
-            ]
+          "command": "editor.action.insertSnippet"
         }
-    ],
+      ]
+    },
+    {
+      "before": ["p"],
+      "after": ["p", "g", "v", "y"]
+    },
+    {
+      "before": [">"],
+      "commands": ["editor.action.indentLines"]
+    },
+    {
+      "before": ["<"],
+      "commands": ["editor.action.outdentLines"]
+    }
+  ],
+  "workbench.startupEditor": "newUntitledFile",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "liveServer.settings.donotShowInfoMsg": true,
+  "workbench.activityBar.visible": false,
+  "search.exclude": {
+    "**/bower_components": true,
+    "**/node_modules": true,
+    "**/tmp": true
+  },
+  "workbench.editor.showTabs": false,
+  "editor.minimap.enabled": false
 }

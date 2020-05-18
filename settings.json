@@ -94,7 +94,7 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "liveServer.settings.donotShowInfoMsg": true,
-  "workbench.activityBar.visible": false,
+  "workbench.activityBar.visible": true,
   "search.exclude": {
     "**/bower_components": true,
     "**/node_modules": true,

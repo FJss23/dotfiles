@@ -2,8 +2,9 @@ call plug#begin('~/.local/share/nvim/plugged')
 
 " SYNTAX HIGHLIGHT AND THEME 
 Plug 'posva/vim-vue'
-Plug 'kaicataldo/material.vim'
+" Plug 'kaicataldo/material.vim'
 Plug 'norcalli/nvim-colorizer.lua'
+Plug 'junegunn/seoul256.vim'
 
 " USABILITY
 Plug 'itchyny/lightline.vim'
@@ -73,10 +74,12 @@ set number
 set noshowmode		 				
 " Activate the syntaxis color
 syntax on
+let g:seoul256_background = 233
+colo seoul256
 " Activate the color scheme
-colorscheme material					
+" colorscheme material					
 " Degine the theme for the airline
-let g:lightline = { 'colorscheme': 'material_vim' }
+let g:lightline = { 'colorscheme': 'seoul256' }
 " Deactivate option when save
 let g:prettier#autoformat = 0				
 " Deactivate option when save
@@ -89,9 +92,7 @@ au TermOpen * setlocal nonumber norelativenumber
 set hidden
 nnoremap <Leader>h <C-W>s
 nnoremap <Leader>v <C-W>v
-set guifont=AnonymiceNerdFontCompleteM\ Nerd\ Font
-set encoding=utf-8
-set t_Co=256
+
 map <C-n> :NERDTreeToggle<CR>
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 " Search a file 
@@ -169,13 +170,13 @@ let g:which_key_map.n = {
 	\ 't' : [':tabnew term://zsh<CR>i', 'terminal in tab'],
 	\ 'f' : [':e<Space>', 'new file']
 	\}
-let g:which_key_map['c'] = [':bd!<CR>', 'close buffer']
+let g:which_key_map['l'] = [':bd!<CR>', 'close buffer']
 let g:which_key_map['d'] = [':bufdo bd<CR>', 'close buffers']
 let g:which_key_map['t'] = [':sp term://zsh<CR>i', 'split terminal']
 let g:which_key_map['h'] = ['<C-W>s', 'split below']
 let g:which_key_map['S'] = [':Startify', 'start']
-let g:which_key_map['v'] = [':<C-W>v', 'split right']
-let g:which_key_map['t'] = [':NERDTreeToggle', 'nerdtree']
+let g:which_key_map['v'] = ['<C-W>v', 'split right']
+let g:which_key_map['n'] = [':NERDTreeToggle', 'nerdtree']
 let g:which_key_map.s = {
       \ 'name' : '+search' ,
       \ 'h' : [':History'     , 'history'],
@@ -196,7 +197,27 @@ let g:which_key_map.s = {
       \ 'z' : [':FZF'          , 'FZF'],
       \ 'e' : [':exe :Ag . expand(<cword>)<CR>', 'selected word']
       \ }
-
+let g:which_key_map.r = {
+      \ 'name' : '+rename-coc' ,
+      \ 'n' : ['n'     , 'symbol renaming'],
+      \ }
+let g:which_key_map.c = {
+      \ 'name' : '+formating-coc' ,
+      \ 'f' : ['f'     , 'formating selected'],
+	\ 'a' : ['f'     , 'diagnostics'],
+	\ 'e' : ['f'     , 'extensions'],
+	\ 'c' : ['f'     , 'commands'],
+	\ 'o' : ['f'     , 'outline'],
+	\ 's' : ['f'     , 'symbols'],
+	\ 'j' : ['f'     , 'do default action next item'],
+	\ 'k' : ['f'     , 'do default action previous item'],
+      \ }
+let g:which_key_map['a'] = ['a', 'codeAction-coc region']
+let g:which_key_map.q = {
+      \ 'name' : '+codeAction-coc' ,
+      \ 'a' : ['a'     , 'apply to the current line'],
+	\ 'f' : ['f'     , 'autofix line'],
+      \ }
 
 let s:header = [
 			\'.######..######...####....####....####...######.',
@@ -265,8 +286,8 @@ else
 endif
 
 " Use `[g` and `]g` to navigate diagnostics
-nmap <silent> [g <Plug>(coc-diagnostic-prev)
-nmap <silent> ]g <Plug>(coc-diagnostic-next)
+nmap <silent> ñg <Plug>(coc-diagnostic-prev)
+nmap <silent> ñg <Plug>(coc-diagnostic-next)
 
 " GoTo code navigation.
 nmap <silent> gd <Plug>(coc-definition)
@@ -292,8 +313,8 @@ autocmd CursorHold * silent call CocActionAsync('highlight')
 nmap <leader>rn <Plug>(coc-rename)
 
 " Formatting selected code.
-xmap <leader>f  <Plug>(coc-format-selected)
-nmap <leader>f  <Plug>(coc-format-selected)
+xmap <leader>cf  <Plug>(coc-format-selected)
+nmap <leader>cf  <Plug>(coc-format-selected)
 
 augroup mygroup
   autocmd!
@@ -309,7 +330,7 @@ xmap <leader>a  <Plug>(coc-codeaction-selected)
 nmap <leader>a  <Plug>(coc-codeaction-selected)
 
 " Remap keys for applying codeAction to the current line.
-nmap <leader>ac  <Plug>(coc-codeaction)
+nmap <leader>qa <Plug>(coc-codeaction)
 " Apply AutoFix to problem on the current line.
 nmap <leader>qf  <Plug>(coc-fix-current)
 
@@ -345,20 +366,17 @@ set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 
 " Mappings using CoCList:
 " Show all diagnostics.
-nnoremap <silent> <space>a  :<C-u>CocList diagnostics<cr>
+nnoremap <silent> <space>ca  :<C-u>CocList diagnostics<cr>
 " Manage extensions.
-nnoremap <silent> <space>e  :<C-u>CocList extensions<cr>
+nnoremap <silent> <space>ce  :<C-u>CocList extensions<cr>
 " Show commands.
-nnoremap <silent> <space>c  :<C-u>CocList commands<cr>
+nnoremap <silent> <space>cc  :<C-u>CocList commands<cr>
 " Find symbol of current document.
-nnoremap <silent> <space>o  :<C-u>CocList outline<cr>
+nnoremap <silent> <space>co  :<C-u>CocList outline<cr>
 " Search workspace symbols.
-nnoremap <silent> <space>s  :<C-u>CocList -I symbols<cr>
+nnoremap <silent> <space>cs  :<C-u>CocList -I symbols<cr>
 " Do default action for next item.
-nnoremap <silent> <space>j  :<C-u>CocNext<CR>
+nnoremap <silent> <space>cj  :<C-u>CocNext<CR>
 " Do default action for previous item.
-nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
-" Resume latest coc list.
-nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
+nnoremap <silent> <space>ck  :<C-u>CocPrev<CR>
 
-let g:coc_node_path='/snap/bin/node'

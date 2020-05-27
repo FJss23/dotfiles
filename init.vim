@@ -1,8 +1,16 @@
+ "  _____  _             _           
+ " |  __ \| |           (_)          
+ " | |__) | |_   _  __ _ _ _ __  ___ 
+ " |  ___/| | | | |/ _` | | '_ \/ __|
+ " | |    | | |_| | (_| | | | | \__ \
+ " |_|    |_|\__,_|\__, |_|_| |_|___/
+ "                  __/ |            
+ "                 |___/             
+
 call plug#begin('~/.local/share/nvim/plugged')
 
 " SYNTAX HIGHLIGHT AND THEME 
 Plug 'posva/vim-vue'
-" Plug 'kaicataldo/material.vim'
 Plug 'norcalli/nvim-colorizer.lua'
 Plug 'junegunn/seoul256.vim'
 
@@ -22,203 +30,153 @@ Plug 'preservim/nerdtree'
 " INTELLISENSE AND ANALYSIS
 Plug 'neoclide/coc.nvim',{'branch' : 'release'}
 
-" HELP WITH KEYBINDINGS
-Plug 'liuchengxu/vim-which-key'
-
 call plug#end()
 
 
-" Remap
-:imap jj <Esc>
-map <Space> <Leader>
-" Save files
-nnoremap zz :update<cr>
+ "  _____                                  _       __            _ _   
+ " |  __ \                                | |     / _|          | | |  
+ " | |__) |___ _ __ ___   __ _ _ __     __| | ___| |_ __ _ _   _| | |_ 
+ " |  _  // _ \ '_ ` _ \ / _` | '_ \   / _` |/ _ \  _/ _` | | | | | __|
+ " | | \ \  __/ | | | | | (_| | |_) | | (_| |  __/ || (_| | |_| | | |_ 
+ " |_|  \_\___|_| |_| |_|\__,_| .__/   \__,_|\___|_| \__,_|\__,_|_|\__|
+ "                            | |                                      
+ "                            |_|                                      
+
+:imap jj <Esc> 						" Remap Esc key
+map <space> <leader> 					" Remap Leader key
+nnoremap zz :update<cr> 				" Save files
 inoremap zz <Esc>:update<cr>gi
-" Exit
-nnoremap qq :q<cr>
-" Move between splited viewports
-nnoremap <C-j> <C-w>j
+nnoremap qq :q<cr> 					" Exit a file
+nnoremap <C-j> <C-w>j 					" Move between splited viewports
 nnoremap <C-k> <C-w>k
 nnoremap <C-h> <C-w>h
 nnoremap <C-l> <C-w>l
-" Exit terminal mode
-:tnoremap jj <C-\><C-n>
-" Move between tabs
-nnoremap <A-h> gT
+:tnoremap jj <C-\><C-n> 				" Exit terminal mode
+nnoremap <A-h> gT 					" Move between tabs
 nnoremap <A-l> gt
 tnoremap <A-h> gT
 tnoremap <A-l> gt
-" Move between buffers
-nnoremap <S-TAB> :bprev<CR>
+nnoremap <S-TAB> :bprev<CR> 				" Move between buffers
 nnoremap <TAB> :bnext<CR>
-" Move to the end of the line
-nnoremap f $
+nnoremap f $ 						" Move to the end of the line
 vnoremap f $
-" Move to the beginning of the line
-nnoremap 0 _
+nnoremap 0 _ 						" Move to the beginning of the line
 vnoremap 0 _
-" Move to the beginning of the line and inser mode
-nnoremap <Leader>0 _i
-vnoremap < <gv
-vnoremap > >gv
+nnoremap <Leader>x <C-W>s 				" Split horizontallly
+nnoremap <Leader>v <C-W>v 				" Split vertically
 
-" Show the name of the current file in the top of the window
-set title
-" Mouse integration
-set mouse=a
-" True color on terminal
-set termguicolors
-" Line number in file
-set number
-" Eliminate the visualization of the active mode
-set noshowmode		 				
-" Activate the syntaxis color
-syntax on
-let g:seoul256_background = 233
-colo seoul256
-" Activate the color scheme
-" colorscheme material					
-" Degine the theme for the airline
-let g:lightline = { 'colorscheme': 'seoul256' }
-" Deactivate option when save
-let g:prettier#autoformat = 0				
-" Deactivate option when save
-let g:prettier#autoformat_require_pragma = 0
-" Extensions files that will format
-autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.md,*.vue,*.yaml,*.html PrettierAsync
-" Hide line numbers on terminal mode
-au TermOpen * setlocal nonumber norelativenumber
-" Hide buffer unless explicity delete them
-set hidden
-nnoremap <Leader>h <C-W>s
-nnoremap <Leader>v <C-W>v
 
-map <C-n> :NERDTreeToggle<CR>
+ "   _____                           _    ____        _   _                 
+ "  / ____|                         | |  / __ \      | | (_)                
+ " | |  __  ___ _ __   ___ _ __ __ _| | | |  | |_ __ | |_ _  ___  _ __  ___ 
+ " | | |_ |/ _ \ '_ \ / _ \ '__/ _` | | | |  | | '_ \| __| |/ _ \| '_ \/ __|
+ " | |__| |  __/ | | |  __/ | | (_| | | | |__| | |_) | |_| | (_) | | | \__ \
+ "  \_____|\___|_| |_|\___|_|  \__,_|_|  \____/| .__/ \__|_|\___/|_| |_|___/
+ "                                             | |                          
+ "                                             |_|                          
+
+set title 						" Show the name of the current file in the top of the window
+set mouse=a 						" Mouse integration
+set termguicolors 					" True color on terminal
+set relativenumber 					" Line number in file
+set noshowmode		 				" Eliminate the visualization of the active mode
+syntax on 						" Activate the syntaxis color
+au TermOpen * setlocal nonumber norelativenumber 	" Hide line numbers on terminal mode
+set hidden 						" Hide buffer unless explicity delete them
+
+
+ "  _______ _                         
+ " |__   __| |                        
+ "    | |  | |__   ___ _ __ ___   ___ 
+ "    | |  | '_ \ / _ \ '_ ` _ \ / _ \
+ "    | |  | | | |  __/ | | | | |  __/
+ "    |_|  |_| |_|\___|_| |_| |_|\___|
+                                    
+let g:seoul256_background = 233 			" Apply the darkest background
+colo seoul256 						" Activate the color scheme
+
+
+ "  _      _       _     _   _ _            
+ " | |    (_)     | |   | | | (_)           
+ " | |     _  __ _| |__ | |_| |_ _ __   ___ 
+ " | |    | |/ _` | '_ \| __| | | '_ \ / _ \
+ " | |____| | (_| | | | | |_| | | | | |  __/
+ " |______|_|\__, |_| |_|\__|_|_|_| |_|\___|
+ "            __/ |                         
+ "           |___/                          
+
+let g:lightline = { 'colorscheme': 'seoul256' } 		" Degine the theme for the airline
+
+
+ "  _____          _   _   _           
+ " |  __ \        | | | | (_)          
+ " | |__) | __ ___| |_| |_ _  ___ _ __ 
+ " |  ___/ '__/ _ \ __| __| |/ _ \ '__|
+ " | |   | | |  __/ |_| |_| |  __/ |   
+ " |_|   |_|  \___|\__|\__|_|\___|_|   
+                                     
+let g:prettier#autoformat = 1													" Deactivate option when save
+let g:prettier#autoformat_require_pragma = 0 											
+autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.md,*.vue,*.yaml,*.html PrettierAsync 	" Extensions files that will format
+let g:prettier#exec_cmd_async = 1
+let g:prettier#config#parser = ''
+let g:prettier#config#config_precedence = 'file-override'
+let g:prettier#config#use_tabs = 'false'
+let g:prettier#config#tab_width = '1'
+
+
+ "  ______    __ 
+ " |  ____|  / _|
+ " | |__ ___| |_ 
+ " |  __|_  /  _|
+ " | |   / /| |  
+ " |_|  /___|_|  
+
+nnoremap <Leader>F :Files<CR> 					" Search a file 
+nnoremap <Leader>g :Rg<CR> 					" Search word in current file
+noremap <Leader>s :Ag<CR> 					" Code search
+noremap <Leader>S :exe ':Ag ' . expand('<cword>')<CR> 		" Ag with the word under the cursor
+nnoremap <Leader>b :Buffers<CR> 				" List buffers
+nnoremap <Leader>h :History<CR> 				" List of history search
+nnoremap <Leader>f :GFiles<CR> 					" Files under a git project
+nnoremap <Leader>u :GFiles?<CR> 				" Files under a git project unstaged 
+nnoremap <Leader>l :Lines<CR> 					" Lines in loaded buffers
+nnoremap <Leader>L :BLines<CR> 					" Lines under the current buffer
+nnoremap <Leader>t :Tags<CR> 					" Tags in the project
+nnoremap <Leader>T :BTags<CR> 					" Tags in the current buffer
+nnoremap <Leader>m :Marks<CR> 					" Marks
+nnoremap <Leader>o; :Commands<CR> 				" Commands
+nnoremap <Leader>c :Commits<CR> 				" Commits
+nnoremap <Leader>C :BCommits<CR> 				" Buffers commits
+nnoremap <Leader>M :Maps<CR> 					" Maps
+nnoremap <Leader>t :tabnew term://zsh<CR>i 			" Open a zsh terminal
+nnoremap <Leader>n :e<space> 					" Edit a new file
+nnoremap <Leader>k :bd!<CR> 					" Close the current buffer 
+nnoremap <Leader>K :bufdo bd<CR> 				" Deletes all buffers stop at first error
+nnoremap <Leader>O :sp term://zsh<CR>i 				" Open a zsh terminal
+
+
+ "  _   _              _ _______            
+ " | \ | |            | |__   __|           
+ " |  \| | ___ _ __ __| |  | |_ __ ___  ___ 
+ " | . ` |/ _ \ '__/ _` |  | | '__/ _ \/ _ \
+ " | |\  |  __/ | | (_| |  | | | |  __/  __/
+ " |_| \_|\___|_|  \__,_|  |_|_|  \___|\___|
+
+map <C-n> :NERDTreeToggle<CR> 										" Remap the openning of nerdtree
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-" Search a file 
-nnoremap <Leader>sf :Files<CR>
-" Search word in current file
-nnoremap <Leader>w :Rg<CR>
-" Ag
-noremap <Leader>sa :Ag<CR>
-" Ag with the word under the cursor
-noremap <Leader>se :exe ':Ag ' . expand('<cword>')<CR>
-" List buffers
-nnoremap <Leader>b :Buffers<CR>
-" List of history search
-nnoremap <Leader>sh :History<CR>
-" Files under a git project
-nnoremap <Leader>f :GFiles<CR>
-" Files under a git project unstaged 
-nnoremap <Leader>u :GFiles?<CR>
-" Lines in loaded buffers
-nnoremap <Leader>sl :Lines<CR>
-" Lines under the current buffer
-nnoremap <Leader>sL :BLines<CR>
-" Tags in the project
-nnoremap <Leader>st :Tags<CR>
-" Tags in the current buffer
-nnoremap <Leader>sT :BTags<CR>
-" Marks
-nnoremap <Leader>sm :Marks<CR>
-" Commands
-nnoremap <Leader>s; :Commands<CR>
-" Commits
-nnoremap <Leader>sc :Commits<CR>
-" Buffers commits
-nnoremap <Leader>sC :BCommits<CR>
-" Maps
-nnoremap <Leader>sM :Maps<CR>
-" Open a zsh terminal
-nnoremap <Leader>nt :tabnew term://zsh<CR>i
-" Edit a new file
-nnoremap <Leader>nf :e<Space>
-" Close the current buffer 
-nnoremap <Leader>c :bd!<CR>
-" Deletes all buffers stop at first error
-nnoremap <Leader>d :bufdo bd<CR>
-" Open a zsh terminal
-nnoremap <Leader>t :sp term://zsh<CR>i
 
 
-call which_key#register('<Space>', "g:which_key_map")
+ "   _____ _             _   _  __       
+ "  / ____| |           | | (_)/ _|      
+ "   (___ | |_ __ _ _ __| |_ _| |_ _   _ 
+ "  \___ \| __/ _` | '__| __| |  _| | | |
+ "  ____) | || (_| | |  | |_| | | | |_| |
+ " |_____/ \__\__,_|_|   \__|_|_|  \__, |
+ "                                  __/ |
+ "                                 |___/ 
 
-nnoremap <silent> <leader> :silent WhichKey '<Space>'<CR>
-vnoremap <silent> <leader> :silent <c-u> :silent WhichKeyVisual '<Space>'<CR>
-
-let g:which_key_map =  {}
-let g:which_key_sep = '→'
-let g:which_key_use_floating_win = 0
-
-highlight default link WhichKey          Operator
-highlight default link WhichKeySeperator DiffAdded
-highlight default link WhichKeyGroup     Identifier
-highlight default link WhichKeyDesc      Function
-
-" Hide status line
-autocmd! FileType which_key
-autocmd  FileType which_key set laststatus=0 noshowmode noruler
-  \| autocmd BufLeave <buffer> set laststatus=2 noshowmode ruler
-
-let g:which_key_map['/'] = ['gcc', 'comment']
-let g:which_key_map['w'] = [':Rg', 'search text']
-let g:which_key_map['b'] = [':Buffers', 'buffers']
-let g:which_key_map['f'] = [':GFiles', 'files']
-let g:which_key_map['u'] = [':GFiles?', 'unstaged files']
-let g:which_key_map.n = {
-	\ 'name' : '+new',
-	\ 't' : [':tabnew term://zsh<CR>i', 'terminal in tab'],
-	\ 'f' : [':e<Space>', 'new file']
-	\}
-let g:which_key_map['l'] = [':bd!<CR>', 'close buffer']
-let g:which_key_map['d'] = [':bufdo bd<CR>', 'close buffers']
-let g:which_key_map['t'] = [':sp term://zsh<CR>i', 'split terminal']
-let g:which_key_map['h'] = ['<C-W>s', 'split below']
-let g:which_key_map['S'] = [':Startify', 'start']
-let g:which_key_map['v'] = ['<C-W>v', 'split right']
-let g:which_key_map['n'] = [':NERDTreeToggle', 'nerdtree']
-let g:which_key_map.s = {
-      \ 'name' : '+search' ,
-      \ 'h' : [':History'     , 'history'],
-      \ ';' : [':Commands'     , 'commands'],
-      \ 'a' : [':Ag'           , 'text Ag'],
-      \ 'c' : [':Commits'      , 'commits'],
-      \ 'C' : [':BCommits'     , 'buffer commits'],
-      \ 'f' : [':Files'        , 'all files'],
-      \ 'l' : [':Lines'        , 'lines'],
-      \ 'L' : [':Blines'	, 'lines in buffers'],
-      \ 'm' : [':Marks'        , 'marks'],
-      \ 'M' : [':Maps'         , 'keybindings'] ,
-      \ 't' : [':Tags'         , 'project tags'],
-      \ 'T' : [':BTags'        , 'buffer tags'],
-      \ 's' : [':Snippets'     , 'snippets'],
-      \ 'S' : [':Colors'       , 'color schemes'],
-      \ 'y' : [':Filetypes'    , 'file types'],
-      \ 'z' : [':FZF'          , 'FZF'],
-      \ 'e' : [':exe :Ag . expand(<cword>)<CR>', 'selected word']
-      \ }
-let g:which_key_map.r = {
-      \ 'name' : '+rename-coc' ,
-      \ 'n' : ['n'     , 'symbol renaming'],
-      \ }
-let g:which_key_map.c = {
-      \ 'name' : '+formating-coc' ,
-      \ 'f' : ['f'     , 'formating selected'],
-	\ 'a' : ['f'     , 'diagnostics'],
-	\ 'e' : ['f'     , 'extensions'],
-	\ 'c' : ['f'     , 'commands'],
-	\ 'o' : ['f'     , 'outline'],
-	\ 's' : ['f'     , 'symbols'],
-	\ 'j' : ['f'     , 'do default action next item'],
-	\ 'k' : ['f'     , 'do default action previous item'],
-      \ }
-let g:which_key_map['a'] = ['a', 'codeAction-coc region']
-let g:which_key_map.q = {
-      \ 'name' : '+codeAction-coc' ,
-      \ 'a' : ['a'     , 'apply to the current line'],
-	\ 'f' : ['f'     , 'autofix line'],
-      \ }
-
+											" Declaring a header
 let s:header = [
 			\'.######..######...####....####....####...######.',
 			\'.##..........##..##......##..........##.....##..',
@@ -226,20 +184,34 @@ let s:header = [
 			\'.##......##..##......##......##..##..........##.',
 			\'.##.......####....####....####...######..#####..']
 
-let g:startify_padding_left=60
+let g:startify_padding_left=60 								"  Applying some padding in the content
 
-function! s:center(lines) abort
+function! s:center(lines) abort 							"  Function to center the header
   let longest_line   = max(map(copy(a:lines), 'strwidth(v:val)'))
   let centered_lines = map(copy(a:lines),
         \ 'repeat(" ", (&columns / 2) - (longest_line / 2)) . v:val')
   return centered_lines
 endfunction
 
-let g:startify_custom_header = s:center(s:header)
+let g:startify_custom_header = s:center(s:header) 					" Applying the header
 
 
-" TextEdit might fail if hidden is not set.
-set hidden
+ "   _____      _            _             _ 
+ "  / ____|    | |          (_)           | |
+ " | |     ___ | | ___  _ __ _ _______  __| |
+ " | |    / _ \| |/ _ \| '__| |_  / _ \/ _` |
+ " | |___| (_) | | (_) | |  | |/ /  __/ (_| |
+ "  \_____\___/|_|\___/|_|  |_/___\___|\__,_|
+
+lua require'colorizer'.setup()
+
+
+ "   _____       _____ 
+ "  / ____|     / ____|
+ " | |     ___ | |     
+ " | |    / _ \| |     
+ " | |___| (_) | |____ 
+ "  \_____\___/ \_____|
 
 " Some servers have issues with backup files, see #649.
 set nobackup
@@ -257,7 +229,12 @@ set shortmess+=c
 
 " Always show the signcolumn, otherwise it would shift the text each time
 " diagnostics appear/become resolved.
-set signcolumn=yes
+if has("patch-8.1.1564")
+  " Recently vim can merge signcolumn and number column into one
+  set signcolumn=number
+else
+  set signcolumn=yes
+endif
 
 " Use tab for trigger completion with characters ahead and navigate.
 " NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
@@ -285,9 +262,9 @@ else
   inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 endif
 
-" Use `[g` and `]g` to navigate diagnostics
-nmap <silent> ñg <Plug>(coc-diagnostic-prev)
-nmap <silent> ñg <Plug>(coc-diagnostic-next)
+" Use `` and `` to navigate diagnostics
+nmap <silent> w <Plug>(coc-diagnostic-prev) " MODIFIED
+nmap <silent> e <Plug>(coc-diagnostic-next) " MODIFIED
 
 " GoTo code navigation.
 nmap <silent> gd <Plug>(coc-definition)
@@ -313,8 +290,8 @@ autocmd CursorHold * silent call CocActionAsync('highlight')
 nmap <leader>rn <Plug>(coc-rename)
 
 " Formatting selected code.
-xmap <leader>cf  <Plug>(coc-format-selected)
-nmap <leader>cf  <Plug>(coc-format-selected)
+" xmap <leader>f  <Plug>(coc-format-selected)
+" nmap <leader>f  <Plug>(coc-format-selected)
 
 augroup mygroup
   autocmd!
@@ -329,8 +306,8 @@ augroup end
 xmap <leader>a  <Plug>(coc-codeaction-selected)
 nmap <leader>a  <Plug>(coc-codeaction-selected)
 
-" Remap keys for applying codeAction to the current line.
-nmap <leader>qa <Plug>(coc-codeaction)
+" Remap keys for applying codeAction to the current buffer.
+nmap <leader>ac  <Plug>(coc-codeaction)
 " Apply AutoFix to problem on the current line.
 nmap <leader>qf  <Plug>(coc-fix-current)
 
@@ -357,7 +334,7 @@ command! -nargs=0 Format :call CocAction('format')
 command! -nargs=? Fold :call     CocAction('fold', <f-args>)
 
 " Add `:OR` command for organize imports of the current buffer.
-command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
+command! -narg=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
 
 " Add (Neo)Vim's native statusline support.
 " NOTE: Please see `:h coc-status` for integrations with external plugins that
@@ -366,17 +343,18 @@ set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 
 " Mappings using CoCList:
 " Show all diagnostics.
-nnoremap <silent> <space>ca  :<C-u>CocList diagnostics<cr>
+nnoremap <silent> <space>a  :<C-u>CocList diagnostics<cr>
 " Manage extensions.
-nnoremap <silent> <space>ce  :<C-u>CocList extensions<cr>
+nnoremap <silent> <space>e  :<C-u>CocList extensions<cr>
 " Show commands.
-nnoremap <silent> <space>cc  :<C-u>CocList commands<cr>
-" Find symbol of current document.
-nnoremap <silent> <space>co  :<C-u>CocList outline<cr>
-" Search workspace symbols.
-nnoremap <silent> <space>cs  :<C-u>CocList -I symbols<cr>
+nnoremap <silent> <space>c  :<C-u>CocList commands<cr>
+" Find symbol of current document. MODIFIED
+nnoremap <silent> <space>O  :<C-u>CocList outline<cr>
+" Search workspace symbols. MODIFIED
+nnoremap <silent> <space>y  :<C-u>CocList -I symbols<cr>
 " Do default action for next item.
-nnoremap <silent> <space>cj  :<C-u>CocNext<CR>
-" Do default action for previous item.
-nnoremap <silent> <space>ck  :<C-u>CocPrev<CR>
-
+nnoremap <silent> <space>j  :<C-u>CocNext<CR>
+" Do default action for previous item. MODIFIED
+nnoremap <silent> <space>p  :<C-u>CocPrev<CR>
+" Resume latest coc list. MODIFIED
+nnoremap <silent> <space>z  :<C-u>CocListResume<CR>s

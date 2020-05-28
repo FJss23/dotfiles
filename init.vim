@@ -12,13 +12,12 @@ call plug#begin('~/.local/share/nvim/plugged')
 " SYNTAX HIGHLIGHT AND THEME 
 Plug 'posva/vim-vue'
 Plug 'norcalli/nvim-colorizer.lua'
-Plug 'junegunn/seoul256.vim'
+Plug 'morhetz/gruvbox'
 
 " USABILITY
 Plug 'itchyny/lightline.vim'
 Plug 'tpope/vim-commentary'
 Plug 'jiangmiao/auto-pairs'
-Plug 'mattn/emmet-vim'
 Plug 'prettier/vim-prettier', {'do':'npm install'}
 Plug 'mhinz/vim-startify'
 
@@ -42,28 +41,30 @@ call plug#end()
  "                            | |                                      
  "                            |_|                                      
 
-:imap jj <Esc> 						" Remap Esc key
-map <space> <leader> 					" Remap Leader key
-nnoremap zz :update<cr> 				" Save files
-inoremap zz <Esc>:update<cr>gi
-nnoremap qq :q<cr> 					" Exit a file
-nnoremap <C-j> <C-w>j 					" Move between splited viewports
+:imap jj <Esc>
+let mapleader=" "
+nnoremap zz :update<cr>
+inoremap zz <Esc>:update<cr>i
+nnoremap qq :q<cr>
+:tnoremap jj <C-\><C-n>
+nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-h> <C-w>h
 nnoremap <C-l> <C-w>l
-:tnoremap jj <C-\><C-n> 				" Exit terminal mode
-nnoremap <A-h> gT 					" Move between tabs
+nnoremap <A-h> gT
 nnoremap <A-l> gt
 tnoremap <A-h> gT
 tnoremap <A-l> gt
-nnoremap <S-TAB> :bprev<CR> 				" Move between buffers
+nnoremap <S-TAB> :bprev<CR>
 nnoremap <TAB> :bnext<CR>
-nnoremap f $ 						" Move to the end of the line
-vnoremap f $
-nnoremap 0 _ 						" Move to the beginning of the line
-vnoremap 0 _
-nnoremap <Leader>x <C-W>s 				" Split horizontallly
-nnoremap <Leader>v <C-W>v 				" Split vertically
+nnoremap <Leader>x <C-W>s
+nnoremap <Leader>v <C-W>v
+nnoremap <Up>    :resize +2<CR>
+nnoremap <Down>  :resize -2<CR>
+nnoremap <Left>  :vertical resize +2<CR>
+nnoremap <Right> :vertical resize -2<CR>
+vnoremap J :m '>+1<CR>gv=gv
+vnoremap K :m '<-2<CR>gv=gv
 
 
  "   _____                           _    ____        _   _                 
@@ -75,14 +76,17 @@ nnoremap <Leader>v <C-W>v 				" Split vertically
  "                                             | |                          
  "                                             |_|                          
 
-set title 						" Show the name of the current file in the top of the window
-set mouse=a 						" Mouse integration
-set termguicolors 					" True color on terminal
-set relativenumber 					" Line number in file
-set noshowmode		 				" Eliminate the visualization of the active mode
-syntax on 						" Activate the syntaxis color
-au TermOpen * setlocal nonumber norelativenumber 	" Hide line numbers on terminal mode
-set hidden 						" Hide buffer unless explicity delete them
+set title
+set mouse=a
+set termguicolors
+set relativenumber
+set noshowmode
+syntax on
+au TermOpen * setlocal nonumber norelativenumber
+set hidden
+set smartindent
+set nowrap
+set incsearch
 
 
  "  _______ _                         
@@ -92,8 +96,8 @@ set hidden 						" Hide buffer unless explicity delete them
  "    | |  | | | |  __/ | | | | |  __/
  "    |_|  |_| |_|\___|_| |_| |_|\___|
                                     
-let g:seoul256_background = 233 			" Apply the darkest background
-colo seoul256 						" Activate the color scheme
+autocmd VimEnter * colorscheme gruvbox
+set background=dark
 
 
  "  _      _       _     _   _ _            
@@ -105,7 +109,7 @@ colo seoul256 						" Activate the color scheme
  "            __/ |                         
  "           |___/                          
 
-let g:lightline = { 'colorscheme': 'seoul256' } 		" Degine the theme for the airline
+let g:lightline = { 'colorscheme': 'seoul256' }
 
 
  "  _____          _   _   _           
@@ -115,14 +119,14 @@ let g:lightline = { 'colorscheme': 'seoul256' } 		" Degine the theme for the air
  " | |   | | |  __/ |_| |_| |  __/ |   
  " |_|   |_|  \___|\__|\__|_|\___|_|   
                                      
-let g:prettier#autoformat = 1													" Deactivate option when save
-let g:prettier#autoformat_require_pragma = 0 											
-autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.md,*.vue,*.yaml,*.html PrettierAsync 	" Extensions files that will format
-let g:prettier#exec_cmd_async = 1
-let g:prettier#config#parser = ''
-let g:prettier#config#config_precedence = 'file-override'
-let g:prettier#config#use_tabs = 'false'
-let g:prettier#config#tab_width = '1'
+let g:prettier#autoformat=1
+let g:prettier#autoformat_require_pragma=0
+autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.md,*.vue,*.yaml,*.html PrettierAsync
+let g:prettier#exec_cmd_async=1
+let g:prettier#config#parser=''
+let g:prettier#config#config_precedence='file-override'
+let g:prettier#config#use_tabs='false'
+let g:prettier#config#tab_width='1'
 
 
  "  ______    __ 
@@ -132,29 +136,29 @@ let g:prettier#config#tab_width = '1'
  " | |   / /| |  
  " |_|  /___|_|  
 
-nnoremap <Leader>F :Files<CR> 					" Search a file 
-nnoremap <Leader>g :Rg<CR> 					" Search word in current file
-noremap <Leader>s :Ag<CR> 					" Code search
-noremap <Leader>S :exe ':Ag ' . expand('<cword>')<CR> 		" Ag with the word under the cursor
-nnoremap <Leader>b :Buffers<CR> 				" List buffers
-nnoremap <Leader>h :History<CR> 				" List of history search
-nnoremap <Leader>f :GFiles<CR> 					" Files under a git project
-nnoremap <Leader>u :GFiles?<CR> 				" Files under a git project unstaged 
-nnoremap <Leader>l :Lines<CR> 					" Lines in loaded buffers
-nnoremap <Leader>L :BLines<CR> 					" Lines under the current buffer
-nnoremap <Leader>t :Tags<CR> 					" Tags in the project
-nnoremap <Leader>T :BTags<CR> 					" Tags in the current buffer
-nnoremap <Leader>m :Marks<CR> 					" Marks
-nnoremap <Leader>o; :Commands<CR> 				" Commands
-nnoremap <Leader>c :Commits<CR> 				" Commits
-nnoremap <Leader>C :BCommits<CR> 				" Buffers commits
-nnoremap <Leader>M :Maps<CR> 					" Maps
-nnoremap <Leader>t :tabnew term://zsh<CR>i 			" Open a zsh terminal
-nnoremap <Leader>n :e<space> 					" Edit a new file
-nnoremap <Leader>k :bd!<CR> 					" Close the current buffer 
-nnoremap <Leader>K :bufdo bd<CR> 				" Deletes all buffers stop at first error
-nnoremap <Leader>O :sp term://zsh<CR>i 				" Open a zsh terminal
-
+nnoremap <Leader>F :Files<CR>
+nnoremap <Leader>g :Rg<CR>
+noremap <Leader>s :Ag<CR>
+noremap <Leader>S :exe ':Ag ' . expand('<cword>')<CR>
+nnoremap , :Buffers<CR>
+nnoremap <Leader>h :History<CR>
+nnoremap <Leader>f :GFiles<CR>
+nnoremap <Leader>u :GFiles?<CR>
+nnoremap <Leader>l :Lines<CR>
+nnoremap <Leader>L :BLines<CR>
+nnoremap <Leader>t :Tags<CR>
+nnoremap <Leader>T :BTags<CR>
+nnoremap <Leader>m :Marks<CR>
+nnoremap <Leader>o :Commands<CR>
+nnoremap <Leader>c :Commits<CR>
+nnoremap <Leader>C :BCommits<CR>
+nnoremap <Leader>M :Maps<CR>
+nnoremap <Leader>b :tabnew term://zsh<CR>i
+nnoremap <Leader>n :e<space>
+nnoremap <Leader>k :bd!<CR>
+nnoremap <Leader>K :bufdo bd<CR>
+nnoremap <Leader>B :sp term://zsh<CR>i
+nnoremap <Leader>, :te zsh<CR>i
 
  "  _   _              _ _______            
  " | \ | |            | |__   __|           
@@ -163,7 +167,8 @@ nnoremap <Leader>O :sp term://zsh<CR>i 				" Open a zsh terminal
  " | |\  |  __/ | | (_| |  | | | |  __/  __/
  " |_| \_|\___|_|  \__,_|  |_|_|  \___|\___|
 
-map <C-n> :NERDTreeToggle<CR> 										" Remap the openning of nerdtree
+map <F2> :NERDTreeToggle<CR>
+map <F3> :NERDTreeFind<CR>
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
 
@@ -176,7 +181,6 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isT
  "                                  __/ |
  "                                 |___/ 
 
-											" Declaring a header
 let s:header = [
 			\'.######..######...####....####....####...######.',
 			\'.##..........##..##......##..........##.....##..',
@@ -184,16 +188,16 @@ let s:header = [
 			\'.##......##..##......##......##..##..........##.',
 			\'.##.......####....####....####...######..#####..']
 
-let g:startify_padding_left=60 								"  Applying some padding in the content
+let g:startify_padding_left=60
 
-function! s:center(lines) abort 							"  Function to center the header
+function! s:center(lines) abort
   let longest_line   = max(map(copy(a:lines), 'strwidth(v:val)'))
   let centered_lines = map(copy(a:lines),
         \ 'repeat(" ", (&columns / 2) - (longest_line / 2)) . v:val')
   return centered_lines
 endfunction
 
-let g:startify_custom_header = s:center(s:header) 					" Applying the header
+let g:startify_custom_header = s:center(s:header)
 
 
  "   _____      _            _             _ 
@@ -263,8 +267,8 @@ else
 endif
 
 " Use `` and `` to navigate diagnostics
-nmap <silent> w <Plug>(coc-diagnostic-prev) " MODIFIED
-nmap <silent> e <Plug>(coc-diagnostic-next) " MODIFIED
+nmap <silent> <C-n> <Plug>(coc-diagnostic-prev) " MODIFIED
+nmap <silent> <C-m> <Plug>(coc-diagnostic-next) " MODIFIED
 
 " GoTo code navigation.
 nmap <silent> gd <Plug>(coc-definition)

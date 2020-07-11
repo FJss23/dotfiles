@@ -1,0 +1,55 @@
+{
+  "editor.formatOnSave": true,
+  "explorer.openEditors.visible": 0,
+  "files.autoSave": "off",
+  "workbench.startupEditor": "newUntitledFile",
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "workbench.activityBar.visible": true,
+  "search.exclude": {
+    "**/bower_components": true,
+    "**/node_modules": true,
+    "**/tmp": true
+  },
+  "editor.minimap.enabled": false,
+  "explorer.confirmDelete": false,
+  "workbench.statusBar.visible": true,
+  "editor.scrollBeyondLastLine": false,
+  "workbench.colorTheme": "Just Black",
+  "workbench.iconTheme": "material-icon-theme",
+  "workbench.colorCustomizations": {
+    "editorLineNumber.foreground": "#4b5555",
+    "sideBar.foreground": "#FFF",
+    "gitDecoration.modifiedResourceForeground": "#dde939",
+    "gitDecoration.addedResourceForeground": "#18d411",
+    "gitDecoration.deletedResourceForeground": "#ff0000",
+    "gitDecoration.untrackedResourceForeground": "#207db3",
+    "gitDecoration.ignoredResourceForeground": "#919399",
+    "gitDecoration.conflictingResourceForeground": "#f136d8"
+  },
+  "window.zoomLevel": 0,
+  "editor.fontSize": 15,
+  "vim.hlsearch": true,
+  "vim.incsearch": true,
+  "vim.useCtrlKeys": false,
+  "vim.normalModeKeyBindingsNonRecursive": [
+    {
+      "before": ["z", "z"],
+      "commands": [":w"]
+    },
+    {
+      "before": ["q", "q"],
+      "commands": [":q"]
+    }
+  ],
+  "vim.insertModeKeyBindings": [
+    {
+      "before": ["j", "k"],
+      "after": ["<Esc>"]
+    }
+  ],
+  "prettier.singleQuote": true,
+  "telemetry.enableTelemetry": false,
+  "telemetry.enableCrashReporter": false
+}

@@ -1,1 +1,0 @@
-/home/fjss23/.config/fish/

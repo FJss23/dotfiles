@@ -6,10 +6,6 @@ _shell:_
 
 - [Fish](https://github.com/fish-shell/fish-shell)
 
-_prompt:_
-
-- [Starship](https://github.com/starship/starship)
-
 _editors:_
 
 - [NeoVim](https://github.com/neovim/neovim)
@@ -21,11 +17,16 @@ _IDE:_
 
 _command line tools:_
 
-- [ripgrep](https://github.com/BurntSushi/ripgrep)
 - [fzf](https://github.com/junegunn/fzf)
 - [htop](https://github.com/htop-dev/htop)
 - [neofetch](https://github.com/dylanaraps/neofetch)
-- [n](https://github.com/tj/n)
+- [nvm](https://github.com/nvm-sh/nvm)
+- [maven](https://maven.apache.org/install.html)
+- find, grep, git, etc.
+
+_fonts:_
+
+- [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono)
 
 _rest of stuff:_
 

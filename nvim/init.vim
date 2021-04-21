@@ -30,6 +30,7 @@ nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-h> <C-w>h
 nnoremap <C-l> <C-w>l
+nnoremap <C-p> <C-w>p
 nnoremap <A-h> gT
 nnoremap <A-l> gt
 tnoremap <A-h> gT
@@ -42,14 +43,13 @@ nnoremap <Left>  :vertical resize +2<CR>
 nnoremap <Right> :vertical resize -2<CR>
 vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '<-2<CR>gv=gv
-nnoremap <Leader>tt :tabnew term://fish<CR>i
-nnoremap <Leader>ts :belowright split term://fish<CR>i
-nnoremap <Leader>tb :te fish<CR>i
+nnoremap <leader>tt :tabnew term://fish<CR>i
+nnoremap <leader>ts :belowright split term://fish<CR>i
+nnoremap <leader>tb :te fish<CR>i
 
 call plug#begin('~/.local/share/nvim/plugged')
-Plug 'nvim-lua/popup.nvim'
-Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-telescope/telescope.nvim'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
 
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-lua/completion-nvim'
@@ -58,8 +58,6 @@ Plug 'norcalli/nvim-colorizer.lua'
 Plug 'prettier/vim-prettier', {'do':'npm install'}
 Plug 'mattn/emmet-vim'
 
-Plug 'embark-theme/vim', { 'as': 'embark' }
-Plug 'itchyny/lightline.vim'
 Plug 'sheerun/vim-polyglot'
 call plug#end()
 
@@ -67,11 +65,7 @@ lua require'lspconfig'.html.setup{on_attach=require'completion'.on_attach}
 lua require'lspconfig'.cssls.setup{on_attach=require'completion'.on_attach}
 lua require'lspconfig'.jsonls.setup{on_attach=require'completion'.on_attach}
 lua require'lspconfig'.vuels.setup{on_attach=require'completion'.on_attach}
-
 lua require'lspconfig'.tsserver.setup{on_attach=require'completion'.on_attach}
-lua require'lspconfig'.clangd.setup{on_attach=require'completion'.on_attach}
-lua require'lspconfig'.gopls.setup{on_attach=require'completion'.on_attach}
-lua require'lspconfig'.sumneko_lua.setup{on_attach=require'completion'.on_attach}
 
 lua require'colorizer'.setup()
 
@@ -79,15 +73,16 @@ autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.gra
 let g:prettier#exec_cmd_async=1
 let g:prettier#config#parser=''
 
-colorscheme embark
-
 autocmd FileType html EmmetInstall
 
-let g:lightline = {
-      \ 'colorscheme': 'embark',
-      \ }
+nnoremap <leader>ff :Files<CR>
+nnoremap <leader>fr :Rg<CR>
+nnoremap <leader>fb :Buffers<CR>
+nnoremap <leader>fg :GFiles?<CR>
 
-nnoremap <leader>ff <cmd>Telescope find_files<cr>
-nnoremap <leader>fg <cmd>Telescope live_grep<cr>
-nnoremap <leader>fb <cmd>Telescope buffers<cr>
-nnoremap <leader>fh <cmd>Telescope help_tags<cr>
+let g:netrw_liststyle = 3
+let g:netrw_browse_split = 4
+let g:netrw_altv = 1
+let g:netrw_winsize = 25
+
+nnoremap <leader>e :Vexplore<CR>

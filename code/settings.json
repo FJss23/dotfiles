@@ -1,0 +1,41 @@
+{
+  "editor.formatOnSave": true,
+  "explorer.openEditors.visible": 0,
+  "files.autoSave": "off",
+  "workbench.startupEditor": "newUntitledFile",
+  "eslint.alwaysShowStatus": true,
+  "editor.tabSize": 2,
+  "editor.detectIndentation": false,
+  "editor.insertSpaces": true,
+  "search.exclude": {
+    "**/bower_components": true,
+    "**/node_modules": true,
+    "**/tmp": true
+  },
+  "editor.minimap.enabled": false,
+  "explorer.confirmDelete": false,
+  "workbench.statusBar.visible": true,
+  "editor.scrollBeyondLastLine": false,
+  "editor.semanticHighlighting.enabled": false,
+  "telemetry.enableTelemetry": false,
+  "telemetry.enableCrashReporter": false,
+  "workbench.enableExperiments": false,
+  "workbench.activityBar.visible": true,
+  "emmet.includeLanguages": {
+    "javascript": "javascriptreact"
+  },
+  "emmet.showSuggestionsAsSnippets": true,
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "editor.rulers": [100],
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "explorer.confirmDragAndDrop": false,
+  "editor.fontFamily": "'JetBrains Mono', 'Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback'",
+  "github.gitAuthentication": false,
+  "scm.diffDecorations": "none",
+  "update.mode": "manual",
+  "inline-parameters.margin": "0.2em",
+  "prettier.singleQuote": true,
+  "editor.fontSize": 15,
+  "workbench.colorTheme": "One Dark Pro"
+}

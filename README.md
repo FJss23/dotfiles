@@ -49,3 +49,15 @@ _gnome extensions:_
 -   Screenshot Tool
 -   Sound Input & Output Device Chooser
 -   Workspace Indicator
+
+_VS Code extensions:_
+- Community Material Theme
+- Docker
+- Eslint
+- Prettier - Code Formatter
+- Ruby
+- rust-analyzer
+- Simple React Snippets
+- Tailwind CSS IntelliSense
+- Vim
+- VSCode Ruby

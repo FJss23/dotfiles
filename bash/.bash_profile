@@ -13,7 +13,7 @@ print_before_the_prompt () {
     dir=$PWD
     home=$HOME
     dir=${dir/"$HOME"/"~"}
-    printf "\n $txtred%s: $bldpur%s $txtgrn%s\n$txtrst" "$HOST_NAME" "$dir 🌱" "$(vcprompt)"
+    printf "\n $txtred%s: $bldpur%s $txtgrn%s\n$txtrst" "$HOST_NAME" "$dir 🌱"
 }
 
 PROMPT_COMMAND=print_before_the_prompt

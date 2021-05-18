@@ -64,7 +64,6 @@ call plug#end()
 lua require'lspconfig'.html.setup{on_attach=require'completion'.on_attach}
 lua require'lspconfig'.cssls.setup{on_attach=require'completion'.on_attach}
 lua require'lspconfig'.jsonls.setup{on_attach=require'completion'.on_attach}
-lua require'lspconfig'.vuels.setup{on_attach=require'completion'.on_attach}
 lua require'lspconfig'.tsserver.setup{on_attach=require'completion'.on_attach}
 
 lua require'colorizer'.setup()

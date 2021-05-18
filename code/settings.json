@@ -49,7 +49,7 @@
   ],
   "vim.leader": "<space>",
   "ruby.useBundler": true,
-  "ruby.useLanguageServer": true, /
+  "ruby.useLanguageServer": true,
   "ruby.lint": {
     "rubocop": {
       "useBundler": true 

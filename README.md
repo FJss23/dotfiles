@@ -43,6 +43,7 @@ _VS Code extensions:_
 - Eslint
 - Prettier - Code Formatter
 - Javascript (ES6) code snippets
+- C/C++ Compile Run extension
 - Night Owl
 - Remote - SSH: Editing Configuration Files
 - Remote - SSH

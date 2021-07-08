@@ -36,6 +36,7 @@ _rest of stuff:_
 -   [Kdenlive](https://kdenlive.org/en/)
 -   [Docker](https://www.docker.com/)
 -   Docker compose
+-   DBeaver
 -   Spotify
 -   Discord
 -   VLC
@@ -63,7 +64,12 @@ _VS Code extensions:_
 - Code Spell Checker
 - GitLens
 
--Notes:_
+_Notes:_
 * Install curl from ppa
 * Instead of using fdfind create an alias fd in .bashrc
 * Install java and maven from sdkman
+* After downloading Dbeaver, make sure that the file dbeaver.ini include the following argument
+`
+  -vm
+  /home/[user]/.sdkman/candidates/[java_version]/bin/java
+`

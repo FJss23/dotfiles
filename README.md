@@ -35,6 +35,8 @@ _rest of stuff:_
 -   Spotify
 -   Discord
 -   VLC
+-   Postgres
+-   Sqlite
 
 _VS Code extensions:_
 - Python

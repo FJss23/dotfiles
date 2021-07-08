@@ -15,6 +15,7 @@ _command line tools:_
 -   [fd](https://github.com/sharkdp/fd)
 -   curl
 -   sdkman
+-   gcc
 
 _fonts:_
 
@@ -23,6 +24,8 @@ _fonts:_
 _rest of stuff:_
 
 -   [Java](https://openjdk.java.net/)
+-   [Rust](https://www.rust-lang.org/)
+-   Python
 -   [Inkscape](https://inkscape.org/)
 -   [GIMP](https://www.gimp.org/)
 -   [Insomnia](https://github.com/Kong/insomnia)
@@ -32,6 +35,7 @@ _rest of stuff:_
 -   [Calibre](https://github.com/kovidgoyal/calibre)
 -   [Kdenlive](https://kdenlive.org/en/)
 -   [Docker](https://www.docker.com/)
+-   Docker compose
 -   Spotify
 -   Discord
 -   VLC

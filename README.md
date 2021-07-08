@@ -62,3 +62,8 @@ _VS Code extensions:_
 - Vue VSCode snippets
 - Code Spell Checker
 - GitLens
+
+-Notes:_
+* Install curl from ppa
+* Instead of using fdfind create an alias fd in .bashrc
+* Install java and maven from sdkman

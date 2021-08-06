@@ -1,7 +1,8 @@
 _editors:_
 
 -   [Neovim](https://github.com/neovim/neovim)
--   IntelliJ
+-   Visual Studio Code
+-   Eclipse
 
 _command line tools:_
 
@@ -15,6 +16,7 @@ _command line tools:_
 -   curl
 -   sdkman
 -   gcc
+-   pyenv
 
 _fonts:_
 
@@ -25,6 +27,7 @@ _rest of stuff:_
 -   [Java](https://openjdk.java.net/)
 -   [Rust](https://www.rust-lang.org/)
 -   Python
+-   Go
 -   [Inkscape](https://inkscape.org/)
 -   [GIMP](https://www.gimp.org/)
 -   Krita
@@ -41,29 +44,23 @@ _rest of stuff:_
 -   Spotify
 -   Discord
 -   VLC
--   Postgres
--   Sqlite
 -   Zeal
 -   Thunderbird Mail
 -   Muon package manager
+-   AnotherRedisDesktopManager
+-   Filezilla
 
 _VS Code extensions:_
 -   Python
--   Pylance
+-   Golang
+-   Java
 -   rust-analyzer
 -   C/C++
--   Docker
 -   Eslint
 -   Prettier - Code Formatter
--   Javascript (ES6) code snippets
 -   C/C++ Compile Run extension
--   Remote - SSH: Editing Configuration Files
--   Remote - SSH
--   Remote - Containers
 -   CodeLLDB
 -   Tailwind CSS IntelliSense
--   Vetur
--   Vue VSCode snippets
 -   Code Spell Checker
 -   GitLens
 

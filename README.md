@@ -73,3 +73,5 @@ _Notes:_
   -vm
   /home/[user]/.sdkman/candidates/[java_version]/bin/java
 `
+
+

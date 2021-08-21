@@ -48,31 +48,12 @@ nnoremap <leader>ts :belowright split term://fish<CR>i
 nnoremap <leader>tb :te fish<CR>i
 
 call plug#begin('~/.local/share/nvim/plugged')
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 
-Plug 'neovim/nvim-lspconfig'
-Plug 'nvim-lua/completion-nvim'
-
-Plug 'norcalli/nvim-colorizer.lua'
-Plug 'prettier/vim-prettier', {'do':'npm install'}
 Plug 'mattn/emmet-vim'
-
-Plug 'sheerun/vim-polyglot'
 call plug#end()
 
-lua require'lspconfig'.html.setup{on_attach=require'completion'.on_attach}
-lua require'lspconfig'.cssls.setup{on_attach=require'completion'.on_attach}
-lua require'lspconfig'.jsonls.setup{on_attach=require'completion'.on_attach}
-lua require'lspconfig'.tsserver.setup{on_attach=require'completion'.on_attach}
-
-lua require'colorizer'.setup()
-
-autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.md,*.vue,*.yaml,*.html PrettierAsync
-let g:prettier#exec_cmd_async=1
-let g:prettier#config#parser=''
-
-autocmd FileType html EmmetInstall
+autocmd FileType html, js, jsx, tsx EmmetInstall
 
 nnoremap <leader>ff :Files<CR>
 nnoremap <leader>fr :Rg<CR>

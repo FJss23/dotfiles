@@ -1,4 +1,6 @@
+set path+=**
 set signcolumn=yes
+set colorcolumn=100
 set tabstop=4 
 set number
 set softtabstop=4
@@ -7,62 +9,64 @@ set expandtab
 set smartindent
 set guicursor=
 set relativenumber
-set nohlsearch
 set hidden
 set nobackup
 set noswapfile
-set incsearch
+set incsearch hlsearch
 set scrolloff=10
 set noshowmode
 set termguicolors
 set completeopt=menu,noinsert,noselect
 set mouse=a
+set nuw=4
 set background=dark
+set cursorline
+filetype on
+filetype indent on
+filetype plugin on
 au TermOpen * setlocal nonumber norelativenumber
 
-:imap jk <Esc>
 let mapleader=" "
-nnoremap zz :update<cr>
-inoremap zz <Esc>:update<cr>i
-nnoremap ww :q<cr>
+:imap jk <Esc>
+nnoremap <leader>s :update<cr>
+inoremap <leader>s <Esc>:update<cr>i
+nnoremap <leader>z :q<cr>
 :tnoremap jk <C-\><C-n>
-nnoremap <C-j> <C-w>j
-nnoremap <C-k> <C-w>k
-nnoremap <C-h> <C-w>h
-nnoremap <C-l> <C-w>l
-nnoremap <C-p> <C-w>p
-nnoremap <A-h> gT
-nnoremap <A-l> gt
-tnoremap <A-h> gT
-tnoremap <A-l> gt
 nnoremap <S-TAB> :bprev<CR>
 nnoremap <TAB> :bnext<CR>
-nnoremap <Up>    :resize +2<CR>
-nnoremap <Down>  :resize -2<CR>
-nnoremap <Left>  :vertical resize +2<CR>
-nnoremap <Right> :vertical resize -2<CR>
 vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '<-2<CR>gv=gv
-nnoremap <leader>tt :tabnew term://fish<CR>i
-nnoremap <leader>ts :belowright split term://fish<CR>i
-nnoremap <leader>tb :te fish<CR>i
+nnoremap Y y$
+" Switch beetwen your last two buffers
+nnoremap <leader><leader> <c-^>
+" Copy and paste from the system clipboard, and avoid indentation issues
+noremap <leader>y "+y
+noremap <leader>p "+p
+" After search, clean the highlight
+nnoremap <silent> <leader><CR> :noh<CR>
 
 call plug#begin('~/.local/share/nvim/plugged')
-Plug 'junegunn/fzf.vim'
-
 Plug 'mattn/emmet-vim'
+Plug 'bluz71/vim-moonfly-colors'
+Plug 'tpope/vim-commentary'
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 call plug#end()
 
-autocmd FileType html, js, jsx, tsx EmmetInstall
+autocmd FileType html EmmetInstall
 
-nnoremap <leader>ff :Files<CR>
-nnoremap <leader>fr :Rg<CR>
-nnoremap <leader>fb :Buffers<CR>
-nnoremap <leader>fg :GFiles?<CR>
-
-let g:netrw_liststyle = 3
-let g:netrw_browse_split = 4
-let g:netrw_altv = 1
+let g:netrw_browse_split = 0
+let g:netrw_banner = 0
 let g:netrw_winsize = 25
+let g:netrw_localrmdir='rm -r'
 
 nnoremap <leader>e :Vexplore<CR>
+
+colorscheme moonfly
+
+lua <<EOF
+  require'nvim-treesitter.configs'.setup {
+    highlight = { enable = true },
+    incremental_selection = { enable = true },
+    textobjects = { enable = true },
+  }
+EOF

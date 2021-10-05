@@ -29,8 +29,7 @@ au TermOpen * setlocal nonumber norelativenumber
 let mapleader=" "
 :imap jk <Esc>
 nnoremap <leader>s :update<cr>
-inoremap <leader>s <Esc>:update<cr>i
-nnoremap <leader>z :q<cr>
+nnoremap <leader>q :q<cr>
 :tnoremap jk <C-\><C-n>
 nnoremap <S-TAB> :bprev<CR>
 nnoremap <TAB> :bnext<CR>

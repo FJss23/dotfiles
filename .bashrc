@@ -117,7 +117,10 @@ if ! shopt -oq posix; then
 fi
 
 export PATH="$HOME/nvim-linux64/bin:$PATH"
-export PATH="$HOME/Documents/stripe:$PATH"
+
+
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init - bash)"
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm

@@ -19,8 +19,11 @@
     "editor.rulers": [
         100
     ],
-    "workbench.iconTheme": "eq-material-theme-icons-light",
+    "workbench.iconTheme": "atom-font-icons",
     "editor.tabSize": 2,
     "window.zoomLevel": 1,
-    "workbench.colorTheme": "Material Theme"
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "workbench.colorTheme": "Gruvbox Dark Hard",
+    "window.titleBarStyle": "custom",
+    "workbench.productIconTheme": "fluent-icons"
 }

@@ -21,9 +21,9 @@
     ],
     "workbench.iconTheme": "atom-font-icons",
     "editor.tabSize": 2,
-    "window.zoomLevel": 1,
     "javascript.updateImportsOnFileMove.enabled": "always",
-    "workbench.colorTheme": "Gruvbox Dark Hard",
+    "workbench.colorTheme": "Night Owl",
     "window.titleBarStyle": "custom",
-    "workbench.productIconTheme": "fluent-icons"
+    "workbench.productIconTheme": "fluent-icons",
+    "window.zoomLevel": 1
 }

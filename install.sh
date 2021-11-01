@@ -30,3 +30,12 @@ echo 'fd -> https://github.com/sharkdp/fd -> install from apt'
 
 # JETBRAINS MONO
 echo 'JetBrains Mono -> https://github.com/JetBrains/JetBrainsMono -> install with the script'
+
+# GIT
+# OBSIDIAN
+# FIREFOX
+# THUNDERBIRD
+# CHROME
+# KITTY
+# NEOVI (vim-plug)
+

@@ -119,15 +119,8 @@ fi
 export PATH="$HOME/nvim-linux64/bin:$PATH"
 
 
-export PATH="$HOME/.rbenv/bin:$PATH"
-eval "$(rbenv init - bash)"
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-
 alias fd=fdfind
+alias nvim="~/nvim/nvim.appimage"
 
 
 #
@@ -524,9 +517,7 @@ unset bash_prompt
 
 ### EOF ###
 
+. $HOME/.asdf/asdf.sh
+. $HOME/.asdf/completions/asdf.bash
 
-#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="/home/frandev/.sdkman"
-[[ -s "/home/frandev/.sdkman/bin/sdkman-init.sh" ]] && source "/home/frandev/.sdkman/bin/sdkman-init.sh"
-
-
+. ~/.asdf/plugins/java/set-java-home.bash

@@ -367,6 +367,9 @@ alias nvim="~/nvim/nvim.appimage"
 alias ssh='kitty +kitten ssh'
 alias fd=fdfind
 
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
 export SDKMAN_DIR="/home/frandev/.sdkman"
 [[ -s "/home/frandev/.sdkman/bin/sdkman-init.sh" ]] && source "/home/frandev/.sdkman/bin/sdkman-init.sh"
+
 

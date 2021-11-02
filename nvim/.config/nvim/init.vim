@@ -38,27 +38,36 @@ vnoremap K :m '<-2<CR>gv=gv
 nnoremap Y y$
 " Switch beetwen your last two buffers
 nnoremap <leader><leader> <c-^>
-" Copy and paste from the system clipboard, and avoid indentation issues
-noremap <leader>y "+y
-noremap <leader>p "+p
 " After search, clean the highlight
 nnoremap <silent> <leader><CR> :noh<CR>
 
+nnoremap <Up>    :resize +2<CR>
+nnoremap <Down>  :resize -2<CR>
+nnoremap <Left>  :vertical resize +2<CR>
+nnoremap <Right> :vertical resize -2<CR>
+
+nnoremap <Leader>k :bp\|bd! #<CR>
+
 call plug#begin('~/.local/share/nvim/plugged')
 Plug 'mattn/emmet-vim'
+
 Plug 'bluz71/vim-moonfly-colors'
+
 Plug 'tpope/vim-commentary'
+
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+
+Plug 'nvim-lua/plenary.nvim'
+Plug 'lewis6991/gitsigns.nvim'
+
+Plug 'kyazdani42/nvim-tree.lua'
 call plug#end()
 
 autocmd FileType html EmmetInstall
 
-let g:netrw_browse_split = 0
-let g:netrw_banner = 0
-let g:netrw_winsize = 25
-let g:netrw_localrmdir='rm -r'
-
-nnoremap <leader>e :Vexplore<CR>
+nnoremap <leader>e :NvimTreeToggle<CR>
+nnoremap <leader>r :NvimTreeRefresh<CR>
+nnoremap <leader>n :NvimTreeFindFile<CR>
 
 colorscheme moonfly
 
@@ -68,4 +77,8 @@ lua <<EOF
     incremental_selection = { enable = true },
     textobjects = { enable = true },
   }
+
+  require'gitsigns'.setup()
+  require'nvim-tree'.setup()
+
 EOF

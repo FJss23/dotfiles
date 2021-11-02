@@ -61,6 +61,8 @@ Plug 'nvim-lua/plenary.nvim'
 Plug 'lewis6991/gitsigns.nvim'
 
 Plug 'kyazdani42/nvim-tree.lua'
+
+Plug 'norcalli/nvim-colorizer.lua'
 call plug#end()
 
 autocmd FileType html EmmetInstall
@@ -80,5 +82,6 @@ lua <<EOF
 
   require'gitsigns'.setup()
   require'nvim-tree'.setup()
+  require'colorizer'.setup()
 
 EOF

@@ -24,6 +24,8 @@ set cursorline
 filetype on
 filetype indent on
 filetype plugin on
+set spelllang=en
+set spellsuggest=best,9
 au TermOpen * setlocal nonumber norelativenumber
 
 let mapleader=" "
@@ -48,10 +50,15 @@ nnoremap <Right> :vertical resize -2<CR>
 
 nnoremap <Leader>k :bp\|bd! #<CR>
 
+nnoremap <silent> <F11> :set spell!<cr>
+inoremap <silent> <F11> <C-O>:set spell!<cr>
+
 call plug#begin('~/.local/share/nvim/plugged')
 Plug 'mattn/emmet-vim'
 
 Plug 'bluz71/vim-moonfly-colors'
+
+Plug 'kyazdani42/nvim-web-devicons'
 
 Plug 'tpope/vim-commentary'
 
@@ -63,9 +70,15 @@ Plug 'lewis6991/gitsigns.nvim'
 Plug 'kyazdani42/nvim-tree.lua'
 
 Plug 'norcalli/nvim-colorizer.lua'
+
+Plug 'lukas-reineke/indent-blankline.nvim'
+
+Plug 'sbdchd/neoformat'
+
+Plug 'tpope/vim-surround'
 call plug#end()
 
-autocmd FileType html EmmetInstall
+autocmd FileType html,javascript,typescript,js,ts,jsx,tsx EmmetInstall
 
 nnoremap <leader>e :NvimTreeToggle<CR>
 nnoremap <leader>r :NvimTreeRefresh<CR>
@@ -83,5 +96,9 @@ lua <<EOF
   require'gitsigns'.setup()
   require'nvim-tree'.setup()
   require'colorizer'.setup()
+  require'indent_blankline'.setup()
 
+  require'nvim-web-devicons'.setup {
+    default = true;
+  }
 EOF

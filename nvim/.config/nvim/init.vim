@@ -55,27 +55,24 @@ inoremap <silent> <F11> <C-O>:set spell!<cr>
 
 call plug#begin('~/.local/share/nvim/plugged')
 Plug 'mattn/emmet-vim'
-
 Plug 'bluz71/vim-moonfly-colors'
-
 Plug 'kyazdani42/nvim-web-devicons'
-
 Plug 'tpope/vim-commentary'
-
+Plug 'tpope/vim-surround'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-
 Plug 'nvim-lua/plenary.nvim'
 Plug 'lewis6991/gitsigns.nvim'
-
+Plug 'nvim-telescope/telescope.nvim'
+Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
 Plug 'kyazdani42/nvim-tree.lua'
-
 Plug 'norcalli/nvim-colorizer.lua'
-
 Plug 'lukas-reineke/indent-blankline.nvim'
-
 Plug 'sbdchd/neoformat'
-
-Plug 'tpope/vim-surround'
+" Plug 'neovim/nvim-lspconfig'
+" Plug 'ray-x/lsp_signature.nvim'
+" Plug 'hrsh7th/nvim-cmp'
+Plug 'windwp/nvim-autopairs'
+Plug 'digitaltoad/vim-pug'
 call plug#end()
 
 autocmd FileType html,javascript,typescript,js,ts,jsx,tsx EmmetInstall
@@ -83,6 +80,11 @@ autocmd FileType html,javascript,typescript,js,ts,jsx,tsx EmmetInstall
 nnoremap <leader>e :NvimTreeToggle<CR>
 nnoremap <leader>r :NvimTreeRefresh<CR>
 nnoremap <leader>n :NvimTreeFindFile<CR>
+
+nnoremap <leader>ff <cmd>Telescope find_files<cr>
+nnoremap <leader>fg <cmd>Telescope live_grep<cr>
+nnoremap <leader>fb <cmd>Telescope buffers<cr>
+nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 
 colorscheme moonfly
 
@@ -101,4 +103,12 @@ lua <<EOF
   require'nvim-web-devicons'.setup {
     default = true;
   }
+
+  require'nvim-autopairs'.setup()
+
+  require'telescope'.load_extension('fzf')
+
+   --require'lspconfig'.cssls.setup{}
+   --require'lsp_signature'.setup()
+
 EOF

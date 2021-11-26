@@ -22,8 +22,7 @@
     "workbench.iconTheme": "atom-font-icons",
     "editor.tabSize": 2,
     "javascript.updateImportsOnFileMove.enabled": "always",
-    "workbench.colorTheme": "Night Owl",
+    "workbench.colorTheme": "Night Owl (No Italics)",
     "window.titleBarStyle": "custom",
-    "workbench.productIconTheme": "fluent-icons",
-    "window.zoomLevel": 1
+    "workbench.productIconTheme": "fluent-icons"
 }

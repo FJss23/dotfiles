@@ -20,10 +20,10 @@
         100
     ],
     "workbench.iconTheme": "atom-font-icons",
-    "editor.tabSize": 2,
     "javascript.updateImportsOnFileMove.enabled": "always",
     "workbench.colorTheme": "Night Owl",
     "window.titleBarStyle": "custom",
     "workbench.productIconTheme": "fluent-icons",
-    "window.zoomLevel": 1
+    "window.zoomLevel": 1,
+    "editor.formatOnSave": true,
 }

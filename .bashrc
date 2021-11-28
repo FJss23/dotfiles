@@ -357,12 +357,7 @@ unset bash_prompt
 #
 ##################################################################################################
 
-FILE="$HOME/nvim-linux64/bin"
-if [ -f "$FILE" ]; then
-    export PATH="$HOME/nvim-linux64/bin:$PATH"
-else 
-    alias nvim="~/nvim/nvim.appimage"
-fi
+ alias nvim="~/nvim/nvim.appimage"
 
 . $HOME/.asdf/asdf.sh
 . $HOME/.asdf/completions/asdf.bash

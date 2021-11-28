@@ -21,9 +21,8 @@ set mouse=a
 set nuw=4
 set background=dark
 set cursorline
-filetype on
-filetype indent on
-filetype plugin on
+syntax on
+filetype plugin indent on
 set spelllang=en
 set spellsuggest=best,9
 au TermOpen * setlocal nonumber norelativenumber
@@ -33,8 +32,6 @@ let mapleader=" "
 nnoremap <leader>s :update<cr>
 nnoremap <leader>q :q<cr>
 :tnoremap jk <C-\><C-n>
-nnoremap <S-TAB> :bprev<CR>
-nnoremap <TAB> :bnext<CR>
 vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '<-2<CR>gv=gv
 nnoremap Y y$
@@ -55,7 +52,12 @@ inoremap <silent> <F11> <C-O>:set spell!<cr>
 
 call plug#begin('~/.local/share/nvim/plugged')
 Plug 'mattn/emmet-vim'
+
 Plug 'bluz71/vim-moonfly-colors'
+Plug 'romgrk/doom-one.vim'
+Plug 'EdenEast/nightfox.nvim'
+Plug 'projekt0n/github-nvim-theme'
+
 Plug 'kyazdani42/nvim-web-devicons'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
@@ -72,7 +74,9 @@ Plug 'sbdchd/neoformat'
 " Plug 'ray-x/lsp_signature.nvim'
 " Plug 'hrsh7th/nvim-cmp'
 Plug 'windwp/nvim-autopairs'
+Plug 'editorconfig/editorconfig-vim'
 Plug 'digitaltoad/vim-pug'
+Plug 'elixir-editors/vim-elixir'
 call plug#end()
 
 autocmd FileType html,javascript,typescript,js,ts,jsx,tsx EmmetInstall
@@ -86,7 +90,11 @@ nnoremap <leader>fg <cmd>Telescope live_grep<cr>
 nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 
-colorscheme moonfly
+" colorscheme moonfly
+" colorscheme doom-one
+" let g:doom_one_terminal_colors = v:true
+colorscheme nightfox
+" colorscheme github_dark
 
 lua <<EOF
   require'nvim-treesitter.configs'.setup {
@@ -96,7 +104,9 @@ lua <<EOF
   }
 
   require'gitsigns'.setup()
-  require'nvim-tree'.setup()
+  require'nvim-tree'.setup {
+    open_on_setup = true,     
+  }
   require'colorizer'.setup()
   require'indent_blankline'.setup()
 

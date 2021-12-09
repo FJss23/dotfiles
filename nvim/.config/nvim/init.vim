@@ -24,7 +24,8 @@ syntax on
 filetype plugin indent on
 set spelllang=en
 set spellsuggest=best,9
-au TermOpen * setlocal nonumber norelativenumber
+highlight Normal ctermbg=none
+highlight NonText ctermbg=none
 
 let mapleader=" "
 :imap jk <Esc>
@@ -54,11 +55,12 @@ Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'EdenEast/nightfox.nvim'
 Plug 'kyazdani42/nvim-web-devicons'
 
-Plug 'tpope/vim-commentary'
-Plug 'tpope/vim-surround'
+Plug 'numToStr/Comment.nvim'
 Plug 'mattn/emmet-vim'
 Plug 'windwp/nvim-autopairs'
 Plug 'editorconfig/editorconfig-vim'
+Plug 'simrat39/symbols-outline.nvim'
+Plug 'folke/trouble.nvim'
 
 Plug 'nvim-lua/plenary.nvim'
 Plug 'lewis6991/gitsigns.nvim'
@@ -69,8 +71,10 @@ Plug 'kyazdani42/nvim-tree.lua'
 
 Plug 'norcalli/nvim-colorizer.lua'
 Plug 'lukas-reineke/indent-blankline.nvim'
+Plug 'windwp/nvim-ts-autotag'
 
 Plug 'neovim/nvim-lspconfig'
+Plug 'hrsh7th/nvim-compe'
 
 Plug 'digitaltoad/vim-pug'
 Plug 'elixir-editors/vim-elixir'
@@ -87,6 +91,19 @@ nnoremap <leader>fg <cmd>Telescope live_grep<cr>
 nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 
+nnoremap <leader>xx <cmd>TroubleToggle<cr>
+nnoremap <leader>xw <cmd>TroubleToggle lsp_workspace_diagnostics<cr>
+nnoremap <leader>xd <cmd>TroubleToggle lsp_document_diagnostics<cr>
+nnoremap <leader>xq <cmd>TroubleToggle quickfix<cr>
+nnoremap <leader>xl <cmd>TroubleToggle loclist<cr>
+nnoremap gR <cmd>TroubleToggle lsp_references<cr>
+
+inoremap <silent><expr> <C-Space> compe#complete()
+inoremap <silent><expr> <CR>      compe#confirm(luaeval("require 'nvim-autopairs'.autopairs_cr()"))
+inoremap <silent><expr> <C-e>     compe#close('<C-e>')
+inoremap <silent><expr> <C-f>     compe#scroll({ 'delta': +4 })
+inoremap <silent><expr> <C-d>     compe#scroll({ 'delta': -4 })
+
 colorscheme nightfox
 
 lua <<EOF
@@ -102,12 +119,14 @@ lua <<EOF
   }
   require'colorizer'.setup()
   require'indent_blankline'.setup()
+  require'Comment'.setup()
 
   require'nvim-web-devicons'.setup {
     default = true;
   }
 
   require'nvim-autopairs'.setup()
+  require'trouble'.setup()
 
   require'telescope'.load_extension('fzf')
 
@@ -134,14 +153,14 @@ lua <<EOF
     buf_set_keymap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
     buf_set_keymap('n', '<space>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
     buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
-    buf_set_keymap('n', '<space>d', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
-    buf_set_keymap('n', '<space>l', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
-    buf_set_keymap('n', '<space>h', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
+    buf_set_keymap('n', '<space>d', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts) 
+    buf_set_keymap('n', '<space>l', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts) 
+    buf_set_keymap('n', '<space>h', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts) 
     buf_set_keymap('n', '<space>y', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
     buf_set_keymap('n', '<space>b', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
   end
 
-  local servers = { 'cssls', 'dockerls', 'html','tailwindcss', 'rust_analyzer', 'tsserver' }
+  local servers = { 'cssls', 'dockerls', 'html','tailwindcss' }
 
   for _, lsp in ipairs(servers) do
     nvim_lsp[lsp].setup {
@@ -151,6 +170,19 @@ lua <<EOF
       }
     }
   end
+
+  nvim_lsp.tsserver.setup {
+    on_attach = function(client, bufnr)
+      if client.config.flags then 
+          client.config.flags.allow_incremental_sync = true
+      end
+      client.resolved_capabilities.document_formatting = false
+      on_attach(client, bufnr)
+    end,
+    flags = {
+        debounce_text_changes = 150,
+     }
+  }
 
   nvim_lsp.elixirls.setup{
     on_attach = on_attach,
@@ -208,29 +240,51 @@ lua <<EOF
 
   local prettier = {formatCommand = "./node_modules/.bin/prettier --stdin-filepath ${INPUT}", formatStdin = true}
 
+  local eslint = {
+    lintCommand = "./node_modules/.bin/eslint -f unix --stdin --stdin-filename ${INPUT}",
+    lintStdin = true,
+    lintFormats = {"%f:%l:%c: %m"},
+    lintIgnoreExitCode = true,
+    formatCommand = "./node_modules/.bin/eslint --fix-to-stdout --stdin --stdin-filename=${INPUT}",
+    formatStdin = true
+  }
+
   local languages = {
     json = {prettier},
     html = {prettier},
     css = {prettier},
-    typescript = {prettier},
-    javascript = {prettier},
-    typescriptreact = {prettier},
-    javascriptreact = {prettier},
+    typescript = {prettier, eslint},
+    javascript = {prettier, eslint},
+    typescriptreact = {prettier, eslint},
+    javascriptreact = {prettier, eslint},
     pug = {prettier},
     markdown = {prettier},
   }
 
   nvim_lsp.efm.setup {
-    on_attach = on_attach,
+    cmd = { "/home/frandevme/.efm-langserver/efm-langserver"},
     flags = {
       debounce_text_changes = 150,
     },
-    init_options = {documentFormatting = true},
-    settings = {
-      rootMarkers = {".git/"},
-      languages = {languages},
-    },
-    filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'css', 'html', 'json', 'pug', 'markdown'}
+    init_options = {documentFormatting = true, codeAction = true},
+    filetypes = {'javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'css', 'html', 'json', 'pug', 'markdown'},
+    settings = {rootMarkers = {".git/"}, languages = languages, log_level = 1, log_file = '~/.efm-langserver/efm.log'},
+    on_attach = function(client, bufnr)
+      client.resolved_capabilities.document_formatting = true
+      client.resolved_capabilities.goto_definition = false
+      on_attach(client, bufnr)
+    end
   }
+
+  require'nvim-ts-autotag'.setup()
+
+  require'compe'.setup({
+    enabled = true,
+    source = {
+      path = true,
+      buffer = true,
+      nvim_lsp = true,
+    },
+  })
 
 EOF

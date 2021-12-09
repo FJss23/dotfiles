@@ -230,7 +230,7 @@ bash_prompt() {
 	local BACKGROUND_3=$WHITE
 	local TEXTEFFECT_3=$BOLD
 	
-	local PROMT_FORMAT=$BLUE_BOLD
+	local PROMT_FORMAT=$TOXIC_GREEN_BOLD
 
 	## CONFIGURATION: BLUE-WHITE
 	if [ "$HOSTNAME" = dell ]; then
@@ -345,6 +345,9 @@ bash_prompt() {
 	trap 'echo -ne "${none}"' DEBUG
 }
 
+LS_COLORS=$LS_COLORS:'di=1;37:';
+export LS_COLORS
+
 PROMPT_COMMAND=bash_prompt_command
 
 bash_prompt
@@ -357,7 +360,8 @@ unset bash_prompt
 #
 ##################################################################################################
 
- alias nvim="~/nvim/nvim.appimage"
+alias nvim="~/nvim/nvim.appimage"
+alias efm-langserver="~/.efm-langserver/efm-langserver"
 
 . $HOME/.asdf/asdf.sh
 . $HOME/.asdf/completions/asdf.bash

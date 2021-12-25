@@ -51,32 +51,49 @@ nnoremap <silent> <F11> :set spell!<cr>
 inoremap <silent> <F11> <C-O>:set spell!<cr>
 
 call plug#begin('~/.local/share/nvim/plugged')
+" Syntax highlight
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-Plug 'EdenEast/nightfox.nvim'
+" Icons
 Plug 'kyazdani42/nvim-web-devicons'
-
+" Buffers like tabs
+Plug 'akinsho/bufferline.nvim'
+" Colorscheme
+Plug 'rebelot/kanagawa.nvim'
+" Better comments
 Plug 'numToStr/Comment.nvim'
+" Better html
 Plug 'mattn/emmet-vim'
+" Auto close
 Plug 'windwp/nvim-autopairs'
+" Config for projects
 Plug 'editorconfig/editorconfig-vim'
+" Info of the current file
 Plug 'simrat39/symbols-outline.nvim'
+" Errors in the project
 Plug 'folke/trouble.nvim'
-
+" Compulsory for other plugins
 Plug 'nvim-lua/plenary.nvim'
+" Git info for files
 Plug 'lewis6991/gitsigns.nvim'
-
+" Better search experience
 Plug 'nvim-telescope/telescope.nvim'
+" Fast telescope
 Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
+" File explorer
 Plug 'kyazdani42/nvim-tree.lua'
-
+" Show colors in file
 Plug 'norcalli/nvim-colorizer.lua'
+" Show line indentation
 Plug 'lukas-reineke/indent-blankline.nvim'
+" Better manipulation of tag
 Plug 'windwp/nvim-ts-autotag'
-
+" Native lsp
 Plug 'neovim/nvim-lspconfig'
+" Better lsp experience
 Plug 'hrsh7th/nvim-compe'
-
+" Syntax highlight for pug files
 Plug 'digitaltoad/vim-pug'
+" Syntax highlight for elixir files
 Plug 'elixir-editors/vim-elixir'
 call plug#end()
 
@@ -104,15 +121,20 @@ inoremap <silent><expr> <C-e>     compe#close('<C-e>')
 inoremap <silent><expr> <C-f>     compe#scroll({ 'delta': +4 })
 inoremap <silent><expr> <C-d>     compe#scroll({ 'delta': -4 })
 
-colorscheme nightfox
+nnoremap <leader>oo <cmd>SymbolsOutlineOpen<cr>
+nnoremap <leader>oc <cmd>SymbolsOutlineClose<cr>
+
+colorscheme kanagawa
 
 lua <<EOF
   require'nvim-treesitter.configs'.setup {
+    autotag = {
+      enable = true
+    },
     highlight = { enable = true },
     incremental_selection = { enable = true },
     textobjects = { enable = true },
   }
-
   require'gitsigns'.setup()
   require'nvim-tree'.setup {
     open_on_setup = false,     
@@ -120,15 +142,21 @@ lua <<EOF
   require'colorizer'.setup()
   require'indent_blankline'.setup()
   require'Comment'.setup()
-
   require'nvim-web-devicons'.setup {
     default = true;
   }
-
   require'nvim-autopairs'.setup()
   require'trouble'.setup()
-
   require'telescope'.load_extension('fzf')
+  require'bufferline'.setup{}
+  require'compe'.setup({
+    enabled = true,
+    source = {
+      path = true,
+      buffer = true,
+      nvim_lsp = true,
+    },
+  })
 
   local nvim_lsp = require('lspconfig')
 
@@ -160,7 +188,8 @@ lua <<EOF
     buf_set_keymap('n', '<space>b', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
   end
 
-  local servers = { 'cssls', 'dockerls', 'html','tailwindcss' }
+  -- LSP: css, docker, tailwind, rust, python
+  local servers = { 'cssls', 'dockerls', 'html', 'tailwindcss', 'rust_analyzer', 'pylsp' }
 
   for _, lsp in ipairs(servers) do
     nvim_lsp[lsp].setup {
@@ -171,6 +200,7 @@ lua <<EOF
     }
   end
 
+  -- LSP: javascript/typescript
   nvim_lsp.tsserver.setup {
     on_attach = function(client, bufnr)
       if client.config.flags then 
@@ -184,14 +214,16 @@ lua <<EOF
      }
   }
 
+  -- LSP: elixir
   nvim_lsp.elixirls.setup{
     on_attach = on_attach,
     flags = {
       debounce_text_changes = 150,
     },
-    cmd = { "/home/frandevme/.elixir-ls/language_server.sh"}
+    cmd = { "/home/frandev/.elixir-ls/language_server.sh"}
   }
 
+  -- LSP: json
   nvim_lsp.jsonls.setup{
     on_attach = on_attach,
     flags = {
@@ -206,13 +238,14 @@ lua <<EOF
     }
   }
   
-  local sumneko_root_path = "/home/frandevme/.lua-language-server"
+  local sumneko_root_path = "/home/frandev/.lua-language-server"
   local sumneko_binary = sumneko_root_path.."/bin/Linux/lua-language-server"
   local runtime_path = vim.split(package.path, ';')
 
   table.insert(runtime_path, "lua/?.lua")
   table.insert(runtime_path, "lua/?/init.lua")
 
+  -- LSP: lua
   nvim_lsp.sumneko_lua.setup {
     on_attach = on_attach,
     flags = {
@@ -261,8 +294,9 @@ lua <<EOF
     markdown = {prettier},
   }
 
+  -- LSP: efm (linters and formatters)
   nvim_lsp.efm.setup {
-    cmd = { "/home/frandevme/.efm-langserver/efm-langserver"},
+    cmd = { "/home/frandev/.efm-langserver/efm-langserver"},
     flags = {
       debounce_text_changes = 150,
     },
@@ -275,16 +309,4 @@ lua <<EOF
       on_attach(client, bufnr)
     end
   }
-
-  require'nvim-ts-autotag'.setup()
-
-  require'compe'.setup({
-    enabled = true,
-    source = {
-      path = true,
-      buffer = true,
-      nvim_lsp = true,
-    },
-  })
-
 EOF

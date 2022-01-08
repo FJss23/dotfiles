@@ -2,13 +2,11 @@ set path+=**
 set signcolumn=yes
 set colorcolumn=100
 set tabstop=4 
-set number
 set softtabstop=4
 set shiftwidth=4
 set expandtab
 set smartindent
 set guicursor=
-set relativenumber
 set hidden
 set nobackup
 set noswapfile
@@ -35,7 +33,8 @@ nnoremap <leader>q :q<cr>
 vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '<-2<CR>gv=gv
 nnoremap Y y$
-" Switch beetwen your last two buffers
+
+" Switch between your last two buffers
 nnoremap <leader><leader> <c-^>
 " After search, clean the highlight
 nnoremap <silent> <leader><CR> :noh<CR>
@@ -45,18 +44,19 @@ nnoremap <Down>  :resize -2<CR>
 nnoremap <Left>  :vertical resize +2<CR>
 nnoremap <Right> :vertical resize -2<CR>
 
+" Kill the current buffer
 nnoremap <Leader>k :bp\|bd! #<CR>
 
-nnoremap <silent> <F11> :set spell!<cr>
-inoremap <silent> <F11> <C-O>:set spell!<cr>
+nnoremap <silent> <F2> :set invnumber invrelativenumber<cr>
+nnoremap <silent> <F4> :set spell!<cr>
+inoremap <silent> <F4> <C-O>:set spell!<cr>
+nnoremap <silent> <F3> :IndentBlanklineToggle<cr>
 
 call plug#begin('~/.local/share/nvim/plugged')
 " Syntax highlight
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 " Icons
 Plug 'kyazdani42/nvim-web-devicons'
-" Buffers like tabs
-Plug 'akinsho/bufferline.nvim'
 " Colorscheme
 Plug 'rebelot/kanagawa.nvim'
 " Better comments
@@ -99,9 +99,9 @@ call plug#end()
 
 autocmd FileType html,javascript,typescript,js,ts,jsx,tsx EmmetInstall
 
-nnoremap <leader>e :NvimTreeToggle<CR>
-nnoremap <leader>r :NvimTreeRefresh<CR>
-nnoremap <leader>n :NvimTreeFindFile<CR>
+nnoremap <leader>ee :NvimTreeToggle<CR>
+nnoremap <leader>er :NvimTreeRefresh<CR>
+nnoremap <leader>en :NvimTreeFindFile<CR>
 
 nnoremap <leader>ff <cmd>Telescope find_files<cr>
 nnoremap <leader>fg <cmd>Telescope live_grep<cr>
@@ -124,6 +124,10 @@ inoremap <silent><expr> <C-d>     compe#scroll({ 'delta': -4 })
 nnoremap <leader>oo <cmd>SymbolsOutlineOpen<cr>
 nnoremap <leader>oc <cmd>SymbolsOutlineClose<cr>
 
+let g:indent_blankline_filetype_exclude = ['NvimTree']
+let g:indent_blankline_use_treesitter = v:true
+let g:indent_blankline_enabled = v:false
+
 colorscheme kanagawa
 
 lua <<EOF
@@ -136,9 +140,8 @@ lua <<EOF
     textobjects = { enable = true },
   }
   require'gitsigns'.setup()
-  require'nvim-tree'.setup {
-    open_on_setup = false,     
-  }
+  require'nvim-tree'.setup()
+  
   require'colorizer'.setup()
   require'indent_blankline'.setup()
   require'Comment'.setup()
@@ -148,7 +151,7 @@ lua <<EOF
   require'nvim-autopairs'.setup()
   require'trouble'.setup()
   require'telescope'.load_extension('fzf')
-  require'bufferline'.setup{}
+  -- require'bufferline'.setup{}
   require'compe'.setup({
     enabled = true,
     source = {
@@ -158,7 +161,7 @@ lua <<EOF
     },
   })
 
-  local nvim_lsp = require('lspconfig')
+  local nvim_lsp = require'lspconfig'
 
   local on_attach = function(client, bufnr)
     local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end

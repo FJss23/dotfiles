@@ -18,6 +18,7 @@ set mouse=a
 set nuw=4
 set background=dark
 set cursorline
+set number relativenumber
 syntax on
 filetype plugin indent on
 set spelllang=en
@@ -33,6 +34,8 @@ nnoremap <leader>q :q<cr>
 vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '<-2<CR>gv=gv
 nnoremap Y y$
+nnoremap <leader>9 :bprevious<CR>
+nnoremap <leader>0 :bnext<CR>
 
 " Switch between your last two buffers
 nnoremap <leader><leader> <c-^>
@@ -53,55 +56,29 @@ inoremap <silent> <F4> <C-O>:set spell!<cr>
 nnoremap <silent> <F3> :IndentBlanklineToggle<cr>
 
 call plug#begin('~/.local/share/nvim/plugged')
-" Syntax highlight
-Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-" Icons
-Plug 'kyazdani42/nvim-web-devicons'
-" Colorscheme
-Plug 'rebelot/kanagawa.nvim'
-" Better comments
-Plug 'numToStr/Comment.nvim'
-" Better html
-Plug 'mattn/emmet-vim'
-" Auto close
-Plug 'windwp/nvim-autopairs'
-" Config for projects
-Plug 'editorconfig/editorconfig-vim'
-" Info of the current file
-Plug 'simrat39/symbols-outline.nvim'
-" Errors in the project
-Plug 'folke/trouble.nvim'
-" Compulsory for other plugins
-Plug 'nvim-lua/plenary.nvim'
-" Git info for files
-Plug 'lewis6991/gitsigns.nvim'
-" Better search experience
-Plug 'nvim-telescope/telescope.nvim'
-" Fast telescope
-Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
-" File explorer
-Plug 'kyazdani42/nvim-tree.lua'
-" Show colors in file
-Plug 'norcalli/nvim-colorizer.lua'
-" Show line indentation
-Plug 'lukas-reineke/indent-blankline.nvim'
-" Better manipulation of tag
-Plug 'windwp/nvim-ts-autotag'
-" Native lsp
-Plug 'neovim/nvim-lspconfig'
-" Better lsp experience
-Plug 'hrsh7th/nvim-compe'
-" Syntax highlight for pug files
-Plug 'digitaltoad/vim-pug'
-" Syntax highlight for elixir files
-Plug 'elixir-editors/vim-elixir'
+Plug 'neovim/nvim-lspconfig' " Native lsp
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'} " Syntax highlight
+Plug 'nvim-lua/plenary.nvim' " Compulsory for other plugins
+Plug 'kyazdani42/nvim-web-devicons' " Icons
+Plug 'rebelot/kanagawa.nvim' " Colorscheme
+Plug 'numToStr/Comment.nvim' " Better comments
+Plug 'mattn/emmet-vim' " Better html
+Plug 'windwp/nvim-autopairs' " Auto close paired characters
+Plug 'editorconfig/editorconfig-vim' " Config for projects
+Plug 'folke/trouble.nvim' " Errors in the project
+Plug 'lewis6991/gitsigns.nvim' " Git info
+Plug 'nvim-telescope/telescope.nvim' " Better search experience
+Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' } " Fast telescope
+Plug 'nvim-telescope/telescope-file-browser.nvim' " File manipulation
+Plug 'norcalli/nvim-colorizer.lua' " Show colors
+Plug 'lukas-reineke/indent-blankline.nvim' " Show indentation
+Plug 'windwp/nvim-ts-autotag' " Easy html tag manipulation
+Plug 'hrsh7th/nvim-compe' " Better lsp experience
+Plug 'L3MON4D3/LuaSnip' " Snippets
+Plug 'akinsho/bufferline.nvim' " Show buffer in a tab style
 call plug#end()
 
 autocmd FileType html,javascript,typescript,js,ts,jsx,tsx EmmetInstall
-
-nnoremap <leader>ee :NvimTreeToggle<CR>
-nnoremap <leader>er :NvimTreeRefresh<CR>
-nnoremap <leader>en :NvimTreeFindFile<CR>
 
 nnoremap <leader>ff <cmd>Telescope find_files<cr>
 nnoremap <leader>fg <cmd>Telescope live_grep<cr>
@@ -121,14 +98,12 @@ inoremap <silent><expr> <C-e>     compe#close('<C-e>')
 inoremap <silent><expr> <C-f>     compe#scroll({ 'delta': +4 })
 inoremap <silent><expr> <C-d>     compe#scroll({ 'delta': -4 })
 
-nnoremap <leader>oo <cmd>SymbolsOutlineOpen<cr>
-nnoremap <leader>oc <cmd>SymbolsOutlineClose<cr>
-
-let g:indent_blankline_filetype_exclude = ['NvimTree']
 let g:indent_blankline_use_treesitter = v:true
 let g:indent_blankline_enabled = v:false
 
 colorscheme kanagawa
+
+autocmd BufWritePre *.go lua goimports(1000)
 
 lua <<EOF
   require'nvim-treesitter.configs'.setup {
@@ -140,10 +115,12 @@ lua <<EOF
     textobjects = { enable = true },
   }
   require'gitsigns'.setup()
-  require'nvim-tree'.setup()
-  
   require'colorizer'.setup()
-  require'indent_blankline'.setup()
+  require("bufferline").setup()
+  require'indent_blankline'.setup {
+      show_current_context = true,
+      show_current_context_start = true,
+  }
   require'Comment'.setup()
   require'nvim-web-devicons'.setup {
     default = true;
@@ -151,7 +128,7 @@ lua <<EOF
   require'nvim-autopairs'.setup()
   require'trouble'.setup()
   require'telescope'.load_extension('fzf')
-  -- require'bufferline'.setup{}
+  require'telescope'.load_extension('file_browser')
   require'compe'.setup({
     enabled = true,
     source = {
@@ -184,12 +161,10 @@ lua <<EOF
     buf_set_keymap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
     buf_set_keymap('n', '<space>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
     buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
-    buf_set_keymap('n', '<space>d', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts) 
-    buf_set_keymap('n', '<space>l', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts) 
-    buf_set_keymap('n', '<space>h', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts) 
-    buf_set_keymap('n', '<space>y', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
     buf_set_keymap('n', '<space>b', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
   end
+
+  vim.api.nvim_set_keymap('n','<space>fe',':Telescope file_browser <CR>', { noremap = true })
 
   -- LSP: css, docker, tailwind, rust, python
   local servers = { 'cssls', 'dockerls', 'html', 'tailwindcss', 'rust_analyzer', 'pylsp' }
@@ -273,6 +248,50 @@ lua <<EOF
       },
     },
   }
+
+  -- LSP: go
+  nvim_lsp.gopls.setup {
+    on_attach = on_attach,
+    cmd = {"gopls", "serve"},
+    settings = {
+      gopls = {
+        analyses = {
+          unusedparams = true,
+        },
+        staticcheck = true,
+      },
+    }
+  }
+
+  function goimports(timeout_ms)
+    local context = { only = { "source.organizeImports" } }
+    vim.validate { context = { context, "t", true } }
+
+    local params = vim.lsp.util.make_range_params()
+    params.context = context
+
+    -- See the implementation of the textDocument/codeAction callback
+    -- (lua/vim/lsp/handler.lua) for how to do this properly.
+    local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, timeout_ms)
+    if not result or next(result) == nil then return end
+    local actions = result[1].result
+    if not actions then return end
+    local action = actions[1]
+
+    -- textDocument/codeAction can return either Command[] or CodeAction[]. If it
+    -- is a CodeAction, it can have either an edit, a command or both. Edits
+    -- should be executed first.
+    if action.edit or type(action.command) == "table" then
+      if action.edit then
+        vim.lsp.util.apply_workspace_edit(action.edit)
+      end
+      if type(action.command) == "table" then
+        vim.lsp.buf.execute_command(action.command)
+      end
+    else
+      vim.lsp.buf.execute_command(action)
+    end
+  end
 
   local prettier = {formatCommand = "./node_modules/.bin/prettier --stdin-filepath ${INPUT}", formatStdin = true}
 

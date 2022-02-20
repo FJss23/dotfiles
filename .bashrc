@@ -117,19 +117,15 @@ if ! shopt -oq posix; then
   fi
 fi
 
-
-##################################################################################################
-#
-# STYLES 
-#
-##################################################################################################
-
-
 ##################################################################################################
 #
 # CUSTOM CONFIGURATION
 #
 ##################################################################################################
+
+eval "$(starship init bash)"
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
 alias nvim="~/nvim/nvim.appimage"
 alias efm-langserver="~/.efm-langserver/efm-langserver"
@@ -143,5 +139,4 @@ alias fd=fdfind
 
 export SDKMAN_DIR="/home/frandev/.sdkman"
 [[ -s "/home/frandev/.sdkman/bin/sdkman-init.sh" ]] && source "/home/frandev/.sdkman/bin/sdkman-init.sh"
-
 

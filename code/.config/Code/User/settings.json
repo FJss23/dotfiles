@@ -19,12 +19,11 @@
     "editor.rulers": [
         100
     ],
-    "workbench.iconTheme": "atom-font-icons",
     "javascript.updateImportsOnFileMove.enabled": "always",
-    "workbench.colorTheme": "Night Owl (No Italics)",
+    "workbench.colorTheme": "Community Material Theme Darker",
     "window.titleBarStyle": "custom",
     "workbench.productIconTheme": "fluent-icons",
     "window.zoomLevel": 1,
     "editor.formatOnSave": true,
-}
+    "workbench.iconTheme": "eq-material-theme-icons-light",
 }

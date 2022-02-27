@@ -114,9 +114,12 @@ lua <<EOF
     incremental_selection = { enable = true },
     textobjects = { enable = true },
   }
-  require'gitsigns'.setup()
+  require'gitsigns'.setup({
+    numhl = true,
+    signcolumn = false,
+  })
   require'colorizer'.setup()
-  require("bufferline").setup()
+  require'bufferline'.setup()
   require'indent_blankline'.setup {
       show_current_context = true,
       show_current_context_start = true,

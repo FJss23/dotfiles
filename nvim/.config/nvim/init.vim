@@ -57,6 +57,8 @@ nnoremap <silent> <F3> :IndentBlanklineToggle<cr>
 
 call plug#begin('~/.local/share/nvim/plugged')
 Plug 'neovim/nvim-lspconfig' " Native lsp
+Plug 'hrsh7th/cmp-nvim-lsp' " Better lsp experience
+Plug 'hrsh7th/nvim-cmp' " Better lsp experience
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'} " Syntax highlight
 Plug 'nvim-lua/plenary.nvim' " Compulsory for other plugins
 Plug 'kyazdani42/nvim-web-devicons' " Icons
@@ -73,9 +75,9 @@ Plug 'nvim-telescope/telescope-file-browser.nvim' " File manipulation
 Plug 'norcalli/nvim-colorizer.lua' " Show colors
 Plug 'lukas-reineke/indent-blankline.nvim' " Show indentation
 Plug 'windwp/nvim-ts-autotag' " Easy html tag manipulation
-Plug 'hrsh7th/nvim-compe' " Better lsp experience
 Plug 'L3MON4D3/LuaSnip' " Snippets
 Plug 'akinsho/bufferline.nvim' " Show buffer in a tab style
+Plug 'nvim-lualine/lualine.nvim'
 call plug#end()
 
 autocmd FileType html,javascript,typescript,js,ts,jsx,tsx EmmetInstall
@@ -114,9 +116,17 @@ lua <<EOF
     incremental_selection = { enable = true },
     textobjects = { enable = true },
   }
-  require'gitsigns'.setup({
+  require'gitsigns'.setup{
     numhl = true,
     signcolumn = false,
+  }
+  require'lualine'.setup({
+    options = {
+        component_separators = { left = '', right = ' '},
+    },
+    sections = {
+      lualine_a = { '' },
+     }
   })
   require'colorizer'.setup()
   require'bufferline'.setup()
@@ -132,14 +142,6 @@ lua <<EOF
   require'trouble'.setup()
   require'telescope'.load_extension('fzf')
   require'telescope'.load_extension('file_browser')
-  require'compe'.setup({
-    enabled = true,
-    source = {
-      path = true,
-      buffer = true,
-      nvim_lsp = true,
-    },
-  })
 
   local nvim_lsp = require'lspconfig'
 
@@ -168,12 +170,44 @@ lua <<EOF
   end
 
   vim.api.nvim_set_keymap('n','<space>fe',':Telescope file_browser <CR>', { noremap = true })
+  vim.api.nvim_set_keymap('n', '<space>3', 'vim.diagnostic.setqflist() <CR>', { noremap = true })
+
+  -- NVIM COMPE
+  local cmp = require'cmp'
+
+  cmp.setup({
+    snippet = {
+      expand = function(args)
+        require('luasnip').lsp_expand(args.body)
+      end,
+    },
+    mapping = {
+      ['<C-b>'] = cmp.mapping(cmp.mapping.scroll_docs(-4), { 'i', 'c' }),
+      ['<C-f>'] = cmp.mapping(cmp.mapping.scroll_docs(4), { 'i', 'c' }),
+      ['<C-Space>'] = cmp.mapping(cmp.mapping.complete(), { 'i', 'c' }),
+      ['<C-y>'] = cmp.config.disable, -- Specify `cmp.config.disable` if you want to remove the default `<C-y>` mapping.
+      ['<C-e>'] = cmp.mapping({
+        i = cmp.mapping.abort(),
+        c = cmp.mapping.close(),
+      }),
+      ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+    },
+    sources = cmp.config.sources({
+      { name = 'nvim_lsp' },
+      { name = 'luasnip' },
+    }, {
+      { name = 'buffer' },
+    })
+  })
+
+  local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 
   -- LSP: css, docker, tailwind, rust, python
   local servers = { 'cssls', 'dockerls', 'html', 'tailwindcss', 'rust_analyzer', 'pylsp' }
 
   for _, lsp in ipairs(servers) do
     nvim_lsp[lsp].setup {
+     capabilities = capabilities,
      on_attach = on_attach,
       flags = {
         debounce_text_changes = 150,
@@ -183,6 +217,7 @@ lua <<EOF
 
   -- LSP: javascript/typescript
   nvim_lsp.tsserver.setup {
+    capabilities = capabilites,
     on_attach = function(client, bufnr)
       if client.config.flags then 
           client.config.flags.allow_incremental_sync = true
@@ -197,6 +232,7 @@ lua <<EOF
 
   -- LSP: elixir
   nvim_lsp.elixirls.setup{
+    capabilities = capabilites;
     on_attach = on_attach,
     flags = {
       debounce_text_changes = 150,
@@ -206,6 +242,7 @@ lua <<EOF
 
   -- LSP: json
   nvim_lsp.jsonls.setup{
+    capabilities = capabilites,
     on_attach = on_attach,
     flags = {
       debounce_text_changes = 150,
@@ -228,6 +265,7 @@ lua <<EOF
 
   -- LSP: lua
   nvim_lsp.sumneko_lua.setup {
+    capabilities = capabilities,
     on_attach = on_attach,
     flags = {
       debounce_text_changes = 150,
@@ -254,6 +292,7 @@ lua <<EOF
 
   -- LSP: go
   nvim_lsp.gopls.setup {
+    capabilities = capabilities,
     on_attach = on_attach,
     cmd = {"gopls", "serve"},
     settings = {
@@ -334,4 +373,5 @@ lua <<EOF
       on_attach(client, bufnr)
     end
   }
+
 EOF

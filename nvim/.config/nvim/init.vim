@@ -40,7 +40,7 @@ nnoremap <leader>0 :bnext<CR>
 " Switch between your last two buffers
 nnoremap <leader><leader> <c-^>
 " After search, clean the highlight
-nnoremap <silent> <leader><CR> :noh<CR>
+" nnoremap <silent> <leader><CR> :noh<CR>
 
 nnoremap <Up>    :resize +2<CR>
 nnoremap <Down>  :resize -2<CR>
@@ -67,7 +67,6 @@ Plug 'numToStr/Comment.nvim' " Better comments
 Plug 'mattn/emmet-vim' " Better html
 Plug 'windwp/nvim-autopairs' " Auto close paired characters
 Plug 'editorconfig/editorconfig-vim' " Config for projects
-Plug 'folke/trouble.nvim' " Errors in the project
 Plug 'lewis6991/gitsigns.nvim' " Git info
 Plug 'nvim-telescope/telescope.nvim' " Better search experience
 Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' } " Fast telescope
@@ -76,8 +75,10 @@ Plug 'norcalli/nvim-colorizer.lua' " Show colors
 Plug 'lukas-reineke/indent-blankline.nvim' " Show indentation
 Plug 'windwp/nvim-ts-autotag' " Easy html tag manipulation
 Plug 'L3MON4D3/LuaSnip' " Snippets
-Plug 'akinsho/bufferline.nvim' " Show buffer in a tab style
 Plug 'nvim-lualine/lualine.nvim'
+Plug 'onsails/lspkind-nvim'
+Plug 'mfussenegger/nvim-dap'
+Plug 'marko-cerovac/material.nvim'
 call plug#end()
 
 autocmd FileType html,javascript,typescript,js,ts,jsx,tsx EmmetInstall
@@ -87,23 +88,11 @@ nnoremap <leader>fg <cmd>Telescope live_grep<cr>
 nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 
-nnoremap <leader>xx <cmd>TroubleToggle<cr>
-nnoremap <leader>xw <cmd>TroubleToggle lsp_workspace_diagnostics<cr>
-nnoremap <leader>xd <cmd>TroubleToggle lsp_document_diagnostics<cr>
-nnoremap <leader>xq <cmd>TroubleToggle quickfix<cr>
-nnoremap <leader>xl <cmd>TroubleToggle loclist<cr>
-nnoremap gR <cmd>TroubleToggle lsp_references<cr>
-
-inoremap <silent><expr> <C-Space> compe#complete()
-inoremap <silent><expr> <CR>      compe#confirm(luaeval("require 'nvim-autopairs'.autopairs_cr()"))
-inoremap <silent><expr> <C-e>     compe#close('<C-e>')
-inoremap <silent><expr> <C-f>     compe#scroll({ 'delta': +4 })
-inoremap <silent><expr> <C-d>     compe#scroll({ 'delta': -4 })
-
 let g:indent_blankline_use_treesitter = v:true
 let g:indent_blankline_enabled = v:false
 
-colorscheme kanagawa
+let g:material_style = 'darker'
+colorscheme material
 
 autocmd BufWritePre *.go lua goimports(1000)
 
@@ -126,10 +115,11 @@ lua <<EOF
     },
     sections = {
       lualine_a = { '' },
+      lualine_b = { 'branch', { 'diff', colored = false }, { 'diagnostics', colored = false} },
+      lualine_z = { { 'location', color = { bg = '#252535', fg = '#DCD7B'} } }
      }
   })
   require'colorizer'.setup()
-  require'bufferline'.setup()
   require'indent_blankline'.setup {
       show_current_context = true,
       show_current_context_start = true,
@@ -139,7 +129,6 @@ lua <<EOF
     default = true;
   }
   require'nvim-autopairs'.setup()
-  require'trouble'.setup()
   require'telescope'.load_extension('fzf')
   require'telescope'.load_extension('file_browser')
 
@@ -170,12 +159,26 @@ lua <<EOF
   end
 
   vim.api.nvim_set_keymap('n','<space>fe',':Telescope file_browser <CR>', { noremap = true })
-  vim.api.nvim_set_keymap('n', '<space>3', 'vim.diagnostic.setqflist() <CR>', { noremap = true })
+  vim.api.nvim_set_keymap('n','<space>t', ':lua vim.diagnostic.setqflist() <CR>', { noremap = true })
+
+  local signs = { Error = ' ●', Warn = ' ●', Hint = ' ●', Info = ' ●' }
+  for type, icon in pairs(signs) do
+    local hl = "DiagnosticSign" .. type
+    vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
+  end
 
   -- NVIM COMPE
   local cmp = require'cmp'
 
+  local lspkind = require'lspkind'
+
   cmp.setup({
+    formatting = {
+      format = lspkind.cmp_format({
+        mode = 'symbol',
+        maxwidth = 50,
+      })
+    },
     snippet = {
       expand = function(args)
         require('luasnip').lsp_expand(args.body)
@@ -373,5 +376,6 @@ lua <<EOF
       on_attach(client, bufnr)
     end
   }
+
 
 EOF

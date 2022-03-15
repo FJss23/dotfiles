@@ -1,168 +1,3 @@
-set path+=**
-set signcolumn=yes
-set colorcolumn=100
-set tabstop=4 
-set softtabstop=4
-set shiftwidth=4
-set expandtab
-set smartindent
-set guicursor=
-set hidden
-set nobackup
-set noswapfile
-set incsearch hlsearch
-set scrolloff=10
-set termguicolors
-set completeopt=menu,noinsert,noselect
-set mouse=a
-set nuw=4
-set background=dark
-set cursorline
-syntax on
-filetype plugin indent on
-set spelllang=en
-set spellsuggest=best,9
-highlight Normal ctermbg=none
-highlight NonText ctermbg=none
-set noshowmode
-set rtp+=~/.fzf
-set nonumber norelativenumber
-
-let mapleader=" "
-:imap jk <Esc>
-
-nnoremap <leader>s :update<cr>
-nnoremap <leader>q :q<cr>
-nnoremap <leader>u :tabclose<cr>
-
-:tnoremap jk <C-\><C-n>
-vnoremap J :m '>+1<CR>gv=gv
-vnoremap K :m '<-2<CR>gv=gv
-nnoremap Y y$
-
-" Improved Split navigation
-nnoremap <leader>h <C-w>h
-nnoremap <leader>j <C-w>j
-nnoremap <leader>k <C-w>k
-nnoremap <leader>l <C-w>l
-
-" Switch between your last two buffers
-nnoremap <leader><leader> <c-^>
-noremap <Up>    :resize +2<CR>
-nnoremap <Down>  :resize -2<CR>
-nnoremap <Left>  :vertical resize +2<CR>
-nnoremap <Right> :vertical resize -2<CR>
-
-" Kill the current buffer
-nnoremap <leader>bb :ls<cr>:b<space>
-nnoremap <Leader>bk :bp\|bd! #<CR>
-nnoremap <leader>bn :bnext<CR>
-nnoremap <leader>bp :bprevious<CR>
-
-nnoremap <silent> <F2> :set invnumber invrelativenumber<cr>
-nnoremap <silent> <F4> :set spell!<cr>
-inoremap <silent> <F4> <C-O>:set spell!<cr>
-nnoremap <silent> <F3> :IndentBlanklineToggle<cr>
-
-nnoremap <leader>. :term<CR>i
-
-call plug#begin('~/.local/share/nvim/plugged')
-Plug 'neovim/nvim-lspconfig' " Native lsp
-Plug 'hrsh7th/cmp-nvim-lsp' " Better lsp experience
-Plug 'hrsh7th/nvim-cmp' " Better lsp experience
-
-Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'} " Syntax highlight
-Plug 'ellisonleao/gruvbox.nvim'
-Plug 'kyazdani42/nvim-web-devicons' " Icons
-
-Plug 'nvim-lua/plenary.nvim' " Compulsory for other plugins
-Plug 'numToStr/Comment.nvim' " Better comments
-Plug 'mattn/emmet-vim' " Better html
-Plug 'windwp/nvim-autopairs' " Auto close paired characters
-Plug 'lewis6991/gitsigns.nvim' " Git info
-Plug 'norcalli/nvim-colorizer.lua' " Show colors
-Plug 'lukas-reineke/indent-blankline.nvim' " Show indentation
-Plug 'windwp/nvim-ts-autotag' " Easy html tag manipulation
-
-Plug 'L3MON4D3/LuaSnip' " Snippets
-Plug 'saadparwaiz1/cmp_luasnip'
-Plug 'rafamadriz/friendly-snippets'
-Plug 'nvim-lualine/lualine.nvim' " Better line
-
-Plug 'mfussenegger/nvim-dap' " Trying to debug
-Plug 'rcarriga/nvim-dap-ui' " Better UI for debug
-
-Plug 'kyazdani42/nvim-tree.lua'
-Plug 'junegunn/fzf.vim'
-call plug#end()
-
-autocmd FileType html,javascript,typescript,js,ts,jsx,tsx,vue EmmetInstall
-autocmd TermOpen * setlocal nonumber norelativenumber
-
-let g:indent_blankline_use_treesitter = v:true
-let g:indent_blankline_enabled = v:false
-
-colorscheme gruvbox
-
-if executable("rg")
-  set grepprg=rg\ --vimgrep\ --smart-case\ --hidden
-  set grepformat=%f:%l:%c:%m
-endif
-
-nnoremap <C-n> :NvimTreeToggle<CR>
-nnoremap <leader>fr :NvimTreeRefresh<CR>
-nnoremap <leader>fn :NvimTreeFindFile<CR>
-
-nnoremap <silent> <leader>ff :Files<CR>
-nnoremap <silent> <leader>fg :Rg<CR>
-nnoremap <silent> <leader>fb :Buffers<CR>
-nnoremap <silent> <Leader>fw :Rg <C-R><C-W><CR>
-
-let g:fzf_preview_window = []
-let g:fzf_layout = { 'down': '~30%' }
-
-autocmd BufWritePre *.go lua goimports(1000)
-
-command! -bang -nargs=* Rg
-  \ call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>), 1, {'options': '--delimiter : --nth 4..'}, <bang>0)
-
-
-lua <<EOF
-  require'nvim-treesitter.configs'.setup {
-    autotag = {
-      enable = true
-    },
-    highlight = { enable = true },
-    incremental_selection = { enable = true },
-    textobjects = { enable = true },
-  }
-  require'gitsigns'.setup()
-  require'lualine'.setup({
-    sections = {
-      lualine_x = { 'encoding', 'fileformat', { 'filetype', colored = false }},
-     }
-  })
-
-  require'colorizer'.setup()
-  require'indent_blankline'.setup {
-      show_current_context = true,
-      show_current_context_start = true,
-  }
-  require'Comment'.setup()
-  require'nvim-web-devicons'.setup {
-    default = true;
-  }
-  require'nvim-autopairs'.setup()
-  require'nvim-tree'.setup{
-    disable_netrw = true,
-    git = {
-      enable = false,
-    },
-    view = {
-      hide_root_folder = true,
-    }
-  }
-
   local nvim_lsp = require'lspconfig'
 
   local on_attach = function(client, bufnr)
@@ -192,14 +27,12 @@ lua <<EOF
   vim.api.nvim_set_keymap('n','<space>t', ':lua vim.diagnostic.setqflist() <CR>', { noremap = true })
 
   local signs = { Error = '➤ ', Warn = '●', Hint = '●', Info = '●' }
+
   for type, icon in pairs(signs) do
     local hl = "DiagnosticSign" .. type
     vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
   end
 
-  require("luasnip.loaders.from_vscode").lazy_load()
-
-  -- NVIM COMPE
   local cmp = require'cmp'
   local luasnip = require'luasnip'
 
@@ -207,7 +40,6 @@ lua <<EOF
     local line, col = unpack(vim.api.nvim_win_get_cursor(0))
     return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
   end
-
 
   cmp.setup({
     snippet = {
@@ -225,28 +57,26 @@ lua <<EOF
         c = cmp.mapping.close(),
       }),
       ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-      
-    ["<Tab>"] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_next_item()
-      elseif luasnip.expand_or_jumpable() then
-        luasnip.expand_or_jump()
-      elseif has_words_before() then
-        cmp.complete()
-      else
-        fallback()
-      end
-    end, { "i", "s" }),
-
-    ["<S-Tab>"] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_prev_item()
-      elseif luasnip.jumpable(-1) then
-        luasnip.jump(-1)
-      else
-        fallback()
-      end
-    end, { "i", "s" }),
+      ["<Tab>"] = cmp.mapping(function(fallback)
+        if cmp.visible() then
+          cmp.select_next_item()
+        elseif luasnip.expand_or_jumpable() then
+          luasnip.expand_or_jump()
+        elseif has_words_before() then
+          cmp.complete()
+        else
+          fallback()
+        end
+      end, { "i", "s" }),
+      ["<S-Tab>"] = cmp.mapping(function(fallback)
+        if cmp.visible() then
+          cmp.select_prev_item()
+        elseif luasnip.jumpable(-1) then
+          luasnip.jump(-1)
+        else
+          fallback()
+        end
+      end, { "i", "s" }),
     },
     sources = cmp.config.sources({
       { name = 'nvim_lsp' },

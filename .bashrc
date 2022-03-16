@@ -125,21 +125,30 @@ fi
 
 eval "$(starship init bash)"
 
+alias fd=fdfind
+alias efm-langserver="~/.efm-langserver/efm-langserver"
+alias nvim="~/nvim/nvim.appimage"
+
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 export FZF_DEFAULT_OPS="--extended"
-export FZF_DEFAULT_COMMAND="fd --type f"
+export FZF_DEFAULT_COMMAND="fdfind --type f"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
-alias nvim="~/nvim/nvim.appimage"
-alias efm-langserver="~/.efm-langserver/efm-langserver"
 
 . $HOME/.asdf/asdf.sh
 . $HOME/.asdf/completions/asdf.bash
 . "$HOME/.cargo/env"
 
+# export PATH="~/.asdf/installs/golang/1.17/packages/bin/:$PATH"
+export GOROOT="$HOME/.asdf/installs/golang/1.17/go"
+export GOPATH=$(go env GOPATH)
+export PATH="$PATH:$(go env GOPATH)/bin"
+
 alias ssh='kitty +kitten ssh'
-alias fd=fdfind
 
 export SDKMAN_DIR="/home/frandev/.sdkman"
 [[ -s "/home/frandev/.sdkman/bin/sdkman-init.sh" ]] && source "/home/frandev/.sdkman/bin/sdkman-init.sh"
 
+# BEGIN_KITTY_SHELL_INTEGRATION
+if test -n "$KITTY_INSTALLATION_DIR" -a -e "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; then source "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; fi
+# END_KITTY_SHELL_INTEGRATION

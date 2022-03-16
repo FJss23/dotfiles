@@ -28,13 +28,18 @@ vim.api.nvim_set_keymap('n', '<C-n>', ':NvimTreeToggle <CR>', { noremap = true }
 vim.api.nvim_set_keymap('n', '<leader>fr', ':NvimTreeRefresh <CR>', { noremap = true })
 vim.api.nvim_set_keymap('n', '<leader>fn', ':NvimTreeFindFile <CR>', { noremap = true })
 
-require'gitsigns'.setup()
+require'gitsigns'.setup({
+    signcolumn = false
+})
+
+vim.api.nvim_set_keymap('n', '<F5>', ':Gitsigns toggle_signs <CR>', { noremap = true })
 
 require("luasnip.loaders.from_vscode").lazy_load({ paths = { "./snippets" } })
 
 require'lualine'.setup({
+  options = { theme = 'gruvbox-material' },
   sections = {
-    lualine_b = { 'branch', { 'diff', colored = false }, { 'diagnostics', colored = false }},
+    lualine_b = { 'branch', { 'diff', colored = true }, { 'diagnostics', colored = true,  symbols = {error = '×', warn = '!', info = 'i', hint = '»'}}},
     lualine_x = { 'encoding', 'fileformat', { 'filetype', colored = false }},
    }
 })

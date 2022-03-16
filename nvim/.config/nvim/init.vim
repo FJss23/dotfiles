@@ -114,7 +114,6 @@ noremap <Up>    :resize +2<CR>
 nnoremap <Down>  :resize -2<CR>
 nnoremap <Left>  :vertical resize +2<CR>
 nnoremap <Right> :vertical resize -2<CR>
-map <F5> <C-W>_<C-W><Bar>
 
 
 " Buffer manipulation

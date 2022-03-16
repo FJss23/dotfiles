@@ -1,3 +1,9 @@
+Currently there is no install.sh file available, so this is a list with all the stuff needed to
+setup my working environment
+
+
+
+
 _editors:_
 
 -   [Neovim](https://github.com/neovim/neovim)

@@ -20,7 +20,6 @@ Plug 'lukas-reineke/indent-blankline.nvim' " Show indentation
 Plug 'windwp/nvim-ts-autotag' " Easy html tag manipulation
 Plug 'editorconfig/editorconfig-vim' " Style for every project
 Plug 'kkoomen/vim-doge' " Easy docs
-Plug 'nvim-lualine/lualine.nvim' " Better line
 
 " Snippets
 Plug 'L3MON4D3/LuaSnip' " Snippets superpower

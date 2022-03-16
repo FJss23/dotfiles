@@ -35,11 +35,3 @@ require'gitsigns'.setup({
 vim.api.nvim_set_keymap('n', '<F5>', ':Gitsigns toggle_signs <CR>', { noremap = true })
 
 require("luasnip.loaders.from_vscode").lazy_load({ paths = { "./snippets" } })
-
-require'lualine'.setup({
-  options = { theme = 'gruvbox-material' },
-  sections = {
-    lualine_b = { 'branch', { 'diff', colored = true }, { 'diagnostics', colored = true,  symbols = {error = '×', warn = '!', info = 'i', hint = '»'}}},
-    lualine_x = { 'encoding', 'fileformat', { 'filetype', colored = false }},
-   }
-})

@@ -16,6 +16,7 @@
      9. Python
      10. EFM
      11. Go
+     12. Elixir
 
      A few considerations:
      * luasnip is used in this file, because is configured using nvim-compe
@@ -112,7 +113,7 @@
 
   local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 
-  -- LSP supported languages -> CSS, JSON, HTML, CSS Modules, Tailwindcss, Zig, C, Javascript, Lua, Python, EFM, Go
+  -- LSP supported languages -> CSS, JSON, HTML, CSS Modules, Tailwindcss, Zig, C, Javascript, Lua, Python, EFM, Go, Elixir
   local servers = { 'cssls', 'jsonls', 'html', 'cssmodules_ls', 'tailwindcss', 'zls', 'volar', 'pyright' }
 
   for _, lsp in ipairs(servers) do
@@ -268,3 +269,11 @@
   }
 
 vim.api.nvim_exec([[autocmd BufWritePre *.go lua goimports(1000)]], false)
+
+nvim_lsp.elixirls.setup {
+   on_attach = on_attach,
+   flags = {
+       debounce_text_changes = 150,
+   },
+   cmd = { "/home/frandev/.elixir-ls/language_server.sh" }
+ }

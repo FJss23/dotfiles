@@ -1,3 +1,27 @@
+--[[
+     This file contains the configuration for native Neovim LSP, using the following plugins:
+     1. neovim-lspconfig
+     2. cmp-nvim-lsp
+     3. nvim-compe
+
+     List of lsp configured:
+     1. CSS
+     2. JSON
+     3. HTML
+     4. CSS Modules
+     5. Tailwindcss
+     6. Zig
+     7. Javascript
+     8. Lua
+     9. Python
+     10. EFM
+     11. Go
+
+     A few considerations:
+     * luasnip is used in this file, because is configured using nvim-compe
+     * EFM is used to enable linter and formatters to work properly on neovim without any additional plugins
+--]]
+
   local nvim_lsp = require'lspconfig'
 
   local on_attach = function(client, bufnr)
@@ -89,7 +113,7 @@
   local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 
   -- LSP supported languages -> CSS, JSON, HTML, CSS Modules, Tailwindcss, Zig, C, Javascript, Lua, Python, EFM, Go
-  local servers = { 'cssls', 'jsonls', 'html', 'cssmodules_ls', 'tailwindcss', 'zls', 'vuels', 'pyright' }
+  local servers = { 'cssls', 'jsonls', 'html', 'cssmodules_ls', 'tailwindcss', 'zls', 'volar', 'pyright' }
 
   for _, lsp in ipairs(servers) do
     nvim_lsp[lsp].setup {
@@ -243,4 +267,4 @@
     end
   }
 
-EOF
+vim.api.nvim_exec([[autocmd BufWritePre *.go lua goimports(1000)]], false)

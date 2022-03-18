@@ -49,7 +49,7 @@
     buf_set_keymap('n', '<space>b', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
   end
 
-  vim.api.nvim_set_keymap('n','<space>t', ':lua vim.diagnostic.setqflist() <CR>', { noremap = true })
+  vim.api.nvim_set_keymap('n','<space>e', ':lua vim.diagnostic.setqflist() <CR>', { noremap = true })
 
   local signs = { Error = ' ❯', Warn = ' ❯', Hint = ' ❯', Info = ' ❯' }
 
@@ -127,6 +127,8 @@
   end
 
   nvim_lsp.ccls.setup {
+    capabilities = capabilities,
+    on_attach = on_attach,
     init_options = {
       compilationDatabaseDirectory = "build";
       index = {
@@ -141,7 +143,7 @@
   nvim_lsp.tsserver.setup {
     capabilities = capabilites,
     on_attach = function(client, bufnr)
-      if client.config.flags then 
+      if client.config.flags then
           client.config.flags.allow_incremental_sync = true
       end
       client.resolved_capabilities.document_formatting = false

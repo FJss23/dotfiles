@@ -21,7 +21,8 @@ require'nvim-tree'.setup{
   },
   view = {
     hide_root_folder = true,
-  }
+    side = 'right'
+  },
 }
 
 vim.api.nvim_set_keymap('n', '<C-n>', ':NvimTreeToggle <CR>', { noremap = true })
@@ -35,3 +36,11 @@ require'gitsigns'.setup({
 vim.api.nvim_set_keymap('n', '<F5>', ':Gitsigns toggle_signs <CR>', { noremap = true })
 
 require("luasnip.loaders.from_vscode").lazy_load({ paths = { "./snippets" } })
+
+-- require'lualine'.setup({
+--   -- options = { theme = 'gruvbox-material' },
+--   sections = {
+--     lualine_b = { 'branch', { 'diff', colored = true }, },
+--     lualine_x = { 'encoding', 'fileformat', { 'filetype', colored = false }},
+--    }
+-- })

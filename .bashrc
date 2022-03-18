@@ -123,11 +123,25 @@ fi
 #
 ##################################################################################################
 
-eval "$(starship init bash)"
+# get current branch in git repo
+function parse_git_branch() {
+	BRANCH=`git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
+	if [ ! "${BRANCH}" == "" ]
+	then
+		echo " [${BRANCH}]"
+	else
+		echo ""
+	fi
+}
+
+export PS1="\t \[\e[32m\]\w\[\e[m\]\`parse_git_branch\`\\$ "
+
 
 alias fd=fdfind
 alias efm-langserver="~/.efm-langserver/efm-langserver"
 alias nvim="~/nvim/nvim.appimage"
+alias ssh='kitty +kitten ssh'
+
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 export FZF_DEFAULT_OPS="--extended"
@@ -137,18 +151,18 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
 . $HOME/.asdf/asdf.sh
 . $HOME/.asdf/completions/asdf.bash
-. "$HOME/.cargo/env"
 
-# export PATH="~/.asdf/installs/golang/1.17/packages/bin/:$PATH"
+
 export GOROOT="$HOME/.asdf/installs/golang/1.17/go"
 export GOPATH=$(go env GOPATH)
 export PATH="$PATH:$(go env GOPATH)/bin"
 
-alias ssh='kitty +kitten ssh'
 
-export SDKMAN_DIR="/home/frandev/.sdkman"
-[[ -s "/home/frandev/.sdkman/bin/sdkman-init.sh" ]] && source "/home/frandev/.sdkman/bin/sdkman-init.sh"
 
 # BEGIN_KITTY_SHELL_INTEGRATION
 if test -n "$KITTY_INSTALLATION_DIR" -a -e "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; then source "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; fi
 # END_KITTY_SHELL_INTEGRATION
+
+
+export SDKMAN_DIR="/home/frandev/.sdkman"
+[[ -s "/home/frandev/.sdkman/bin/sdkman-init.sh" ]] && source "/home/frandev/.sdkman/bin/sdkman-init.sh"

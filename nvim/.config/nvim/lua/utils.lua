@@ -1,46 +1,26 @@
+-- Config for various plugins
 require'colorizer'.setup()
+require('nvim-ts-autotag').setup()
 
-require'indent_blankline'.setup {
-    show_current_context = true,
-    show_current_context_start = true,
-}
+-- require'nvim-tree'.setup{
+--   disable_netrw = true,
+--   git = {
+--     enable = false,
+--   },
+--   view = {
+--     hide_root_folder = true,
+--     side = 'right'
+--   },
+-- }
 
-vim.g['indent_blankline_enabled'] = false
-vim.g['indent_blankline_use_treesitter'] = true
-
-vim.api.nvim_set_keymap('n', '<F3>', ':IndentBlanklineToggle<CR>', { noremap = true })
-
-require'Comment'.setup()
-
-require'nvim-autopairs'.setup()
-
-require'nvim-tree'.setup{
-  disable_netrw = true,
-  git = {
-    enable = false,
-  },
-  view = {
-    hide_root_folder = true,
-    side = 'right'
-  },
-}
-
-vim.api.nvim_set_keymap('n', '<C-n>', ':NvimTreeToggle <CR>', { noremap = true })
-vim.api.nvim_set_keymap('n', '<leader>fr', ':NvimTreeRefresh <CR>', { noremap = true })
-vim.api.nvim_set_keymap('n', '<leader>fn', ':NvimTreeFindFile <CR>', { noremap = true })
+-- vim.api.nvim_set_keymap('n', '<leader>n', ':NvimTreeToggle <CR>', { noremap = true })
+-- vim.api.nvim_set_keymap('n', '<leader>fr', ':NvimTreeRefresh <CR>', { noremap = true })
+-- vim.api.nvim_set_keymap('n', '<leader>fn', ':NvimTreeFindFile <CR>', { noremap = true })
 
 require'gitsigns'.setup({
-    signcolumn = false
+    signcolumn = true
 })
-
-vim.api.nvim_set_keymap('n', '<F5>', ':Gitsigns toggle_signs <CR>', { noremap = true })
 
 require("luasnip.loaders.from_vscode").lazy_load({ paths = { "./snippets" } })
 
--- require'lualine'.setup({
---   -- options = { theme = 'gruvbox-material' },
---   sections = {
---     lualine_b = { 'branch', { 'diff', colored = true }, },
---     lualine_x = { 'encoding', 'fileformat', { 'filetype', colored = false }},
---    }
--- })
+-- require'diffview'.setup()

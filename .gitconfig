@@ -1,0 +1,9 @@
+[alias]
+    ci = commit
+    co = checkout
+    br = branch
+    di = diff
+[merge]
+    tool = vimdiff
+[diff]
+    tool = vimdiff

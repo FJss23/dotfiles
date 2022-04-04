@@ -23,39 +23,45 @@
 
 -- Behavior for diagnostics
 vim.diagnostic.config({
-    virtual_text = false,
+    virtual_text = {
+      prefix = '•'
+    },
     update_in_insert = false,
 })
 
 vim.o.updatetime = 350
 vim.cmd [[autocmd CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {focus=false})]]
 
-vim.cmd [[autocmd! ColorScheme * highlight NormalFloat guibg=#353f46]]
-vim.cmd [[autocmd! ColorScheme * highlight FloatBorder guifg=white guibg=#353f46]]
+-- Lsp background popup
+-- VS code
+-- vim.cmd [[autocmd! ColorScheme * highlight NormalFloat guibg=#272727]]
+-- vim.cmd [[autocmd! ColorScheme * highlight FloatBorder guifg=white guibg=#272727]]
+-- Gruvbox
+-- vim.cmd [[autocmd! ColorScheme * highlight NormalFloat guibg=#3c3836]]
+-- vim.cmd [[autocmd! ColorScheme * highlight FloatBorder guifg=white guibg=#3c3836]]
 
+-- local border = {
+--       {"🭽", "FloatBorder"},
+--       {"▔", "FloatBorder"},
+--       {"🭾", "FloatBorder"},
+--       {"▕", "FloatBorder"},
+--       {"🭿", "FloatBorder"},
+--       {"▁", "FloatBorder"},
+--       {"🭼", "FloatBorder"},
+--       {"▏", "FloatBorder"},
+-- }
 
-local border = {
-      {"🭽", "FloatBorder"},
-      {"▔", "FloatBorder"},
-      {"🭾", "FloatBorder"},
-      {"▕", "FloatBorder"},
-      {"🭿", "FloatBorder"},
-      {"▁", "FloatBorder"},
-      {"🭼", "FloatBorder"},
-      {"▏", "FloatBorder"},
-}
+-- local handlers =  {
+--   ["textDocument/hover"] =  vim.lsp.with(vim.lsp.handlers.hover, {border = border}),
+--   ["textDocument/signatureHelp"] =  vim.lsp.with(vim.lsp.handlers.signature_help, {border = border }),
+-- }
 
-local handlers =  {
-  ["textDocument/hover"] =  vim.lsp.with(vim.lsp.handlers.hover, {border = border}),
-  ["textDocument/signatureHelp"] =  vim.lsp.with(vim.lsp.handlers.signature_help, {border = border }),
-}
-
-local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
-function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
-  opts = opts or {}
-  opts.border = opts.border or border
-  return orig_util_open_floating_preview(contents, syntax, opts, ...)
-end
+-- local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
+-- function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
+--   opts = opts or {}
+--   opts.border = opts.border or border
+--   return orig_util_open_floating_preview(contents, syntax, opts, ...)
+-- end
 
 local nvim_lsp = require'lspconfig'
 
@@ -88,11 +94,40 @@ end
 vim.api.nvim_set_keymap('n','<space>e', ':lua vim.diagnostic.setloclist() <CR>', { noremap = true })
 
 -- Change the icons of lsp 'events'
-local signs = { Error = '', Warn = '', Hint = '', Info = '' }
+local signs = { Error = '', Warn = '', Hint = '', Info = '' }
 for type, icon in pairs(signs) do
   local hl = "DiagnosticSign" .. type
   vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
 end
+
+
+local cmp_kinds = {
+  Text = " ",
+  Method = " ",
+  Function = " ",
+  Constructor = " ",
+  Field = " ",
+  Variable = " ",
+  Class = "ﴯ" ,
+  Interface = " ",
+  Module = " ",
+  Property = "ﰠ" ,
+  Unit = " ",
+  Value = " ",
+  Enum = " ",
+  Keyword = " ",
+  Snippet = " ",
+  Color = " ",
+  File = " ",
+  Reference = " ",
+  Folder = " ",
+  EnumMember = " ",
+  Constant = " ",
+  Struct = " ",
+  Event = " ",
+  Operator = " ",
+  TypeParameter = " "
+}
 
 -- Use the completion engine and include snippets
 local cmp = require'cmp'
@@ -108,6 +143,12 @@ cmp.setup({
     expand = function(args)
       luasnip.lsp_expand(args.body)
     end,
+  },
+  formatting = {
+	  format = function(_, vim_item)
+        vim_item.kind = (cmp_kinds[vim_item.kind] or '') .. vim_item.kind
+        return vim_item
+      end,
   },
   mapping = {
     ['<C-b>'] = cmp.mapping(cmp.mapping.scroll_docs(-4), { 'i', 'c' }),
@@ -154,8 +195,8 @@ cmp.setup({
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
 
--- LSP supported languages -> CSS, JSON, HTML, CSS Modules, Zig, C, Javascript, Lua, Python, EFM, Go
-local servers = { 'cssls', 'jsonls', 'html', 'cssmodules_ls', 'zls','pyright', 'clangd', 'tailwindcss' }
+-- LSP: CSS, JSON, HTML, CSS Modules, Zig, Python and Tailwind CSS
+local servers = { 'cssls', 'jsonls', 'html', 'cssmodules_ls', 'zls','pyright', 'tailwindcss' }
 
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup {
@@ -167,6 +208,7 @@ for _, lsp in ipairs(servers) do
   }
 end
 
+-- LSP: Javascript / Typescript
 nvim_lsp.tsserver.setup {
   capabilities = capabilites,
   on_attach = function(client, bufnr)
@@ -181,6 +223,7 @@ nvim_lsp.tsserver.setup {
    }
 }
 
+-- LSP: Go (Inlcudes function for autoimport functionality)
 nvim_lsp.gopls.setup {
   capabilities = capabilities,
   on_attach = on_attach,
@@ -195,6 +238,43 @@ nvim_lsp.gopls.setup {
   },
 }
 
+function goimports(timeout_ms)
+  local context = { only = { "source.organizeImports" } }
+  vim.validate { context = { context, "t", true } }
+
+  local params = vim.lsp.util.make_range_params()
+  params.context = context
+
+  local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, timeout_ms)
+  if not result or next(result) == nil then return end
+  local actions = result[1].result
+  if not actions then return end
+  local action = actions[1]
+
+  if action.edit or type(action.command) == "table" then
+    if action.edit then
+      vim.lsp.util.apply_workspace_edit(action.edit)
+    end
+    if type(action.command) == "table" then
+      vim.lsp.buf.execute_command(action.command)
+    end
+  else
+    vim.lsp.buf.execute_command(action)
+  end
+end
+
+vim.api.nvim_exec([[autocmd BufWritePre *.go lua goimports(1000)]], false)
+
+-- LSP: C
+nvim_lsp.ccls.setup {
+  init_options = {
+    cache = {
+      directory = ".ccls-cache";
+    };
+  }
+}
+
+-- LSP: Lua
 local sumneko_root_path = "/home/frandev/.lua-language-server"
 local sumneko_binary = sumneko_root_path.."/bin/Linux/lua-language-server"
 local runtime_path = vim.split(package.path, ';')
@@ -228,37 +308,7 @@ nvim_lsp.sumneko_lua.setup {
   },
 }
 
--- Autoimport stuff when working with go
-function goimports(timeout_ms)
-  local context = { only = { "source.organizeImports" } }
-  vim.validate { context = { context, "t", true } }
-
-  local params = vim.lsp.util.make_range_params()
-  params.context = context
-
-  -- See the implementation of the textDocument/codeAction callback
-  -- (lua/vim/lsp/handler.lua) for how to do this properly.
-  local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, timeout_ms)
-  if not result or next(result) == nil then return end
-  local actions = result[1].result
-  if not actions then return end
-  local action = actions[1]
-
-  -- textDocument/codeAction can return either Command[] or CodeAction[]. If it
-  -- is a CodeAction, it can have either an edit, a command or both. Edits
-  -- should be executed first.
-  if action.edit or type(action.command) == "table" then
-    if action.edit then
-      vim.lsp.util.apply_workspace_edit(action.edit)
-    end
-    if type(action.command) == "table" then
-      vim.lsp.buf.execute_command(action.command)
-    end
-  else
-    vim.lsp.buf.execute_command(action)
-  end
-end
-
+-- LSP: EFM (linters and formatters)
 local prettier = {formatCommand = "./node_modules/.bin/prettier --stdin-filepath ${INPUT}", formatStdin = true}
 
 local eslint = {
@@ -297,38 +347,29 @@ nvim_lsp.efm.setup {
   end
 }
 
-vim.api.nvim_exec([[autocmd BufWritePre *.go lua goimports(1000)]], false)
-
-local function goto_definition(split_cmd)
-  local util = vim.lsp.util
-  local log = require("vim.lsp.log")
-  local api = vim.api
-
-  -- note, this handler style is for neovim 0.5.1/0.6, if on 0.5, call with function(_, method, result)
-  local handler = function(_, result, ctx)
-    if result == nil or vim.tbl_isempty(result) then
-      local _ = log.info() and log.info(ctx.method, "No location found")
-      return nil
-    end
-
-    if split_cmd then
-      vim.cmd(split_cmd)
-    end
-
-    if vim.tbl_islist(result) then
-      util.jump_to_location(result[1])
-
-      if #result > 1 then
-        util.set_qflist(util.locations_to_items(result))
-        api.nvim_command("copen")
-        api.nvim_command("wincmd p")
-      end
-    else
-      util.jump_to_location(result)
-    end
-  end
-
-  return handler
-end
-
-vim.lsp.handlers["textDocument/definition"] = goto_definition('split')
+-- Lsp cmp colors for suggestions
+-- VS Code color
+vim.cmd [[highlight! CmpItemAbbrDeprecated guibg=NONE gui=strikethrough guifg=#808080]]
+vim.cmd [[highlight! CmpItemAbbrMatch guibg=NONE guifg=#569CD6]]
+vim.cmd [[highlight! CmpItemAbbrMatchFuzzy guibg=NONE guifg=#569CD6]]
+vim.cmd [[highlight! CmpItemKindVariable guibg=NONE guifg=#9CDCFE]]
+vim.cmd [[highlight! CmpItemKindInterface guibg=NONE guifg=#9CDCFE]]
+vim.cmd [[highlight! CmpItemKindText guibg=NONE guifg=#9CDCFE]]
+vim.cmd [[highlight! CmpItemKindFunction guibg=NONE guifg=#C586C0]]
+vim.cmd [[highlight! CmpItemKindMethod guibg=NONE guifg=#C586C0]]
+vim.cmd [[highlight! CmpItemKindKeyword guibg=NONE guifg=#D4D4D4]]
+-- Gruvbox material
+-- vim.cmd [[highlight! link CmpItemAbbrMatchFuzzy Aqua]]
+-- vim.cmd [[highlight! link CmpItemKindText Fg]]
+-- vim.cmd [[highlight! link CmpItemKindMethod Purple]]
+-- vim.cmd [[highlight! link CmpItemKindFunction Purple]]
+-- vim.cmd [[highlight! link CmpItemKindConstructor Green]]
+-- vim.cmd [[highlight! link CmpItemKindField Aqua]]
+-- vim.cmd [[highlight! link CmpItemKindVariable Blue]]
+-- vim.cmd [[highlight! link CmpItemKindClass Green]]
+-- vim.cmd [[highlight! link CmpItemKindInterface Green]]
+-- vim.cmd [[highlight! link CmpItemKindValue Orange]]
+-- vim.cmd [[highlight! link CmpItemKindKeyword Keyword]]
+-- vim.cmd [[highlight! link CmpItemKindSnippet Red]]
+-- vim.cmd [[highlight! link CmpItemKindFile Orange]]
+-- vim.cmd [[highlight! link CmpItemKindFolder Orange]]

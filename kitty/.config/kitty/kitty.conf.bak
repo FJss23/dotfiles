@@ -7,17 +7,15 @@ adjust_line_height 3
 tab_bar_style powerline
 editor nvim
 tab_switch_strategy left
-tab_title_template "T{index}"
-# background_opacity 0.8
 
 # remaps
-map ctrl+shift+m next_tab
-map ctrl+shift+n previous_tab
+map ctrl+shift+l next_tab
+map ctrl+shift+h previous_tab
 map ctrl+shift+j next_layout
 map ctrl+shift+k next_window
 
-map f11 launch --cwd=current
-map f12 launch --cwd=current --type=tab
+map f9 launch --cwd=current
+map f10 launch --cwd=current --type=tab
 
 # Colorscheme Bright Lights
 # include current-theme.conf
@@ -25,6 +23,6 @@ map f12 launch --cwd=current --type=tab
 
 
 # BEGIN_KITTY_THEME
-# Pencil Dark
-# include current-theme.conf
+# Gruvbox Dark
+include current-theme.conf
 # END_KITTY_THEME

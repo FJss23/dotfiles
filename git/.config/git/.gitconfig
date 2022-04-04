@@ -3,7 +3,12 @@
     co = checkout
     br = branch
     di = diff
+
 [merge]
     tool = vimdiff
+
 [diff]
     tool = vimdiff
+
+[mergetool "vimdiff"]
+    cmd = nvim -d $LOCAL $REMOTE $MERGED -c

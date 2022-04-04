@@ -124,7 +124,6 @@ fi
 ##################################################################################################
 
 alias nvim="~/nvim/nvim.appimage"
-alias vimdiff="nvim -d"
 alias fd="fdfind"
 alias efm-langserver="~/.efm-langserver/efm-langserver"
 alias ssh='kitty +kitten ssh'
@@ -136,14 +135,14 @@ function parse_git_branch() {
 	BRANCH=`git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
 	if [ ! "${BRANCH}" == "" ]
 	then
-		echo ":(${BRANCH})"
+		echo ":[${BRANCH}]"
 	else
 		echo ""
 	fi
 }
 
 
-export PS1="\[\e[32m\]\u\[\e[m\]\[\e[34m\]:\[\e[m\]\[\e[34m\]\w\[\e[m\]\`parse_git_branch\`\\$ "
+export PS1="\[\e[32m\]\u\[\e[m\]\[\e[34m\]:\[\e[m\]\[\e[36m\]\w\[\e[m\]\`parse_git_branch\`\\$ "
 
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash

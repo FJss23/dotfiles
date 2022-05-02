@@ -1,7 +1,7 @@
 -- Configuration for nvim-treesitter plugin
 
-local enabled_list = { 'clojure' }
-local parsers = require("nvim-treesitter.parsers")
+-- local enabled_list = { 'clojure' }
+-- local parsers = require("nvim-treesitter.parsers")
 
 require'nvim-treesitter.configs'.setup {
   autotag = {
@@ -12,6 +12,7 @@ require'nvim-treesitter.configs'.setup {
   textobjects = { enable = true },
   rainbow = {
     enable = true,
+    disable = { 'html' }
     -- disable = vim.tbl_filter(
 		-- function(p)
 			-- local disable = true
@@ -23,4 +24,4 @@ require'nvim-treesitter.configs'.setup {
 		-- parsers.available_parsers()
 	  -- )
 	}
-  }
+}

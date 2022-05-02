@@ -1,100 +1,105 @@
---[[
-    This file contains the configuration for native Neovim LSP, using the following plugins:
-    1. neovim-lspconfig
-    2. cmp-nvim-lsp
-    3. nvim-compe
-
-    List of lsp configured:
-    1. CSS / JSON / HTML
-    2. CSS Modules
-    3. Zig
-    4. Javascript / Typescript
-    5. Lua
-    6. Python
-    7. EFM (lint and formatting)
-    8. Go
-    9. C
-    10. Tailwind
-
-    A few considerations:
-    * luasnip is used in this file, because is configured using nvim-compe
-    * This file if full of comments
---]]
-
--- Behavior for diagnostics
 vim.diagnostic.config({
     virtual_text = {
-      prefix = '•'
+      prefix = ' '
     },
     update_in_insert = false,
+    float = {
+	    focusable = false,
+    	-- style = "minimal",
+	    -- border = "solid",
+	    -- source = "always",
+	    header = "",
+	    prefix = "",
+    },
 })
 
 vim.o.updatetime = 350
-vim.cmd [[autocmd CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {focus=false})]]
 
--- Lsp background popup
--- VS code
--- vim.cmd [[autocmd! ColorScheme * highlight NormalFloat guibg=#272727]]
--- vim.cmd [[autocmd! ColorScheme * highlight FloatBorder guifg=white guibg=#272727]]
--- Gruvbox
--- vim.cmd [[autocmd! ColorScheme * highlight NormalFloat guibg=#3c3836]]
--- vim.cmd [[autocmd! ColorScheme * highlight FloatBorder guifg=white guibg=#3c3836]]
 
--- local border = {
---       {"🭽", "FloatBorder"},
---       {"▔", "FloatBorder"},
---       {"🭾", "FloatBorder"},
---       {"▕", "FloatBorder"},
---       {"🭿", "FloatBorder"},
---       {"▁", "FloatBorder"},
---       {"🭼", "FloatBorder"},
---       {"▏", "FloatBorder"},
--- }
+local border = {
+    {"┌", "FloatBorder"},
+    {"─","FloatBorder"},
+    {"┐", "FloatBorder"},
+    {"│","FloatBorder"},
+    {"┘","FloatBorder"},
+    {"─", "FloatBorder"},
+    {"└","FloatBorder"},
+    {"│", "FloatBorder"},
+}
 
--- local handlers =  {
---   ["textDocument/hover"] =  vim.lsp.with(vim.lsp.handlers.hover, {border = border}),
---   ["textDocument/signatureHelp"] =  vim.lsp.with(vim.lsp.handlers.signature_help, {border = border }),
--- }
+local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
+function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
+  opts = opts or {}
+  opts.border = opts.border or border
+  return orig_util_open_floating_preview(contents, syntax, opts, ...)
+end
 
--- local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
--- function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
---   opts = opts or {}
---   opts.border = opts.border or border
---   return orig_util_open_floating_preview(contents, syntax, opts, ...)
--- end
+
+local opts = { noremap=true, silent=true }
+
+vim.api.nvim_set_keymap('n', '<space>e', '<cmd>lua vim.diagnostic.setloclist()<CR>', opts)
 
 local nvim_lsp = require'lspconfig'
 
 -- Define the keymaps for lsp client
 local on_attach = function(client, bufnr)
-  local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
-  local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
-
   -- Enable completion triggered by <c-x><c-o>
-  buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
+  vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 
-  local opts = { noremap=true, silent=true }
+  -- Mappings.
+  -- See `:help vim.lsp.*` for documentation on any of the below functions
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>u', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
 
-  buf_set_keymap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
-  buf_set_keymap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
-  buf_set_keymap('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
-  buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
-  buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
-  buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
-  buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
-  buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
-  buf_set_keymap('n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
-  buf_set_keymap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
-  buf_set_keymap('n', '<space>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
-  buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
-  buf_set_keymap('n', '<space>u', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
+  if client.resolved_capabilities.document_highlight then
+    vim.cmd [[
+      hi! LspReferenceRead cterm=bold ctermbg=red guibg=gray21
+      hi! LspReferenceText cterm=bold ctermbg=red guibg=gray21
+      hi! LspReferenceWrite cterm=bold ctermbg=red guibg=gray21
+    ]]
+    vim.api.nvim_create_augroup('lsp_document_highlight', {})
+    vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
+      group = 'lsp_document_highlight',
+      buffer = 0,
+      callback = vim.lsp.buf.document_highlight,
+    })
+    vim.api.nvim_create_autocmd('CursorMoved', {
+      group = 'lsp_document_highlight',
+      buffer = 0,
+      callback = vim.lsp.buf.clear_references,
+    })
+  end
+
+  vim.api.nvim_create_autocmd("CursorHold", {
+    buffer = bufnr,
+    callback = function()
+      local opts = {
+        focusable = false,
+        close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
+        border = 'single',
+        source = 'always',
+        prefix = ' ',
+        scope = 'cursor',
+      }
+      vim.diagnostic.open_float(nil, opts)
+    end
+  })
 end
 
--- Show lsp diagnostic of the current file in the location list
-vim.api.nvim_set_keymap('n','<space>e', ':lua vim.diagnostic.setloclist() <CR>', { noremap = true })
 
 -- Change the icons of lsp 'events'
-local signs = { Error = '', Warn = '', Hint = '', Info = '' }
+local signs = {Error = " ", Warn = " ", Hint = " ", Info = " "}
 for type, icon in pairs(signs) do
   local hl = "DiagnosticSign" .. type
   vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
@@ -102,32 +107,33 @@ end
 
 
 local cmp_kinds = {
-  Text = " ",
-  Method = " ",
-  Function = " ",
-  Constructor = " ",
-  Field = " ",
-  Variable = " ",
-  Class = "ﴯ" ,
-  Interface = " ",
-  Module = " ",
-  Property = "ﰠ" ,
-  Unit = " ",
-  Value = " ",
-  Enum = " ",
-  Keyword = " ",
-  Snippet = " ",
-  Color = " ",
-  File = " ",
-  Reference = " ",
-  Folder = " ",
-  EnumMember = " ",
-  Constant = " ",
-  Struct = " ",
-  Event = " ",
-  Operator = " ",
-  TypeParameter = " "
+  Text = "",
+	Method = "",
+	Function = "",
+	Constructor = "",
+	Field = "ﰠ",
+	Variable = "",
+	Class = "",
+	Interface = "",
+	Module = "",
+	Property = "",
+	Unit = "",
+	Value = "",
+	Enum = "",
+	Keyword = "",
+	Snippet = "",
+	Color = "",
+	File = "",
+	Reference = "",
+	Folder = "",
+	EnumMember = "",
+	Constant = "",
+	Struct = "פּ",
+	Event = "",
+	Operator = "",
+	TypeParameter = "",
 }
+
 
 -- Use the completion engine and include snippets
 local cmp = require'cmp'
@@ -146,55 +152,59 @@ cmp.setup({
   },
   formatting = {
 	  format = function(_, vim_item)
-        vim_item.kind = (cmp_kinds[vim_item.kind] or '') .. vim_item.kind
-        return vim_item
-      end,
+      vim_item.kind = (cmp_kinds[vim_item.kind] or '') .. ' ' .. vim_item.kind
+      return vim_item
+    end,
   },
-  mapping = {
-    ['<C-b>'] = cmp.mapping(cmp.mapping.scroll_docs(-4), { 'i', 'c' }),
-    ['<C-f>'] = cmp.mapping(cmp.mapping.scroll_docs(4), { 'i', 'c' }),
-    ['<C-Space>'] = cmp.mapping(cmp.mapping.complete(), { 'i', 'c' }),
-    ['<C-y>'] = cmp.config.disable, -- Specify `cmp.config.disable` if you want to remove the default `<C-y>` mapping.
-    ['<C-e>'] = cmp.mapping({
-      i = cmp.mapping.abort(),
-      c = cmp.mapping.close(),
-    }),
+  window = {
+		completion = {
+			border = { "┌", "─", "┐", "│", "┘", "─", "└", "│" },
+		},
+		documentation = {
+			border = { "┌", "─", "┐", "│", "┘", "─", "└", "│" },
+		},
+	},
+  mapping = cmp.mapping.preset.insert({
+    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<C-e>'] = cmp.mapping.abort(),
     ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-    ["<Tab>"] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_next_item()
-      elseif luasnip.expand_or_jumpable() then
-        luasnip.expand_or_jump()
-      elseif has_words_before() then
-        cmp.complete()
-      else
-        fallback()
-      end
-    end, { "i", "s" }),
-    ["<S-Tab>"] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_prev_item()
-      elseif luasnip.jumpable(-1) then
-        luasnip.jump(-1)
-      else
-        fallback()
-      end
-    end, { "i", "s" }),
-  },
+  }),
   sources = cmp.config.sources({
     { name = 'nvim_lsp' },
     { name = 'luasnip' },
-    { name = 'buffer', max_item_count = 10 },
+    { name = 'buffer', max_item_count = 3 },
     { name = 'path' },
   }, {
     { name = 'buffer' },
   })
 })
 
+local augroup = vim.api.nvim_create_augroup("luasnip-expand", { clear=true })
 
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
+vim.api.nvim_create_autocmd("ModeChanged", {
+  group    = augroup,
+  pattern  = "*:s",
+  callback = function ()
+    if luasnip.in_snippet() then
+      return vim.diagnostic.disable()
+    end
+  end
+})
 
+vim.api.nvim_create_autocmd("ModeChanged", {
+  group    = augroup,
+  pattern  = "[is]:n",
+  callback = function ()
+    if luasnip.in_snippet() then
+      return vim.diagnostic.enable()
+    end
+  end
+})
+
+
+local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 -- LSP: CSS, JSON, HTML, CSS Modules, Zig, Python and Tailwind CSS
 local servers = { 'cssls', 'jsonls', 'html', 'cssmodules_ls', 'zls','pyright', 'tailwindcss' }
 
@@ -236,6 +246,9 @@ nvim_lsp.gopls.setup {
       staticcheck = true,
     },
   },
+  flags = {
+      debounce_text_changes = 150,
+   }
 }
 
 function goimports(timeout_ms)
@@ -271,6 +284,9 @@ nvim_lsp.ccls.setup {
     cache = {
       directory = ".ccls-cache";
     };
+  },
+  flags = {
+    debounce_text_changes = 150,
   }
 }
 
@@ -306,6 +322,26 @@ nvim_lsp.sumneko_lua.setup {
       },
     },
   },
+}
+
+-- LSP: Rust-analyzer
+nvim_lsp.rust_analyzer.setup {
+  capabilities = capabilities,
+  on_attach = on_attach,
+  settings = {
+    ["rust-analyzer"] = {
+      assist = {
+        importGranularity = "module",
+        importPrefix = "self",
+      },
+      cargo = {
+        loadOutDirsFromCheck = true
+      },
+      procMacro = {
+        enable = true
+      },
+    }
+  }
 }
 
 -- LSP: EFM (linters and formatters)
@@ -347,29 +383,3 @@ nvim_lsp.efm.setup {
   end
 }
 
--- Lsp cmp colors for suggestions
--- VS Code color
-vim.cmd [[highlight! CmpItemAbbrDeprecated guibg=NONE gui=strikethrough guifg=#808080]]
-vim.cmd [[highlight! CmpItemAbbrMatch guibg=NONE guifg=#569CD6]]
-vim.cmd [[highlight! CmpItemAbbrMatchFuzzy guibg=NONE guifg=#569CD6]]
-vim.cmd [[highlight! CmpItemKindVariable guibg=NONE guifg=#9CDCFE]]
-vim.cmd [[highlight! CmpItemKindInterface guibg=NONE guifg=#9CDCFE]]
-vim.cmd [[highlight! CmpItemKindText guibg=NONE guifg=#9CDCFE]]
-vim.cmd [[highlight! CmpItemKindFunction guibg=NONE guifg=#C586C0]]
-vim.cmd [[highlight! CmpItemKindMethod guibg=NONE guifg=#C586C0]]
-vim.cmd [[highlight! CmpItemKindKeyword guibg=NONE guifg=#D4D4D4]]
--- Gruvbox material
--- vim.cmd [[highlight! link CmpItemAbbrMatchFuzzy Aqua]]
--- vim.cmd [[highlight! link CmpItemKindText Fg]]
--- vim.cmd [[highlight! link CmpItemKindMethod Purple]]
--- vim.cmd [[highlight! link CmpItemKindFunction Purple]]
--- vim.cmd [[highlight! link CmpItemKindConstructor Green]]
--- vim.cmd [[highlight! link CmpItemKindField Aqua]]
--- vim.cmd [[highlight! link CmpItemKindVariable Blue]]
--- vim.cmd [[highlight! link CmpItemKindClass Green]]
--- vim.cmd [[highlight! link CmpItemKindInterface Green]]
--- vim.cmd [[highlight! link CmpItemKindValue Orange]]
--- vim.cmd [[highlight! link CmpItemKindKeyword Keyword]]
--- vim.cmd [[highlight! link CmpItemKindSnippet Red]]
--- vim.cmd [[highlight! link CmpItemKindFile Orange]]
--- vim.cmd [[highlight! link CmpItemKindFolder Orange]]

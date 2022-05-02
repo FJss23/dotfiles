@@ -3,7 +3,7 @@
   "emmet.includeLanguages": {
     "javascript": "javascriptreact"
   },
-  "editor.fontSize": 13,
+  "editor.fontSize": 12,
   "editor.lineHeight": 1.9,
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -16,4 +16,14 @@
   "window.zoomLevel": 1,
   "editor.formatOnSave": true,
   "editor.tabSize": 2,
+  "cSpell.language": "en,es",
+  "editor.minimap.enabled": false,
+  "editor.minimap.maxColumn": 100,
+  "telemetry.telemetryLevel": "off",
+  "editor.bracketPairColorization.enabled": true,
+  "workbench.colorCustomizations": {
+    "statusBar.background": "#1A1A1A",
+    "statusBar.noFolderBackground": "#212121",
+    "statusBar.debuggingBackground": "#263238"
+  }
 }

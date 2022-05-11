@@ -15,7 +15,6 @@ vim.diagnostic.config({
 
 vim.o.updatetime = 350
 
-
 local border = {
     {"┌", "FloatBorder"},
     {"─","FloatBorder"},
@@ -151,19 +150,28 @@ cmp.setup({
     end,
   },
   formatting = {
-	  format = function(_, vim_item)
-      vim_item.kind = (cmp_kinds[vim_item.kind] or '') .. ' ' .. vim_item.kind
+	  format = function(entry, vim_item)
+      -- Kind icons
+      vim_item.kind = (cmp_kinds[vim_item.kind] or '') .. ' ' .. vim_item.kind .. ' '
+      	  -- Source
+      vim_item.menu = ({
+        buffer = "[Buffer]",
+        nvim_lsp = "[LSP]",
+        luasnip = "[LuaSnip]",
+        nvim_lua = "[Lua]",
+              latex_symbols = "[LaTeX]",
+      })[entry.source.name]
       return vim_item
     end,
   },
-  window = {
-		completion = {
-			border = { "┌", "─", "┐", "│", "┘", "─", "└", "│" },
-		},
-		documentation = {
-			border = { "┌", "─", "┐", "│", "┘", "─", "└", "│" },
-		},
-	},
+  -- window = {
+		-- completion = {
+			-- border = { "┌", "─", "┐", "│", "┘", "─", "└", "│" },
+		-- },
+		-- documentation = {
+			-- border = { "┌", "─", "┐", "│", "┘", "─", "└", "│" },
+		-- },
+	-- },
   mapping = cmp.mapping.preset.insert({
     ['<C-b>'] = cmp.mapping.scroll_docs(-4),
     ['<C-f>'] = cmp.mapping.scroll_docs(4),
@@ -206,7 +214,7 @@ vim.api.nvim_create_autocmd("ModeChanged", {
 
 local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 -- LSP: CSS, JSON, HTML, CSS Modules, Zig, Python and Tailwind CSS
-local servers = { 'cssls', 'jsonls', 'html', 'cssmodules_ls', 'zls','pyright', 'tailwindcss' }
+local servers = { 'cssls', 'jsonls', 'html', 'cssmodules_ls', 'tailwindcss' }
 
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup {
@@ -382,4 +390,3 @@ nvim_lsp.efm.setup {
     on_attach(client, bufnr)
   end
 }
-

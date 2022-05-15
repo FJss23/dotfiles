@@ -151,7 +151,7 @@ alias ssh='kitty +kitten ssh'
 
 alias delta="~/.cargo/bin/delta"
 
-alias ls='nnn -e'
+alias ne='nnn -e'
 
 # alias dot="cd ~/dotfiles"
 # alias proj="cd ~/Documents/github"

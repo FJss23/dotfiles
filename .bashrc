@@ -119,9 +119,31 @@ fi
 #
 #####################################################################
 
+n()
+{
+  # Block nesting of nnn in subshells
+  if [ -n $NNNLVL ] & [ "${NNNLVL:-0}" -ge 1 ]; then
+    echo "nnn is already running"
+    return
+  fi
+
+  export NNN_TMPFILE="${XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd"
+
+  nnn -Re "$@"
+
+  if [ -f "$NNN_TMPFILE" ]; then
+    . "$NNN_TMPFILE"
+    rm -f "$NNN_TMPFILE" > /dev/null
+  fi
+}
+
+export NNN_BMS='h:~;o:~/dotfiles;p:~/Documents/github'
+# export NNN_FCOLORS='0000R6310000000000000000'
+
 export PS1="\u:\w\\$ "
 
-alias nvim="~/nvim/nvim.appimage"
+# Create a symlink instead
+# alias nvim="~/nvim/nvim.appimage"
 alias fd="fdfind"
 
 alias efm-langserver="~/.efm-langserver/efm-langserver"
@@ -129,22 +151,25 @@ alias ssh='kitty +kitten ssh'
 
 alias delta="~/.cargo/bin/delta"
 
-alias dot="cd ~/dotfiles"
-alias proj="cd ~/Documents/github"
+alias ls='nnn -e'
 
-alias ls='exa --grid --color auto --icons --sort=type'
-alias ll='exa --long --color always --icons --sort=type'
-alias la='exa --grid --all --color auto --icons --sort=type'
-alias lla='exa --long --all --color auto --icons --sort=type'
+# alias dot="cd ~/dotfiles"
+# alias proj="cd ~/Documents/github"
 
-alias l='ls -l'
-alias lt='ls --tree'
+# alias ls='exa --grid --color auto --icons --sort=type'
+# alias ll='exa --long --color always --icons --sort=type'
+# alias la='exa --grid --all --color auto --icons --sort=type'
+# alias lla='exa --long --all --color auto --icons --sort=type'
+
+# alias l='ls -l'
+# alias lt='ls --tree'
 
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 export FZF_DEFAULT_OPS="--extended"
 export FZF_DEFAULT_COMMAND="fdfind --type f"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND="fdfind -t d . $HOME"
 
 . $HOME/.asdf/asdf.sh
 . $HOME/.asdf/completions/asdf.bash
@@ -152,7 +177,14 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export SDKMAN_DIR="/home/frandev/.sdkman"
 [[ -s "/home/frandev/.sdkman/bin/sdkman-init.sh" ]] && source "/home/frandev/.sdkman/bin/sdkman-init.sh"
 
+export VISUAL=nvim
+export EDITO="$VISUAL"
+
 if test -n "$KITTY_INSTALLATION_DIR" -a -e "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; then source "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; fi
 
 . "$HOME/.cargo/env"
 
+#set PATH so it includes user's private ~/.local/bin if it exists
+if [ -d "$HOME/.local/bin" ] ; then
+    PATH="$HOME/.local/bin:$PATH"
+fi

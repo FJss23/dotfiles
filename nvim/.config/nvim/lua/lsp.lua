@@ -1,3 +1,5 @@
+-- LSP: HTML, CSS, JSON, CSS Modules, Tailwdind CSS, Typescript,
+--      C, Rust, Lua & efm (linting and formatting)
 vim.diagnostic.config({
     virtual_text = {
       prefix = ' '
@@ -15,28 +17,30 @@ vim.diagnostic.config({
 
 vim.o.updatetime = 350
 
-local border = {
-    {"┌", "FloatBorder"},
-    {"─","FloatBorder"},
-    {"┐", "FloatBorder"},
-    {"│","FloatBorder"},
-    {"┘","FloatBorder"},
-    {"─", "FloatBorder"},
-    {"└","FloatBorder"},
-    {"│", "FloatBorder"},
-}
+-- @Info floating window on hover
+-- local border = {
+--     {"┌", "FloatBorder"},
+--     {"─","FloatBorder"},
+--     {"┐", "FloatBorder"},
+--     {"│","FloatBorder"},
+--     {"┘","FloatBorder"},
+--     {"─", "FloatBorder"},
+--     {"└","FloatBorder"},
+--     {"│", "FloatBorder"},
+-- }
 
-local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
-function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
-  opts = opts or {}
-  opts.border = opts.border or border
-  return orig_util_open_floating_preview(contents, syntax, opts, ...)
-end
+-- local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
+-- function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
+--   opts = opts or {}
+--   opts.border = opts.border or border
+--   return orig_util_open_floating_preview(contents, syntax, opts, ...)
+-- end
 
 
 local opts = { noremap=true, silent=true }
 
-vim.api.nvim_set_keymap('n', '<space>e', '<cmd>lua vim.diagnostic.setloclist()<CR>', opts)
+vim.api.nvim_set_keymap('n', '<space>le', '<cmd>lua vim.diagnostic.setloclist()<CR>', opts)
+vim.api.nvim_set_keymap('n', '<space>e', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
 
 local nvim_lsp = require'lspconfig'
 
@@ -63,9 +67,9 @@ local on_attach = function(client, bufnr)
 
   if client.resolved_capabilities.document_highlight then
     vim.cmd [[
-      hi! LspReferenceRead cterm=bold ctermbg=red guibg=gray21
-      hi! LspReferenceText cterm=bold ctermbg=red guibg=gray21
-      hi! LspReferenceWrite cterm=bold ctermbg=red guibg=gray21
+      hi! LspReferenceRead cterm=bold ctermbg=red guibg=gray27
+      hi! LspReferenceText cterm=bold ctermbg=red guibg=gray27
+      hi! LspReferenceWrite cterm=bold ctermbg=red guibg=gray27
     ]]
     vim.api.nvim_create_augroup('lsp_document_highlight', {})
     vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
@@ -80,20 +84,21 @@ local on_attach = function(client, bufnr)
     })
   end
 
-  vim.api.nvim_create_autocmd("CursorHold", {
-    buffer = bufnr,
-    callback = function()
-      local opts = {
-        focusable = false,
-        close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
-        border = 'single',
-        source = 'always',
-        prefix = ' ',
-        scope = 'cursor',
-      }
-      vim.diagnostic.open_float(nil, opts)
-    end
-  })
+  -- @Info Floating window on hover
+  -- vim.api.nvim_create_autocmd("CursorHold", {
+  --   buffer = bufnr,
+  --   callback = function()
+  --     local opts = {
+  --       focusable = false,
+  --       close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
+  --       border = 'single',
+  --       source = 'always',
+  --       prefix = ' ',
+  --       scope = 'cursor',
+  --     }
+  --     vim.diagnostic.open_float(nil, opts)
+  --   end
+  -- })
 end
 
 
@@ -134,7 +139,6 @@ local cmp_kinds = {
 }
 
 
--- Use the completion engine and include snippets
 local cmp = require'cmp'
 local luasnip = require'luasnip'
 
@@ -164,6 +168,7 @@ cmp.setup({
       return vim_item
     end,
   },
+  -- @Info border for completion
   -- window = {
 		-- completion = {
 			-- border = { "┌", "─", "┐", "│", "┘", "─", "└", "│" },
@@ -241,50 +246,6 @@ nvim_lsp.tsserver.setup {
    }
 }
 
--- LSP: Go (Inlcudes function for autoimport functionality)
-nvim_lsp.gopls.setup {
-  capabilities = capabilities,
-  on_attach = on_attach,
-  cmd = {"gopls", "serve"},
-  settings = {
-    gopls = {
-      analyses = {
-        unusedparams = true,
-      },
-      staticcheck = true,
-    },
-  },
-  flags = {
-      debounce_text_changes = 150,
-   }
-}
-
-function goimports(timeout_ms)
-  local context = { only = { "source.organizeImports" } }
-  vim.validate { context = { context, "t", true } }
-
-  local params = vim.lsp.util.make_range_params()
-  params.context = context
-
-  local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, timeout_ms)
-  if not result or next(result) == nil then return end
-  local actions = result[1].result
-  if not actions then return end
-  local action = actions[1]
-
-  if action.edit or type(action.command) == "table" then
-    if action.edit then
-      vim.lsp.util.apply_workspace_edit(action.edit)
-    end
-    if type(action.command) == "table" then
-      vim.lsp.buf.execute_command(action.command)
-    end
-  else
-    vim.lsp.buf.execute_command(action)
-  end
-end
-
-vim.api.nvim_exec([[autocmd BufWritePre *.go lua goimports(1000)]], false)
 
 -- LSP: C
 nvim_lsp.ccls.setup {
@@ -390,3 +351,48 @@ nvim_lsp.efm.setup {
     on_attach(client, bufnr)
   end
 }
+
+-- Some lua snip configuration
+local t = function(str)
+    return vim.api.nvim_replace_termcodes(str, true, true, true)
+end
+
+local check_back_space = function()
+    local col = vim.fn.col('.') - 1
+    if col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') then
+        return true
+    else
+        return false
+    end
+end
+
+_G.tab_complete = function()
+    if vim.fn.pumvisible() == 1 then
+        return t "<C-n>"
+    elseif luasnip and luasnip.expand_or_jumpable() then
+        return t("<Plug>luasnip-expand-or-jump")
+    elseif check_back_space() then
+        return t "<Tab>"
+    else
+        return vim.fn['compe#complete']()
+    end
+    return ""
+end
+
+_G.s_tab_complete = function()
+    if vim.fn.pumvisible() == 1 then
+        return t "<C-p>"
+    elseif luasnip and luasnip.jumpable(-1) then
+        return t("<Plug>luasnip-jump-prev")
+    else
+        return t "<S-Tab>"
+    end
+    return ""
+end
+
+vim.api.nvim_set_keymap("i", "<C-s>", "v:lua.tab_complete()", {expr = true})
+vim.api.nvim_set_keymap("s", "<C-s>", "v:lua.tab_complete()", {expr = true})
+vim.api.nvim_set_keymap("i", "<C-d>", "v:lua.s_tab_complete()", {expr = true})
+vim.api.nvim_set_keymap("s", "<C-d>", "v:lua.s_tab_complete()", {expr = true})
+vim.api.nvim_set_keymap("i", "<C-E>", "<Plug>luasnip-next-choice", {})
+vim.api.nvim_set_keymap("s", "<C-E>", "<Plug>luasnip-next-choice", {})

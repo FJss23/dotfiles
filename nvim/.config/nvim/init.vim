@@ -9,7 +9,6 @@ Plug 'hrsh7th/nvim-cmp' " Completion engine
 
 " Colors
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'} " Syntax highlight
-" Plug 'Mofiqul/vscode.nvim'
 Plug 'EdenEast/nightfox.nvim'
 
 " Utils
@@ -22,6 +21,7 @@ Plug 'p00f/nvim-ts-rainbow' " Colored characters
 Plug 'kevinhwang91/nvim-bqf' " Qf list superpowers
 Plug 'romgrk/nvim-treesitter-context' " Better context
 Plug 'kyazdani42/nvim-web-devicons' " Icons
+Plug 'danymat/neogen'
 
 " Git
 Plug 'nvim-lua/plenary.nvim' " Required for gitsigns
@@ -32,7 +32,6 @@ Plug 'L3MON4D3/LuaSnip' " Snippets superpowers
 Plug 'saadparwaiz1/cmp_luasnip' " Required for luasnip
 
 " Search
-" Plug 'junegunn/fzf.vim' " Search superpowers
 Plug 'ibhagwan/fzf-lua', {'branch': 'main'}
 Plug 'kyazdani42/nvim-tree.lua' " Explorer
 
@@ -52,7 +51,7 @@ set nobackup
 set noswapfile
 set incsearch hlsearch
 set scrolloff=10
-set termguicolors
+" set termguicolors=v:true
 set completeopt=menu,noinsert,noselect
 set mouse=a
 set nuw=4
@@ -72,13 +71,8 @@ set background=dark
 
 set statusline=%!v:lua.require'statusline'.statusline() 
 
-" let g:vscode_style = "dark"
-" let g:vscode_italic_comment = 1
-" let g:vscode_transparency = 1
-" let g:vscode_disable_nvimtree_bg = v:true
-" colorscheme vscode
-
 " Config for emmet
+"
 autocmd FileType html,javascript,typescript,js,ts,jsx,tsx EmmetInstall
 
 
@@ -147,8 +141,8 @@ nnoremap <leader>md :delm!<CR> :delm A-Z0-9<CR>
 
 
 " Indentation for file types
-autocmd FileType html,javascript,typescript,js,ts,jsx,tsx,pug setlocal shiftwidth=2 tabstop=2
-autocmd FileType go setlocal shiftwidth=4 tabstop=4
+autocmd FileType html,javascript,typescript,js,ts,jsx,tsx,pug,javascriptreact,typescriptreact 
+      \ setlocal shiftwidth=2 tabstop=2
 
 
 " Close all buffers except current

@@ -9,6 +9,9 @@ Plug 'hrsh7th/nvim-cmp' " Completion engine
 
 " Colors
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'} " Syntax highlight
+" Plug 'sainnhe/gruvbox-material'
+" Plug 'rebelot/kanagawa.nvim'
+" Plug 'marko-cerovac/material.nvim'
 Plug 'EdenEast/nightfox.nvim'
 
 " Utils
@@ -16,12 +19,12 @@ Plug 'norcalli/nvim-colorizer.lua' " Show colors
 Plug 'tpope/vim-commentary' " Better comments
 Plug 'mattn/emmet-vim' " Better html
 Plug 'lukas-reineke/indent-blankline.nvim' " Indent lines
-Plug 'windwp/nvim-autopairs' " Auto close
-Plug 'p00f/nvim-ts-rainbow' " Colored characters
-Plug 'kevinhwang91/nvim-bqf' " Qf list superpowers
+Plug 'mbbill/undotree'
 Plug 'romgrk/nvim-treesitter-context' " Better context
 Plug 'kyazdani42/nvim-web-devicons' " Icons
-Plug 'danymat/neogen'
+Plug 'danymat/neogen' " Comments/Doc generator
+" Plug 'kevinhwang91/nvim-bqf' " Qf list superpowers
+" Plug 'windwp/nvim-autopairs' " Auto close
 
 " Git
 Plug 'nvim-lua/plenary.nvim' " Required for gitsigns
@@ -33,7 +36,8 @@ Plug 'saadparwaiz1/cmp_luasnip' " Required for luasnip
 
 " Search
 Plug 'ibhagwan/fzf-lua', {'branch': 'main'}
-Plug 'kyazdani42/nvim-tree.lua' " Explorer
+Plug 'luukvbaal/nnn.nvim'
+" Plug 'kyazdani42/nvim-tree.lua' " Explorer
 
 call plug#end()
 
@@ -51,7 +55,6 @@ set nobackup
 set noswapfile
 set incsearch hlsearch
 set scrolloff=10
-" set termguicolors=v:true
 set completeopt=menu,noinsert,noselect
 set mouse=a
 set nuw=4
@@ -64,15 +67,32 @@ set wildmode=longest,list,full
 set wildignore+=*.png,*.jpg,*jpg,*/.git/*,*/node_modules/*
 set nowrap
 set colorcolumn=90
-set number "relativenumber
-" set noshowmode
-set cursorline
+set number
+" set cursorline
 set background=dark
 
-set statusline=%!v:lua.require'statusline'.statusline() 
+" let g:gruvbox_material_enable_italic = 0
+" let g:gruvbox_material_enable_bold = 0
+" let g:gruvbox_material_disable_italic_comment = 1
+" let g:gruvbox_material_background = 'medium'
+" let g:gruvbox_material_sign_column_background = 'none'
+" let g:gruvbox_material_ui_contrast = 'low'
+" let g:gruvbox_material_diagnostic_text_highlight = 1
+" let g:gruvbox_material_diagnostic_line_highlight = 1
+" let g:gruvbox_material_diagnostic_virtual_text = 'colored'
+" let g:gruvbox_material_current_word = 'bold'
+" let g:gruvbox_material_statusline_style = 'original'
+" let g:gruvbox_material_palette = 'original'
+" let g:gruvbox_material_transparent_background = 1
+" colorscheme gruvbox-material
+
+hi FloatBorder guibg=NONE  guifg=NONE
+hi Todo guibg=black guifg=white gui=bold,underline,italic
+hi Search guibg=gold2
+hi StatusLine guifg=seashell2
+
 
 " Config for emmet
-"
 autocmd FileType html,javascript,typescript,js,ts,jsx,tsx EmmetInstall
 
 
@@ -88,6 +108,7 @@ let mapleader=" "
 :imap jk <Esc>
 nnoremap <leader>s :update<cr>
 nnoremap <leader>q :q<cr>
+
 nnoremap <silent> <F2> :set spell!<cr>
 inoremap <silent> <F2> <C-O>:set spell!<cr>
 nnoremap <leader>fd :find 
@@ -95,7 +116,7 @@ nnoremap <leader>rg :Rgrep
 
 
 " Move lines
-:tnoremap jk <C-\><C-n>
+:tnoremap fd <C-\><C-n>
 vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '<-2<CR>gv=gv
 
@@ -119,11 +140,15 @@ nnoremap <leader>co :copen<CR>
 nnoremap <leader>ck :cclose<CR>
 nnoremap <leader>cf :cfirst<CR>
 nnoremap <leader>cl :cclast<CR>
+nnoremap <leader>cn :cnext<CR>
+nnoremap <leader>cp :cprevious<CR>
 
 
 " Location list manipulation
 nnoremap <leader>lo :lopen<CR>
 nnoremap <leader>lk :lclose<CR>
+nnoremap <leader>ln :lnext<CR>
+nnoremap <leader>ln :lprevious<CR>
 
 
 " Tab manipulation
@@ -164,6 +189,12 @@ augroup quickfix
     autocmd QuickFixCmdPost lgetexpr lwindow
 augroup END
 
+" https://vim.fandom.com/wiki/Search_for_current_word_in_multiple_files
+:nnoremap gr :Rgrep <cword> *<CR>
+:nnoremap Gr :Rgrep <cword> %:p:h/*<CR>
+:nnoremap gR :Rgrep '\b<cword>\b' *<CR>
+:nnoremap GR :Rgrep '\b<cword>\b' %:p:h/*<CR>
+
 
 let g:term_buf = 0
 let g:term_win = 0
@@ -199,8 +230,17 @@ inoremap <A-t> <Esc>:call TermToggle(12)<CR>
 tnoremap <A-t> <C-\><C-n>:call TermToggle(12)<CR>
 autocmd BufWinEnter,WinEnter term://* startinsert
 
+
+tnoremap <F3> <cmd>NnnExplorer<CR>
+nnoremap <F3> <cmd>NnnExplorer %:p:h<CR>
+tnoremap <F7> <cmd>NnnPicker<CR>
+nnoremap <F7> <cmd>NnnPicker<CR>
+
+nnoremap <F8> :UndotreeToggle<CR>
+
 lua <<EOF
 require('lsp')
 require('treesitter')
 require('utils')
+require('statusline')
 EOF

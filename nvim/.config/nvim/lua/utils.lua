@@ -24,17 +24,17 @@ require'nightfox'.setup({
 })
 
 -- @Info First declare and define the colorscheme, then change the color of indentation lines
-vim.cmd("colorscheme nightfox")
+vim.cmd("colorscheme nordfox")
 
 vim.opt.list = true
 vim.opt.listchars:append("eol:↴")
 vim.opt.termguicolors = true
 
 vim.g.indent_blankline_use_treesitter = true
--- vim.g.indent_blankline_enabled = true
+vim.g.indent_blankline_enabled = true
 
 vim.cmd [[highlight IndentBlanklineIndent1 guifg=gray29 gui=nocombine]]
-vim.cmd [[highlight IndentBlanklineContextChar  guifg=gray49 gui=nocombine]]
+vim.cmd [[highlight IndentBlanklineContextChar  guifg=gray35 gui=nocombine]]
 -- @Info Change the color of the underline when using show_current_context_start
 -- vim.cmd [[highlight IndentBlanklineContextStart guisp=gray49 gui=underline]]
 
@@ -43,7 +43,7 @@ require("indent_blankline").setup {
   buftype_exclude = {'terminal', 'nofile', 'NvimTree'},
   filetype_exclude = {'help', 'NvimTree'},
   show_current_context = true,
-  char_highlight_list = {"IndentBlanklineIndent1"},
+  -- char_highlight_list = {"IndentBlanklineIndent1"},
   -- show_current_context_start = true,
 }
 
@@ -51,40 +51,40 @@ vim.api.nvim_set_keymap('n', '<F4>', ':IndentBlanklineToggle <CR>', { noremap = 
 
 require'gitsigns'.setup({
   signcolumn = true,
-  -- signs = {
-  --   add = { hl = 'GitSignsAdd', text = '▌ ' },
-  --   change = { hl = 'GitSignsChange', text = '▌ ' },
-  --   delete = { hl = 'GitSignsDelete', text = '▌ ' },
-  --   topdelete = { hl = 'GitSignsDelete', text = '▌ ' },
-  --   changedelete = { hl = 'GitSignsChange', text = '▌ ' },
-  -- },
+  signs = {
+    -- add = { hl = 'GitSignsAdd', text = '+' },
+    -- change = { hl = 'GitSignsChange', text = '~' },
+    -- delete = { hl = 'GitSignsDelete', text = '-' },
+    -- topdelete = { hl = 'GitSignsDelete', text = '-' },
+    -- changedelete = { hl = 'GitSignsChange', text = '~' },
+  },
 })
 
 vim.api.nvim_set_keymap('n', '<F5>', ':Gitsigns toggle_signs <CR>', { noremap = true })
 
 require("luasnip.loaders.from_vscode").lazy_load({ paths = { "./snippets" } })
-require('nvim-autopairs').setup()
+-- require('nvim-autopairs').setup()
 
-require('bqf').setup({
-  preview = {
-    border_chars = {'│', '│', '─', '─', '┌', '┐', '└', '┘', ''},
-  }
-})
+-- require('bqf').setup({
+--   preview = {
+--     border_chars = {'│', '│', '─', '─', '┌', '┐', '└', '┘', ''},
+--   }
+-- })
 
-require('nvim-tree').setup{
-  git = {
-    enable = false
-  },
-  view = {
-    side = "right",
-    width = '25%',
-    hide_root_folder = true,
-  }
-}
+-- require('nvim-tree').setup{
+--   git = {
+--     enable = false
+--   },
+--   view = {
+--     side = "right",
+--     width = '25%',
+--     hide_root_folder = true,
+--   }
+-- }
 
-vim.api.nvim_set_keymap('n', '<F3>', ':NvimTreeToggle <CR>', { noremap = true })
-vim.api.nvim_set_keymap('n', '<leader>nr', ':NvimTreeRefresh <CR>', { noremap = true })
-vim.api.nvim_set_keymap('n', '<leader>nf', ':NvimTreeFindFile <CR>', { noremap = true })
+-- vim.api.nvim_set_keymap('n', '<F3>', ':NvimTreeToggle <CR>', { noremap = true })
+-- vim.api.nvim_set_keymap('n', '<leader>nr', ':NvimTreeRefresh <CR>', { noremap = true })
+-- vim.api.nvim_set_keymap('n', '<leader>nf', ':NvimTreeFindFile <CR>', { noremap = true })
 
 require'treesitter-context'.setup()
 require'nvim-web-devicons'.setup{
@@ -112,6 +112,9 @@ require'fzf-lua'.setup({
       hidden = "hidden",
     }
   },
+  files = {
+    git_icons = false
+  }
 })
 
 function zen_mode()
@@ -136,3 +139,30 @@ vim.api.nvim_set_keymap('n', '<leader>fgb', ':FzfLua git_branches <CR>', { norem
 
 -- Shut down sometings
 vim.api.nvim_set_keymap('n', '<F6>', '<cmd>lua zen_mode()<CR>', { noremap = true})
+
+local builtin = require("nnn").builtin
+require('nnn').setup({
+  explorer = {
+    width = 50,
+    side = "botright"
+  },
+  mappgins = {
+    { "<C-t>", builtin.open_in_tab },       -- open file(s) in tab
+		{ "<C-s>", builtin.open_in_split },     -- open file(s) in split
+		{ "<C-v>", builtin.open_in_vsplit },    -- open file(s) in vertical split
+		{ "<C-p>", builtin.open_in_preview },   -- open file in preview split keeping nnn focused
+		{ "<C-y>", builtin.copy_to_clipboard }, -- copy file(s) to clipboard
+		{ "<C-w>", builtin.cd_to_path },        -- cd to file directory
+		{ "<C-e>", builtin.populate_cmdline },  -- populate cmdline (:) with file(s)
+  }
+})
+
+vim.g.diagnostics_active = true
+vim.keymap.set('n', '<leader>kl', function()
+  vim.g.diagnostics_active = not vim.g.diagnostics_active
+  if vim.g.diagnostics_active then
+    vim.diagnostic.show()
+  else
+    vim.diagnostic.hide()
+  end
+end)

@@ -9,10 +9,15 @@ Plug 'hrsh7th/nvim-cmp' " Completion engine
 
 " Colors
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'} " Syntax highlight
+" Plug 'dracula/vim'
+Plug 'morhetz/gruvbox'
+" Plug 'projekt0n/github-nvim-theme'
+" Plug 'folke/tokyonight.nvim'
+" Plug 'NLKNguyen/papercolor-theme'
 " Plug 'sainnhe/gruvbox-material'
 " Plug 'rebelot/kanagawa.nvim'
 " Plug 'marko-cerovac/material.nvim'
-Plug 'EdenEast/nightfox.nvim'
+" Plug 'EdenEast/nightfox.nvim'
 
 " Utils
 Plug 'norcalli/nvim-colorizer.lua' " Show colors
@@ -21,8 +26,8 @@ Plug 'mattn/emmet-vim' " Better html
 Plug 'lukas-reineke/indent-blankline.nvim' " Indent lines
 Plug 'mbbill/undotree'
 Plug 'romgrk/nvim-treesitter-context' " Better context
-Plug 'kyazdani42/nvim-web-devicons' " Icons
-Plug 'danymat/neogen' " Comments/Doc generator
+" Plug 'kyazdani42/nvim-web-devicons' " Icons
+" Plug 'danymat/neogen' " Comments/Doc generator
 " Plug 'kevinhwang91/nvim-bqf' " Qf list superpowers
 " Plug 'windwp/nvim-autopairs' " Auto close
 
@@ -36,8 +41,7 @@ Plug 'saadparwaiz1/cmp_luasnip' " Required for luasnip
 
 " Search
 Plug 'ibhagwan/fzf-lua', {'branch': 'main'}
-Plug 'luukvbaal/nnn.nvim'
-" Plug 'kyazdani42/nvim-tree.lua' " Explorer
+Plug 'kyazdani42/nvim-tree.lua' " Explorer
 
 call plug#end()
 
@@ -65,9 +69,11 @@ set spellsuggest=best,9
 set wildmenu
 set wildmode=longest,list,full
 set wildignore+=*.png,*.jpg,*jpg,*/.git/*,*/node_modules/*
+set wildoptions+=pum
 set nowrap
-set colorcolumn=90
+" set colorcolumn=90
 set number
+set termguicolors
 " set cursorline
 set background=dark
 
@@ -85,16 +91,24 @@ set background=dark
 " let g:gruvbox_material_palette = 'original'
 " let g:gruvbox_material_transparent_background = 1
 " colorscheme gruvbox-material
+" colorscheme PaperColor
+" colorscheme dracula
+colorscheme gruvbox
+" let g:github_function_style = "italic"
+" colorscheme github_dark
 
 hi FloatBorder guibg=NONE  guifg=NONE
 hi Todo guibg=black guifg=white gui=bold,underline,italic
-hi Search guibg=gold2
-hi StatusLine guifg=seashell2
+" hi Search guibg=gold2
+" hi StatusLine guibg=gray20 guifg=white gui=italic
+" hi StatusLineNC guifg=gray9
+hi Normal guibg=#1c1f20
 
 
 " Config for emmet
 autocmd FileType html,javascript,typescript,js,ts,jsx,tsx EmmetInstall
 
+autocmd BufWinEnter,WinEnter *.svelte set syntax=html
 
 " Use ripgrep instead of grep
 if executable("rg")
@@ -108,7 +122,6 @@ let mapleader=" "
 :imap jk <Esc>
 nnoremap <leader>s :update<cr>
 nnoremap <leader>q :q<cr>
-
 nnoremap <silent> <F2> :set spell!<cr>
 inoremap <silent> <F2> <C-O>:set spell!<cr>
 nnoremap <leader>fd :find 
@@ -148,7 +161,7 @@ nnoremap <leader>cp :cprevious<CR>
 nnoremap <leader>lo :lopen<CR>
 nnoremap <leader>lk :lclose<CR>
 nnoremap <leader>ln :lnext<CR>
-nnoremap <leader>ln :lprevious<CR>
+nnoremap <leader>lp :lprevious<CR>
 
 
 " Tab manipulation
@@ -191,9 +204,9 @@ augroup END
 
 " https://vim.fandom.com/wiki/Search_for_current_word_in_multiple_files
 :nnoremap gr :Rgrep <cword> *<CR>
-:nnoremap Gr :Rgrep <cword> %:p:h/*<CR>
+:nnoremap <leader>gr :Rgrep <cword> %:p:h/*<CR>
 :nnoremap gR :Rgrep '\b<cword>\b' *<CR>
-:nnoremap GR :Rgrep '\b<cword>\b' %:p:h/*<CR>
+:nnoremap <leader>gR :Rgrep '\b<cword>\b' %:p:h/*<CR>
 
 
 let g:term_buf = 0
@@ -231,10 +244,10 @@ tnoremap <A-t> <C-\><C-n>:call TermToggle(12)<CR>
 autocmd BufWinEnter,WinEnter term://* startinsert
 
 
-tnoremap <F3> <cmd>NnnExplorer<CR>
-nnoremap <F3> <cmd>NnnExplorer %:p:h<CR>
-tnoremap <F7> <cmd>NnnPicker<CR>
-nnoremap <F7> <cmd>NnnPicker<CR>
+" tnoremap <F3> <cmd>NnnExplorer<CR>
+" nnoremap <F3> <cmd>NnnExplorer %:p:h<CR>
+" tnoremap <F7> <cmd>NnnPicker<CR>
+" nnoremap <F7> <cmd>NnnPicker<CR>
 
 nnoremap <F8> :UndotreeToggle<CR>
 

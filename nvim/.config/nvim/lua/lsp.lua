@@ -103,7 +103,8 @@ end
 
 
 -- Change the icons of lsp 'events'
-local signs = {Error = " ", Warn = " ", Hint = " ", Info = " "}
+-- local signs = {Error = " ", Warn = " ", Hint = " ", Info = " "}
+local signs = {Error = " ", Warn = " ", Hint = " ", Info = " "}
 for type, icon in pairs(signs) do
   local hl = "DiagnosticSign" .. type
   vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
@@ -218,7 +219,7 @@ vim.api.nvim_create_autocmd("ModeChanged", {
 
 
 local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
--- LSP: CSS, JSON, HTML, CSS Modules, Zig, Python and Tailwind CSS
+-- LSP: CSS, JSON, HTML, CSS Modules and Tailwind CSS
 local servers = { 'cssls', 'jsonls', 'html', 'cssmodules_ls', 'tailwindcss' }
 
 for _, lsp in ipairs(servers) do
@@ -294,24 +295,24 @@ nvim_lsp.sumneko_lua.setup {
 }
 
 -- LSP: Rust-analyzer
-nvim_lsp.rust_analyzer.setup {
-  capabilities = capabilities,
-  on_attach = on_attach,
-  settings = {
-    ["rust-analyzer"] = {
-      assist = {
-        importGranularity = "module",
-        importPrefix = "self",
-      },
-      cargo = {
-        loadOutDirsFromCheck = true
-      },
-      procMacro = {
-        enable = true
-      },
-    }
-  }
-}
+-- nvim_lsp.rust_analyzer.setup {
+--   capabilities = capabilities,
+--   on_attach = on_attach,
+--   settings = {
+--     ["rust-analyzer"] = {
+--       assist = {
+--         importGranularity = "module",
+--         importPrefix = "self",
+--       },
+--       cargo = {
+--         loadOutDirsFromCheck = true
+--       },
+--       procMacro = {
+--         enable = true
+--       },
+--     }
+--   }
+-- }
 
 -- LSP: EFM (linters and formatters)
 local prettier = {formatCommand = "./node_modules/.bin/prettier --stdin-filepath ${INPUT}", formatStdin = true}

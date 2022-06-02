@@ -137,33 +137,12 @@ n()
   fi
 }
 
-export NNN_BMS='h:~;o:~/dotfiles;p:~/Documents/github'
-# export NNN_FCOLORS='0000R6310000000000000000'
-
 export PS1="\u:\w\\$ "
 
-# Create a symlink instead
-# alias nvim="~/nvim/nvim.appimage"
 alias fd="fdfind"
 
 alias efm-langserver="~/.efm-langserver/efm-langserver"
 alias ssh='kitty +kitten ssh'
-
-alias delta="~/.cargo/bin/delta"
-
-alias ne='nnn -e'
-
-# alias dot="cd ~/dotfiles"
-# alias proj="cd ~/Documents/github"
-
-# alias ls='exa --grid --color auto --icons --sort=type'
-# alias ll='exa --long --color always --icons --sort=type'
-# alias la='exa --grid --all --color auto --icons --sort=type'
-# alias lla='exa --long --all --color auto --icons --sort=type'
-
-# alias l='ls -l'
-# alias lt='ls --tree'
-
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 export FZF_DEFAULT_OPS="--extended"
@@ -180,11 +159,12 @@ export SDKMAN_DIR="/home/frandev/.sdkman"
 export VISUAL=nvim
 export EDITO="$VISUAL"
 
+eval "$(starship init bash)"
+
 if test -n "$KITTY_INSTALLATION_DIR" -a -e "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; then source "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; fi
 
-. "$HOME/.cargo/env"
+export GOROOT="$HOME/.asdf/installs/golang/1.18/go"
+export GOPATH=$(go env GOPATH)
+export PATH="$PATH:$(go env GOPATH)/bin"
 
-#set PATH so it includes user's private ~/.local/bin if it exists
-if [ -d "$HOME/.local/bin" ] ; then
-    PATH="$HOME/.local/bin:$PATH"
-fi
+. "$HOME/.cargo/env"

@@ -1,24 +1,23 @@
-vim.g.loaded_netrwPlugin = 1
-vim.g.loaded_tutor_mode_plugin = 1
-vim.g.loaded_2html_plugin = 1
-vim.g.loaded_zipPlugin = 1
-vim.g.loaded_tarPlugin = 1
-vim.g.loaded_gzip = 1
-
--- vim.g.tokyonight_transparent = 1
--- vim.cmd("colorscheme tokyonight")
-
--- @Info First declare and define the colorscheme, then change the color of indentation lines
--- vim.cmd("colorscheme nordfox")
+vim.g.loaded_netrw            = 1
+vim.g.loaded_netrwPlugin      = 1
+vim.g.loaded_matchparen       = 1
+vim.g.loaded_matchit          = 1
+vim.g.loaded_2html_plugin     = 1
+vim.g.loaded_getscriptPlugin  = 1
+vim.g.loaded_gzip             = 1
+vim.g.loaded_logipat          = 1
+vim.g.loaded_rrhelper         = 1
+vim.g.loaded_spellfile_plugin = 1
+vim.g.loaded_tarPlugin        = 1
+vim.g.loaded_vimballPlugin    = 1
+vim.g.loaded_zipPlugin        = 1
 
 vim.opt.list = true
 vim.opt.listchars:append("eol:↴")
 
 vim.g.indent_blankline_use_treesitter = true
-vim.g.indent_blankline_enabled = false
+vim.g.indent_blankline_enabled = true
 
--- vim.cmd [[highlight IndentBlanklineIndent1 guifg=gray29 gui=nocombine]]
--- vim.cmd [[highlight IndentBlanklineContextChar  guifg=gray35 gui=nocombine]]
 -- @Info Change the color of the underline when using show_current_context_start
 -- vim.cmd [[highlight IndentBlanklineContextStart guisp=gray49 gui=underline]]
 
@@ -27,9 +26,12 @@ require("indent_blankline").setup {
   buftype_exclude = {'terminal', 'nofile', 'NvimTree'},
   filetype_exclude = {'help', 'NvimTree'},
   show_current_context = true,
-  show_current_context_start = true,
-  -- char_highlight_list = {"IndentBlanklineIndent1"},
+  -- show_current_context_start = true,
+  char_highlight_list = {"IndentBlanklineIndent1"},
 }
+
+vim.cmd [[highlight IndentBlanklineIndent1 guifg=gray23 gui=nocombine]]
+vim.cmd [[highlight IndentBlanklineContextChar  guifg=gray35 gui=nocombine]]
 
 -- vim.api.nvim_set_keymap('n', '<F4>', ':IndentBlanklineToggle <CR>', { noremap = true })
 
@@ -41,7 +43,7 @@ require'gitsigns'.setup({
     topdelete = { hl = 'GitSignsDelete', text = '▌' },
     changedelete = { hl = 'GitSignsChange', text = '▌' },
   },
-  signcolumn = false,
+  signcolumn = true,
   current_line_blame = false
 })
 
@@ -56,7 +58,6 @@ require('nvim-tree').setup{
   view = {
     side = "right",
     width = '25%',
-    hide_root_folder = true,
   }
 }
 
@@ -65,9 +66,6 @@ vim.api.nvim_set_keymap('n', '<leader>nr', ':NvimTreeRefresh <CR>', { noremap = 
 vim.api.nvim_set_keymap('n', '<leader>nf', ':NvimTreeFindFile <CR>', { noremap = true })
 
 require'treesitter-context'.setup()
--- require'nvim-web-devicons'.setup{
---   default = true
--- }
 
 require'colorizer'.setup()
 
@@ -90,7 +88,7 @@ function ide_mode()
   vim.cmd(":Gitsigns toggle_signs")
   vim.cmd(":Gitsigns toggle_current_line_blame")
   vim.cmd(':IndentBlanklineToggle')
-  print("This is zen mode")
+  print("ey!")
 end
 
 vim.api.nvim_set_keymap('n', '<leader>ff', ':FzfLua files <CR>', { noremap = true })
@@ -110,3 +108,6 @@ vim.api.nvim_set_keymap('n', '<leader>fgb', ':FzfLua git_branches <CR>', { norem
 
 -- Shut down sometings
 vim.api.nvim_set_keymap('n', '<F6>', '<cmd>lua ide_mode()<CR>', { noremap = true})
+
+require('nvim-web-devicons').setup()
+require('Comment').setup()

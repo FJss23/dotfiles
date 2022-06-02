@@ -9,29 +9,20 @@ Plug 'hrsh7th/nvim-cmp' " Completion engine
 
 " Colors
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'} " Syntax highlight
-" Plug 'dracula/vim'
-Plug 'morhetz/gruvbox'
-" Plug 'projekt0n/github-nvim-theme'
-" Plug 'folke/tokyonight.nvim'
-" Plug 'NLKNguyen/papercolor-theme'
-" Plug 'sainnhe/gruvbox-material'
-" Plug 'rebelot/kanagawa.nvim'
-" Plug 'marko-cerovac/material.nvim'
-" Plug 'EdenEast/nightfox.nvim'
+Plug 'sainnhe/everforest' " Hopefully my main colorscheme, kidding
 
 " Utils
 Plug 'norcalli/nvim-colorizer.lua' " Show colors
-Plug 'tpope/vim-commentary' " Better comments
+Plug 'numToStr/Comment.nvim' " Better comments
 Plug 'mattn/emmet-vim' " Better html
 Plug 'lukas-reineke/indent-blankline.nvim' " Indent lines
-Plug 'mbbill/undotree'
+Plug 'mbbill/undotree' " Keep track of history
 Plug 'romgrk/nvim-treesitter-context' " Better context
-" Plug 'kyazdani42/nvim-web-devicons' " Icons
-" Plug 'danymat/neogen' " Comments/Doc generator
-" Plug 'kevinhwang91/nvim-bqf' " Qf list superpowers
-" Plug 'windwp/nvim-autopairs' " Auto close
+Plug 'kyazdani42/nvim-web-devicons' " Is this an IDE??
+Plug 'gpanders/editorconfig.nvim' " Don't mess with indentation and stuff
 
 " Git
+Plug 'tpope/vim-fugitive' " Illegal plugin
 Plug 'nvim-lua/plenary.nvim' " Required for gitsigns
 Plug 'lewis6991/gitsigns.nvim' " Git info
 
@@ -71,43 +62,21 @@ set wildmode=longest,list,full
 set wildignore+=*.png,*.jpg,*jpg,*/.git/*,*/node_modules/*
 set wildoptions+=pum
 set nowrap
-" set colorcolumn=90
 set number
 set termguicolors
-" set cursorline
+set cursorline
 set background=dark
-
-" let g:gruvbox_material_enable_italic = 0
-" let g:gruvbox_material_enable_bold = 0
-" let g:gruvbox_material_disable_italic_comment = 1
-" let g:gruvbox_material_background = 'medium'
-" let g:gruvbox_material_sign_column_background = 'none'
-" let g:gruvbox_material_ui_contrast = 'low'
-" let g:gruvbox_material_diagnostic_text_highlight = 1
-" let g:gruvbox_material_diagnostic_line_highlight = 1
-" let g:gruvbox_material_diagnostic_virtual_text = 'colored'
-" let g:gruvbox_material_current_word = 'bold'
-" let g:gruvbox_material_statusline_style = 'original'
-" let g:gruvbox_material_palette = 'original'
-" let g:gruvbox_material_transparent_background = 1
-" colorscheme gruvbox-material
-" colorscheme PaperColor
-" colorscheme dracula
-colorscheme gruvbox
-" let g:github_function_style = "italic"
-" colorscheme github_dark
-
-hi FloatBorder guibg=NONE  guifg=NONE
-hi Todo guibg=black guifg=white gui=bold,underline,italic
-" hi Search guibg=gold2
-" hi StatusLine guibg=gray20 guifg=white gui=italic
-" hi StatusLineNC guifg=gray9
-hi Normal guibg=#1c1f20
-
+set pumblend=15
+let g:everforest_background = 'hard'
+colorscheme everforest
+hi CursorLine guibg=NONE
+hi CursorLineNr guibg=NONE guifg=gold3 gui=bold
+hi Search guibg=bisque2
+hi QuickFixLine guibg=bisque2 guifg=black
+hi StatusLine guifg=bisque2
 
 " Config for emmet
 autocmd FileType html,javascript,typescript,js,ts,jsx,tsx EmmetInstall
-
 autocmd BufWinEnter,WinEnter *.svelte set syntax=html
 
 " Use ripgrep instead of grep
@@ -203,11 +172,10 @@ augroup quickfix
 augroup END
 
 " https://vim.fandom.com/wiki/Search_for_current_word_in_multiple_files
-:nnoremap gr :Rgrep <cword> *<CR>
-:nnoremap <leader>gr :Rgrep <cword> %:p:h/*<CR>
-:nnoremap gR :Rgrep '\b<cword>\b' *<CR>
-:nnoremap <leader>gR :Rgrep '\b<cword>\b' %:p:h/*<CR>
-
+:nnoremap ñ :Rgrep <cword> *<CR> " searches for the text in the word under the cursor (like g*) in any of the files in the current directory. 
+:nnoremap <leader>ñ :Rgrep <cword> %:p:h/*<CR> " searches for the text in the word under the cursor (like g*) in any of the files in the same directory as the current file
+:nnoremap ç :Rgrep '\b<cword>\b' *<CR> " searches for the whole word under the cursor (like *) in any of the files in the current directory
+:nnoremap <leader>ç :Rgrep '\b<cword>\b' %:p:h/*<CR> " searches for the whole word under the cursor (like *) in any of the files in the same directory as the current file. 
 
 let g:term_buf = 0
 let g:term_win = 0
@@ -242,12 +210,6 @@ nnoremap <A-t> :call TermToggle(12)<CR>
 inoremap <A-t> <Esc>:call TermToggle(12)<CR>
 tnoremap <A-t> <C-\><C-n>:call TermToggle(12)<CR>
 autocmd BufWinEnter,WinEnter term://* startinsert
-
-
-" tnoremap <F3> <cmd>NnnExplorer<CR>
-" nnoremap <F3> <cmd>NnnExplorer %:p:h<CR>
-" tnoremap <F7> <cmd>NnnPicker<CR>
-" nnoremap <F7> <cmd>NnnPicker<CR>
 
 nnoremap <F8> :UndotreeToggle<CR>
 

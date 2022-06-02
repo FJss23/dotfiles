@@ -4,7 +4,7 @@
     "javascript": "javascriptreact"
   },
   "editor.fontSize": 12,
-  "editor.lineHeight": 1.9,
+  "editor.lineHeight": 1.8,
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
@@ -13,7 +13,7 @@
   "prettier.semi": false,
   "editor.suggestSelection": "first",
   "javascript.updateImportsOnFileMove.enabled": "always",
-  "window.zoomLevel": 1,
+  "window.zoomLevel": 1.2,
   "editor.formatOnSave": true,
   "editor.tabSize": 2,
   "cSpell.language": "en,es",
@@ -25,5 +25,9 @@
     "statusBar.background": "#1A1A1A",
     "statusBar.noFolderBackground": "#212121",
     "statusBar.debuggingBackground": "#263238"
-  }
+  },
+  "editor.guides.highlightActiveIndentation": false,
+  "editor.guides.indentation": true,
+  "git.decorations.enabled": false,
+  "workbench.sideBar.location": "right"
 }

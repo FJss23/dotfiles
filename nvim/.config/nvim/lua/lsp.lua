@@ -67,9 +67,9 @@ local on_attach = function(client, bufnr)
 
   if client.resolved_capabilities.document_highlight then
     vim.cmd [[
-      hi! LspReferenceRead cterm=bold ctermbg=red guibg=gray27
-      hi! LspReferenceText cterm=bold ctermbg=red guibg=gray27
-      hi! LspReferenceWrite cterm=bold ctermbg=red guibg=gray27
+      hi! LspReferenceRead cterm=bold ctermbg=red guibg=gray22
+      hi! LspReferenceText cterm=bold ctermbg=red guibg=gray22
+      hi! LspReferenceWrite cterm=bold ctermbg=red guibg=gray22
     ]]
     vim.api.nvim_create_augroup('lsp_document_highlight', {})
     vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
@@ -313,6 +313,39 @@ nvim_lsp.sumneko_lua.setup {
 --     }
 --   }
 -- }
+
+nvim_lsp.gopls.setup {
+  on_attach = on_attach,
+  capabilities = capabilities,
+    cmd = {"gopls", "serve"},
+    filetypes = {"go", "gomod"},
+    settings = {
+      gopls = {
+        analyses = {
+          unusedparams = true,
+        },
+        staticcheck = true,
+      },
+    },
+  }
+
+function orgimports(wait_ms)
+  local params = vim.lsp.util.make_range_params()
+  params.context = {only = {"source.organizeImports"}}
+  local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, wait_ms)
+  for _, res in pairs(result or {}) do
+    for _, r in pairs(res.result or {}) do
+      if r.edit then
+        vim.lsp.util.apply_workspace_edit(r.edit, "UTF-8")
+      else
+        vim.lsp.buf.execute_command(r.command)
+      end
+    end
+  end
+end
+
+vim.api.nvim_exec([[autocmd BufWritePre *.go lua goimports(1000)]], false)
+vim.api.nvim_exec([[autocmd FileType go setlocal omnifunc=v:lua.vim.lsp.omnifunc]], false)
 
 -- LSP: EFM (linters and formatters)
 local prettier = {formatCommand = "./node_modules/.bin/prettier --stdin-filepath ${INPUT}", formatStdin = true}

@@ -113,35 +113,68 @@ if ! shopt -oq posix; then
   fi
 fi
 
-#####################################################################
-#
-####################### Custom Configuration ########################
-#
-#####################################################################
+# .................................................................................................
+# Custom configuration
 
-n()
-{
-  # Block nesting of nnn in subshells
-  if [ -n $NNNLVL ] & [ "${NNNLVL:-0}" -ge 1 ]; then
-    echo "nnn is already running"
-    return
-  fi
+# get current branch in git repo
+function parse_git_branch() {
+	BRANCH=`git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
+	if [ ! "${BRANCH}" == "" ]
+	then
+		STAT=`parse_git_dirty`
+		echo "(${BRANCH}${STAT})"
+	else
+		echo ""
+	fi
+}
 
-  export NNN_TMPFILE="${XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd"
+# get current status of git repo
+function parse_git_dirty {
+	status=`git status 2>&1 | tee`
+	dirty=`echo -n "${status}" 2> /dev/null | grep "modified:" &> /dev/null; echo "$?"`
+	untracked=`echo -n "${status}" 2> /dev/null | grep "Untracked files" &> /dev/null; echo "$?"`
+	ahead=`echo -n "${status}" 2> /dev/null | grep "Your branch is ahead of" &> /dev/null; echo "$?"`
+	newfile=`echo -n "${status}" 2> /dev/null | grep "new file:" &> /dev/null; echo "$?"`
+	renamed=`echo -n "${status}" 2> /dev/null | grep "renamed:" &> /dev/null; echo "$?"`
+	deleted=`echo -n "${status}" 2> /dev/null | grep "deleted:" &> /dev/null; echo "$?"`
+	bits=''
+	if [ "${renamed}" == "0" ]; then
+		bits=">${bits}"
+	fi
+	if [ "${ahead}" == "0" ]; then
+		bits="*${bits}"
+	fi
+	if [ "${newfile}" == "0" ]; then
+		bits="+${bits}"
+	fi
+	if [ "${untracked}" == "0" ]; then
+		bits="?${bits}"
+	fi
+	if [ "${deleted}" == "0" ]; then
+		bits="x${bits}"
+	fi
+	if [ "${dirty}" == "0" ]; then
+		bits="!${bits}"
+	fi
+	if [ ! "${bits}" == "" ]; then
+		echo " ${bits}"
+	else
+		echo ""
+	fi
+}
 
-  nnn -Re "$@"
-
-  if [ -f "$NNN_TMPFILE" ]; then
-    . "$NNN_TMPFILE"
-    rm -f "$NNN_TMPFILE" > /dev/null
+function get_hostname() {
+  hostname=`hostname`
+  if [ "$hostname" == "frandev-kubuntu" ]; then
+    echo "kubuntu"
+  else
+    echo $hostname
   fi
 }
 
-export PS1="\u:\w\\$ "
+export PS1="\u@\`get_hostname\`:\W\[\e[33m\]\`parse_git_branch\`\[\e[m\]$ "
 
 alias fd="fdfind"
-
-alias efm-langserver="~/.efm-langserver/efm-langserver"
 alias ssh='kitty +kitten ssh'
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
@@ -157,11 +190,11 @@ export SDKMAN_DIR="/home/frandev/.sdkman"
 [[ -s "/home/frandev/.sdkman/bin/sdkman-init.sh" ]] && source "/home/frandev/.sdkman/bin/sdkman-init.sh"
 
 export VISUAL=nvim
-export EDITO="$VISUAL"
+export EDITOR="$VISUAL"
 
-eval "$(starship init bash)"
-
-if test -n "$KITTY_INSTALLATION_DIR" -a -e "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; then source "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; fi
+if test -n "$KITTY_INSTALLATION_DIR" -a -e "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; 
+  then source "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; 
+fi
 
 export GOROOT="$HOME/.asdf/installs/golang/1.18/go"
 export GOPATH=$(go env GOPATH)

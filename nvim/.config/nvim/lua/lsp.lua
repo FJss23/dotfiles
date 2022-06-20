@@ -41,12 +41,11 @@ vim.diagnostic.config({
 })
 vim.o.updatetime = 350
 
-vim.cmd [[
-  sign define DiagnosticSignError text= texthl=DiagnosticSignError linehl= numhl=DiagnosticLineNrError
-  sign define DiagnosticSignWarn text= texthl=DiagnosticSignWarn linehl= numhl=DiagnosticLineNrWarn
-  sign define DiagnosticSignInfo text= texthl=DiagnosticSignInfo linehl= numhl=DiagnosticLineNrInfo
-  sign define DiagnosticSignHint text= texthl=DiagnosticSignHint linehl= numhl=DiagnosticLineNrHint
-]]
+local signs = { Error = "» ", Warn = "» ", Hint = "» ", Info = "» " }
+for type, icon in pairs(signs) do
+  local hl = "DiagnosticSign" .. type
+  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
+end
 
 -- ................................................................................
 -- Configuring keyword mapping for each Language (not all the functionality is supported for
@@ -114,11 +113,11 @@ cmp.setup({
         ['<CR>'] = cmp.mapping.confirm({select = true})
     }),
     sources = cmp.config.sources({
-        {name = 'nvim_lsp', max_item_count = 5},
-        {name = 'buffer', max_item_count = 5},
+        {name = 'nvim_lsp'},
+        {name = 'buffer'},
         {name = 'nvim_lsp_signature_help'},
         {name = 'path'}
-    }, {{name = 'buffer', max_item_count = 5}})
+    }, {{name = 'buffer'}})
 })
 
 

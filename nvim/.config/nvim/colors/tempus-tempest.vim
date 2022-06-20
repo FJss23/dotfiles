@@ -220,11 +220,5 @@ hi MarkdownCodeBlock guifg=#b6e0ca ctermfg=15
 hi MarkdownListMarker gui=none guifg=#7ad97a cterm=none ctermfg=2
 hi default link MarkdownOrderedListMarker MarkdownListMarker
 
-" Linting
+" Custom
 " -------
-hi DiagnosticLineNrError guibg=#51202A guifg=#FF0000 gui=bold
-hi DiagnosticLineNrWarn guibg=#51412A guifg=#FFA500 gui=bold
-hi DiagnosticLineNrInfo guibg=#1E535D guifg=#00FFFF gui=bold
-hi DiagnosticLineNrHint guibg=#1E205D guifg=#0000FF gui=bold
-
-"

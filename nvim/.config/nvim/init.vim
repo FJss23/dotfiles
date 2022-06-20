@@ -24,13 +24,14 @@ set number
 " Plugins
 
 call plug#begin('~/.local/share/nvim/plugged')
-Plug 'neovim/nvim-lspconfig'                                  " LSP
+Plug 'neovim/nvim-lspconfig'                                  " Config for each lsp
 Plug 'hrsh7th/cmp-nvim-lsp'                                   " Completion
 Plug 'hrsh7th/cmp-buffer'                                     " Buffer completion
 Plug 'hrsh7th/cmp-path'                                       " Path completion
 Plug 'hrsh7th/nvim-cmp'                                       " More completion...
 Plug 'hrsh7th/cmp-nvim-lsp-signature-help'                    " Show signature
-Plug 'nvim-lua/plenary.nvim'                                  " Required for null-ls 
+Plug 'williamboman/nvim-lsp-installer'                        " lsp manager/installer
+
 Plug 'norcalli/nvim-colorizer.lua'                            " Show colors #HEX 
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}   " AST
 Plug 'numToStr/Comment.nvim'                                  " Easy comments
@@ -41,6 +42,11 @@ Plug 'gpanders/editorconfig.nvim'                             " Sane configs per
 Plug 'danymat/neogen'                                         " Generate doc
 Plug 'tpope/vim-fugitive'                                     " Git
 Plug 'L3MON4D3/LuaSnip'                                       " Snippets
+Plug 'sbdchd/neoformat'                                       " Formatter manager
+Plug 'windwp/nvim-ts-autotag'                                 " Manipulate tags
+Plug 'romgrk/nvim-treesitter-context'                         " Context under cursor
+Plug 'godlygeek/tabular'                                      " Old school tab
+Plug 'AndrewRadev/splitjoin.vim'                               " Easy split
 Plug 'ibhagwan/fzf-lua', {'branch': 'main'}                   " Search
 call plug#end()
 
@@ -113,8 +119,18 @@ autocmd FileType html,javascript,typescript,js,ts,jsx,tsx,pug,javascriptreact,ty
 autocmd BufWinEnter,WinEnter *.svelte set syntax=html
 autocmd FileType cpp,go,java,lua setlocal shiftwidth=4 tabstop=4
 autocmd FileType html, javascript,typescript,js,ts,jsx,tsx EmmetInstall
+autocmd BufWritePre *.go lua OrgImports(1000)
+autocmd FileType go setlocal omnifunc=v:lua.vim.lsp.omnifunc
 
 set errorformat+=%f:\ line\ %l\\,\ col\ %c\\,\ %m,%-G%.%#
+
+" https://stackoverflow.com/questions/10692289/proper-html-attribute-highlighting-in-vim thanks!
+function! SynStack()
+    if !exists("*synstack")
+        return
+    endif
+    echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
+endfunc
 
 " ................................................................................
 " QuickFix specific stuuf
@@ -271,13 +287,3 @@ require('snippets')     -- Snippets configuration
 require('statusline')   -- Custom status line
 EOF
 
-autocmd BufWritePre *.go lua OrgImports(1000)
-autocmd FileType go setlocal omnifunc=v:lua.vim.lsp.omnifunc
-
-" https://stackoverflow.com/questions/10692289/proper-html-attribute-highlighting-in-vim thanks!
-function! SynStack()
-    if !exists("*synstack")
-        return
-    endif
-    echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
-endfunc

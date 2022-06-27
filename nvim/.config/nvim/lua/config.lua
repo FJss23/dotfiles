@@ -3,48 +3,24 @@ local opts = {noremap = true, silent = true}
 local nvim_lsp = require 'lspconfig'
 local cmp = require 'cmp'
 local luasnip = require 'luasnip'
-local cmp_kinds = {
-    Text = " ",
-    Method = " ",
-    Function = " ",
-    Constructor = " ",
-    Field = "ﰠ",
-    Variable = " ",
-    Class = " ",
-    Interface = " ",
-    Module = " ",
-    Property = " ",
-    Unit = " ",
-    Value = " ",
-    Enum = " ",
-    Keyword = " ",
-    Snippet = " ",
-    Color = " ",
-    File = " ",
-    Reference = " ",
-    Folder = " ",
-    EnumMember = " ",
-    Constant = " ",
-    Struct = "פּ",
-    Event = " ",
-    Operator = " ",
-    TypeParameter = " "
-}
 
 -- ................................................................................
 -- Configuring Icons that will appear next to errors
 
 vim.diagnostic.config({
-    virtual_text = {prefix = ' '},
-    update_in_insert = false,
-    float = {focusable = false, header = "", prefix = ""}
+  virtual_text = false,
+  signs = true,
+  underline = true,
+  update_in_insert = false,
+  severity_sort = false,
 })
+
 vim.o.updatetime = 350
 
-local signs = { Error = "» ", Warn = "» ", Hint = "» ", Info = "» " }
+local signs = { Error = "ᐳᐳ", Warn = "ᐳᐳ" , Hint = "ᐳᐳ", Info = "ᐳᐳ" }
 for type, icon in pairs(signs) do
   local hl = "DiagnosticSign" .. type
-  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
+  vim.fn.sign_define(hl, { text = icon, texthl = hl })
 end
 
 -- ................................................................................
@@ -53,6 +29,8 @@ end
 
 vim.keymap.set('n', '<space>le', vim.diagnostic.setloclist, opts)
 vim.keymap.set('n', '<space>e', vim.diagnostic.open_float, opts)
+vim.keymap.set('n', '<space>n', vim.diagnostic.goto_prev, opts)
+vim.keymap.set('n', '<space>N', vim.diagnostic.goto_next, opts)
 
 local on_attach = function(client, bufnr)
     vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
@@ -63,33 +41,15 @@ local on_attach = function(client, bufnr)
     vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
     vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
     vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
-    vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, bufopts)
-    vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
-    vim.keymap.set('n', '<space>wl', function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end, bufopts)
     vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, bufopts)
     vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, bufopts)
     vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, bufopts)
     vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
-    vim.keymap.set('n', '<space>u', vim.lsp.buf.formatting, bufopts)
-
-    if client.resolved_capabilities.document_highlight then
-        vim.cmd [[
-      hi! LspReferenceRead cterm=bold ctermbg=red guibg=gray22
-      hi! LspReferenceText cterm=bold ctermbg=red guibg=gray22
-      hi! LspReferenceWrite cterm=bold ctermbg=red guibg=gray22
-    ]]
-        vim.api.nvim_create_augroup('lsp_document_highlight', {})
-        vim.api.nvim_create_autocmd({'CursorHold', 'CursorHoldI'}, {
-            group = 'lsp_document_highlight',
-            buffer = 0,
-            callback = vim.lsp.buf.document_highlight
-        })
-        vim.api.nvim_create_autocmd('CursorMoved', {
-            group = 'lsp_document_highlight',
-            buffer = 0,
-            callback = vim.lsp.buf.clear_references
-        })
-    end
+    vim.keymap.set('n', '<space>gW', vim.lsp.buf.workspace_symbol, bufopts)
+    vim.keymap.set('n', '<space>fc', vim.lsp.buf.formatting, bufopts)
+    vim.keymap.set('n', '<space>ai', vim.lsp.buf.incoming_calls, bufopts)
+    vim.keymap.set('n', '<space>ao', vim.lsp.buf.outgoing_calls, bufopts)
+    vim.keymap.set('n', '<space>gw', vim.lsp.buf.document_symbol, bufopts)
 end
 
 -- ................................................................................
@@ -99,7 +59,6 @@ cmp.setup({
     snippet = {expand = function(args) luasnip.lsp_expand(args.body) end},
     formatting = {
         format = function(entry, vim_item)
-            vim_item.kind = (cmp_kinds[vim_item.kind] or '') .. ' ' .. vim_item.kind .. ' '
             vim_item.menu =
                 ({buffer = "[Buffer]", nvim_lsp = "[LSP]", luasnip = "[LuaSnip]", nvim_lua = "[Lua]"})[entry.source.name]
             return vim_item
@@ -114,12 +73,19 @@ cmp.setup({
     }),
     sources = cmp.config.sources({
         {name = 'nvim_lsp'},
-        {name = 'buffer'},
-        {name = 'nvim_lsp_signature_help'},
-        {name = 'path'}
-    }, {{name = 'buffer'}})
+        {name = 'buffer', max_item_count = 10},
+    }, {{name = 'buffer'}}),
+    enabled = false
+    -- enabled = function ()
+    --     local context = require('cmp.config.context')
+    --     if vim.api.nvim_get_mode() == 'c' then
+    --         return true
+    --     else
+    --         return not context.in_treesitter_capture("comment")
+    --         and not context.in_syntax_group("Comment")
+    --     end
+    -- end
 })
-
 
 local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 
@@ -136,7 +102,6 @@ end
 -- LSP: Javascript / Typescript
 
 nvim_lsp.tsserver.setup {
----@diagnostic disable-next-line: undefined-global
     capabilities = capabilites,
     on_attach = function(client, bufnr)
         if client.config.flags then client.config.flags.allow_incremental_sync = true end
@@ -204,10 +169,14 @@ nvim_lsp.gopls.setup {
       gopls = {
         analyses = {
           unusedparams = true,
+          shadow = true,
         },
         staticcheck = true,
       },
     },
+    init_options = {
+        usePlaceholders = true
+    }
   }
 
 function OrgImports(wait_ms)
@@ -224,3 +193,123 @@ function OrgImports(wait_ms)
       end
     end
 end
+
+-- ................................................................................
+-- LSP: EFM
+
+local eslint = {
+  lintCommand = "./node_modules/.bin/eslint -f unix --stdin --stdin-filename ${INPUT}",
+  lintStdin = true,
+  lintFormats = {"%f:%l:%c: %m"},
+  rootMarkers = {
+    '.eslintrc',
+    '.eslintrc.cjs',
+    '.eslintrc.js',
+    '.eslintrc.json',
+    '.eslintrc.yaml',
+    '.eslintrc.yml',
+    'package.json',
+  },
+}
+
+local lua_check = {
+    lintCommand = home .. "/.asdf/installs/lua/5.4.4/luarocks/bin/luacheck --codes --no-color --quiet ${INPUT}",
+    lintStdin = true,
+    lintFormats = {'%.%#:%l:%c: (%t%n) %m'},
+    rootMarkers = { '.luacheckrc' },
+}
+
+local languages = {
+  typescript = {eslint},
+  javascript = {eslint},
+  typescriptreact = {eslint},
+  javascriptreact = {eslint},
+  lua = {lua_check}
+}
+
+nvim_lsp.efm.setup {
+  cmd = { home .. "/.efm-langserver/efm-langserver"},
+  init_options = {documentFormatting = true},
+  flags = {
+    debounce_text_changes = 150,
+  },
+  settings = {rootMarkers = {".git/"}, languages = languages, log_level = 1, log_file = home .. '/.efm-langserver/efm.log'},
+}
+
+-- ................................................................................
+-- Status line configuration
+
+local function filepath()
+    local fpath = vim.fn.fnamemodify(vim.fn.expand "%", ":~:.:h")
+    if fpath == "" or fpath == "." then return " " end
+
+    return string.format(" %%<%s/", fpath)
+end
+
+local function filename()
+    local fname = vim.fn.expand "%:t"
+    if fname == "" then return "" end
+    return fname .. " "
+end
+
+local function lsp()
+    local count = {}
+    local levels = {errors = "Error", warnings = "Warn", info = "Info", hints = "Hint"}
+
+    for k, level in pairs(levels) do count[k] = vim.tbl_count(vim.diagnostic.get(0, {severity = level})) end
+
+    return "[E" .. count["errors"] .. " W" .. count["warnings"] .. " H" .. count["hints"] .. " I" .. count["info"] ..
+               "]"
+end
+
+local function filetype() return "[" .. string.format("%s", vim.bo.filetype) .. "]" end
+
+local function lineinfo()
+    if vim.bo.filetype == "alpha" then return "" end
+    return " %l,%c %L "
+end
+
+local vcs = function()
+    local git_info = vim.fn["fugitive#statusline"]()
+    if git_info then
+        local branch_name = git_info:sub(6, git_info:len() - 2)
+        return table.concat {" [", branch_name, "] "}
+    end
+    return " [NO VCS]"
+end
+
+statusline = {}
+
+statusline.active = function()
+    return table.concat {
+        " [%n]",filepath(), filename(), "%m%r", "%=", lsp(), vcs(),
+        "%{ &ff != 'unix' ? '['.&ff.'] ' : '' }", filetype(), lineinfo()
+    }
+end
+
+function statusline.inactive() return " %F" end
+
+vim.api.nvim_exec([[
+  augroup Statusline
+  au!
+  au WinEnter,BufEnter * setlocal statusline=%!v:lua.statusline.active()
+  au WinLeave,BufLeave * setlocal statusline=%!v:lua.statusline.inactive()
+  augroup END
+]], false)
+
+require('neogen').setup()
+
+require("lsp_signature").setup({})
+
+require'nvim-treesitter.configs'.setup {
+  autotag = {
+    enable = true
+  },
+  highlight = { enable = false },
+  incremental_selection = { enable = true },
+  textobjects = { enable = true },
+}
+
+require("treesitter-context").setup({
+    enable = false
+})

@@ -19,17 +19,21 @@ map ctrl+shift+k next_window
 map f11 launch --cwd=current
 map f12 launch --cwd=current --type=tab
 
+# theme: Tempus Tempest
+# author: Protesilaos Stavrou (https://protesilaos.com)
+# description: A green-scale, subtle theme for late night hackers (WCAG AAA compliant)
+
 # cursor #b6e0ca
 # cursor_text_color #282b2b
 # url_color #60d7cd
 #
-active_border_color #b0c8ca
-inactive_border_color #323535
-bell_border_color #bbde4f
-active_tab_foreground #7ad97a
-active_tab_background #323535
-inactive_tab_foreground #b0c8ca
-inactive_tab_background #282b2b
+# active_border_color #b0c8ca
+# inactive_border_color #323535
+# bell_border_color #bbde4f
+# active_tab_foreground #7ad97a
+# active_tab_background #323535
+# inactive_tab_foreground #b0c8ca
+# inactive_tab_background #282b2b
 # foreground #FFFFFF
 # background #1f1f24
 # cursor #7F7F7F
@@ -57,3 +61,9 @@ inactive_tab_background #282b2b
 # background #282b2b
 # selection_foreground #282b2b
 # selection_background #b6e0ca
+
+
+# BEGIN_KITTY_THEME
+# Gruvbox Dark
+include current-theme.conf
+# END_KITTY_THEME

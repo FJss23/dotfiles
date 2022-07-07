@@ -2,7 +2,7 @@ syntax on
 filetype plugin indent on
 
 set path+=**
-set signcolumn=yes
+set signcolumn=auto
 set smartindent
 set tabstop=2
 set softtabstop=2
@@ -16,36 +16,44 @@ set mouse=a
 set spellsuggest=best,9
 set wildignore+=*.png,*.jpg,*jpg,*/.git/*,*/node_modules/*
 set nowrap
-set termguicolors
-set number
 set guicursor=
+set termguicolors
+set showmode
+set number
+set nuw=5
 
 " ................................................................................
 " Plugins
 
 call plug#begin('~/.local/share/nvim/plugged')
-Plug 'neovim/nvim-lspconfig'
-Plug 'hrsh7th/cmp-nvim-lsp' | Plug 'hrsh7th/nvim-cmp' | Plug 'hrsh7th/cmp-buffer' | Plug 'ray-x/lsp_signature.nvim'
-Plug 'danymat/neogen'
-Plug 'L3MON4D3/LuaSnip'
-Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-Plug 'romgrk/nvim-treesitter-context'
-Plug 'rvighne/vim-one'
+Plug 'https://github.com/neovim/nvim-lspconfig'
+Plug 'https://github.com/williamboman/nvim-lsp-installer'
+Plug 'https://github.com/hrsh7th/nvim-cmp'
+Plug 'https://github.com/hrsh7th/cmp-nvim-lsp'
+Plug 'https://github.com/hrsh7th/cmp-buffer'
+Plug 'https://github.com/ray-x/lsp_signature.nvim'
+Plug 'https://github.com/jose-elias-alvarez/null-ls.nvim'
+Plug 'https://github.com/nvim-lua/plenary.nvim'
+Plug 'https://github.com/nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'https://github.com/romgrk/nvim-treesitter-context'
+Plug 'https://github.com/JoosepAlviste/nvim-ts-context-commentstring'
+Plug 'https://github.com/L3MON4D3/LuaSnip'
 
-Plug 'ntpeters/vim-better-whitespace'
-Plug 'vim-test/vim-test'
-Plug 'chrisbra/Colorizer'
-Plug 'mattn/emmet-vim'
-Plug 'tpope/vim-fugitive'
-Plug 'editorconfig/editorconfig-vim'
-Plug 'junegunn/vim-easy-align'
-Plug 'tpope/vim-endwise'
-Plug 'tpope/vim-surround'
-Plug 'tpope/vim-commentary'
-Plug 'tpope/vim-dispatch'
-Plug 'mbbill/undotree'
-Plug 'AndrewRadev/splitjoin.vim'
-Plug 'junegunn/fzf.vim'
+Plug 'https://github.com/EdenEast/nightfox.nvim'
+Plug 'https://github.com/ntpeters/vim-better-whitespace'
+Plug 'https://github.com/vim-test/vim-test'
+Plug 'https://github.com/chrisbra/Colorizer'
+Plug 'https://github.com/mattn/emmet-vim'
+Plug 'https://github.com/AndrewRadev/splitjoin.vim'
+Plug 'https://github.com/editorconfig/editorconfig-vim'
+Plug 'https://github.com/junegunn/vim-easy-align'
+Plug 'https://github.com/tpope/vim-fugitive'
+Plug 'https://github.com/tpope/vim-surround'
+Plug 'https://github.com/tpope/vim-commentary'
+Plug 'https://github.com/tpope/vim-dispatch'
+Plug 'https://github.com/tpope/vim-endwise'
+Plug 'https://github.com/mbbill/undotree'
+Plug 'https://github.com/junegunn/fzf.vim'
 call plug#end()
 
 " ................................................................................
@@ -66,7 +74,6 @@ nnoremap <Down>  :resize -2<CR>
 nnoremap <Left>  :vertical resize +2<CR>
 nnoremap <Right> :vertical resize -2<CR>
 
-command! BufOnly execute '%bdelete|edit #|normal `"'
 nnoremap <leader>bq :BufOnly <CR>
 nnoremap <leader><leader> <c-^>
 nnoremap <leader>, :ls<cr>:b<space>
@@ -143,11 +150,10 @@ snoremap <silent> <S-Tab> <cmd>lua require('luasnip').jump(-1)<Cr>
 imap <silent><expr> <C-E> luasnip#choice_active() ? '<Plug>luasnip-next-choice' : '<C-E>'
 smap <silent><expr> <C-E> luasnip#choice_active() ? '<Plug>luasnip-next-choice' : '<C-E>'
 
-nnoremap <leader>p "0p
-nnoremap <leader>P "0P
-
 " ................................................................................
 " Other global stuff
+
+colorscheme nightfox
 
 if executable("rg")
     set grepprg=rg\ --vimgrep\ --smart-case\ --hidden
@@ -156,23 +162,20 @@ endif
 
 autocmd FileType go setlocal omnifunc=v:lua.vim.lsp.omnifunc
 
-autocmd FileType lua,c,go setlocal shiftwidth=4 tabstop=4
+autocmd FileType lua,go setlocal shiftwidth=4 tabstop=4
 
 autocmd BufWritePre *.go lua OrgImports(1000)
 
 autocmd BufWinEnter,WinEnter *.svelte set syntax=html
 
-autocmd FileType html,pug setlocal shiftwidth=2 tabstop=2
+autocmd FileType html setlocal shiftwidth=2 tabstop=2
 
-" hi DiagnosticUnderlineWarn gui=underline
-" hi DiagnosticUnderlineError gui=underline
-" hi DiagnosticUnderlineHint gui=underline
-" hi DiagnosticUnderlineInfo gui=underline
+hi DiagnosticSignWarn guibg=NONE guifg=gold
+hi DiagnosticSignError guibg=NONE guifg=red
+hi DiagnosticSignHint guibg=NONE guifg=green
+hi DiagnosticSignInfo guibg=NONE guifg=blue
 
-" hi DiagnosticSignWarn guibg=yellow guifg=black
-" hi DiagnosticSignError guibg=red guifg=black
-" hi DiagnosticSignHint guibg=green guifg=black
-" hi DiagnosticSignInfo guibg=blue guifg=black
+command! BufOnly execute '%bdelete|edit #|normal `"'
 
 " ................................................................................
 " Colorized configuration
@@ -180,6 +183,10 @@ autocmd FileType html,pug setlocal shiftwidth=2 tabstop=2
 let g:colorizer_auto_filetype = 'css,html,javacript,typescript,javascriptreact,typescriptreact'
 let g:colorizer_colornames = 0
 let g:colorizer_skip_comments = 1
+
+" ................................................................................
+" Editor config configuration
+
 let g:EditorConfig_exclude_patterns = ['fugitive://.*']
 
 " ................................................................................
@@ -188,21 +195,6 @@ let g:EditorConfig_exclude_patterns = ['fugitive://.*']
 set runtimepath^=~/.fzf
 let g:fzf_layout = { 'down': '~30%' }
 let g:fzf_preview_window = ['right:40%:hidden', 'ctrl-/']
-
-let g:fzf_colors =
-\ { 'fg':      ['fg', 'Normal'],
-  \ 'bg':      ['bg', 'Normal'],
-  \ 'hl':      ['fg', 'Comment'],
-  \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-  \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
-  \ 'hl+':     ['fg', 'Statement'],
-  \ 'info':    ['fg', 'PreProc'],
-  \ 'border':  ['fg', 'Ignore'],
-  \ 'prompt':  ['fg', 'Conditional'],
-  \ 'pointer': ['fg', 'Exception'],
-  \ 'marker':  ['fg', 'Keyword'],
-  \ 'spinner': ['fg', 'Label'],
-  \ 'header':  ['fg', 'Comment'] }
 
 " ................................................................................
 " Function to identify highlight groups
@@ -244,6 +236,7 @@ let g:netrw_list_hide = '\(^\|\s\s\)\zs\.\S\+'
 let g:netrw_banner = 0
 
 hi! link netrwMarkFile Search
+hi! link StatusLine Normal
 
 function! NetrwMapping()
   nmap <buffer> <leader>da :Sexplore<CR>
@@ -303,4 +296,3 @@ let g:loaded_zipPlugin = 1
 lua <<EOF
 require('config')
 EOF
-

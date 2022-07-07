@@ -517,19 +517,19 @@ call s:HL('GruvboxBg3', s:gb.bg3)
 call s:HL('GruvboxBg4', s:gb.bg4)
 
 call s:HL('GruvboxRed', s:gb.red)
-call s:HL('GruvboxRedBold', s:gb.red, s:none, s:bold)
+call s:HL('GruvboxRedBold', s:gb.red)
 call s:HL('GruvboxGreen', s:gb.green)
-call s:HL('GruvboxGreenBold', s:gb.green, s:none, s:bold)
+call s:HL('GruvboxGreenBold', s:gb.fg2)
 call s:HL('GruvboxYellow', s:gb.yellow)
-call s:HL('GruvboxYellowBold', s:gb.yellow, s:none, s:bold)
+call s:HL('GruvboxYellowBold', s:gb.yellow)
 call s:HL('GruvboxBlue', s:gb.blue)
-call s:HL('GruvboxBlueBold', s:gb.blue, s:none, s:bold)
+call s:HL('GruvboxBlueBold', s:gb.blue)
 call s:HL('GruvboxPurple', s:gb.purple)
-call s:HL('GruvboxPurpleBold', s:gb.purple, s:none, s:bold)
+call s:HL('GruvboxPurpleBold', s:gb.purple)
 call s:HL('GruvboxAqua', s:gb.aqua)
-call s:HL('GruvboxAquaBold', s:gb.aqua, s:none, s:bold)
+call s:HL('GruvboxAquaBold', s:gb.aqua)
 call s:HL('GruvboxOrange', s:gb.orange)
-call s:HL('GruvboxOrangeBold', s:gb.orange, s:none, s:bold)
+call s:HL('GruvboxOrangeBold', s:gb.orange)
 
 call s:HL('GruvboxRedSign', s:gb.red, s:sign_column, s:invert_signs)
 call s:HL('GruvboxGreenSign', s:gb.green, s:sign_column, s:invert_signs)
@@ -1126,29 +1126,29 @@ hi! link TelescopePrompt TelescopeNormal
 
 " }}}
 " nvim-cmp: {{{
-" hi! link CmpItemAbbr GruvboxFg0
-" hi! link CmpItemAbbrDeprecated GruvboxFg1
-" hi! link CmpItemAbbrMatch GruvboxBlueBold
-" hi! link CmpItemAbbrMatchFuzzy GruvboxBlueUnderline
-" hi! link CmpItemMenu GruvboxGray
-" hi! link CmpItemKindText GruvboxOrange
-" hi! link CmpItemKindMethod GruvboxBlue
-" hi! link CmpItemKindFunction GruvboxBlue
-" hi! link CmpItemKindConstructor GruvboxYellow
-" hi! link CmpItemKindField GruvboxBlue
-" hi! link CmpItemKindClass GruvboxYellow
-" hi! link CmpItemKindInterface GruvboxYellow
-" hi! link CmpItemKindModule GruvboxBlue
-" hi! link CmpItemKindProperty GruvboxBlue
-" hi! link CmpItemKindValue GruvboxOrange
-" hi! link CmpItemKindEnum GruvboxYellow
-" hi! link CmpItemKindKeyword GruvboxPurple
-" hi! link CmpItemKindSnippet GruvboxGreen
-" hi! link CmpItemKindFile GruvboxBlue
-" hi! link CmpItemKindEnumMember GruvBoxAqua
-" hi! link CmpItemKindConstant GruvboxOrange
-" hi! link CmpItemKindStruct GruvboxYellow
-" hi! link CmpItemKindTypeParameter GruvboxYellow
+hi! link CmpItemAbbr GruvboxFg0
+hi! link CmpItemAbbrDeprecated GruvboxFg1
+hi! link CmpItemAbbrMatch GruvboxBlueBold
+hi! link CmpItemAbbrMatchFuzzy GruvboxBlueUnderline
+hi! link CmpItemMenu GruvboxGray
+hi! link CmpItemKindText GruvboxOrange
+hi! link CmpItemKindMethod GruvboxBlue
+hi! link CmpItemKindFunction GruvboxBlue
+hi! link CmpItemKindConstructor GruvboxYellow
+hi! link CmpItemKindField GruvboxBlue
+hi! link CmpItemKindClass GruvboxYellow
+hi! link CmpItemKindInterface GruvboxYellow
+hi! link CmpItemKindModule GruvboxBlue
+hi! link CmpItemKindProperty GruvboxBlue
+hi! link CmpItemKindValue GruvboxOrange
+hi! link CmpItemKindEnum GruvboxYellow
+hi! link CmpItemKindKeyword GruvboxPurple
+hi! link CmpItemKindSnippet GruvboxGreen
+hi! link CmpItemKindFile GruvboxBlue
+hi! link CmpItemKindEnumMember GruvBoxAqua
+hi! link CmpItemKindConstant GruvboxOrange
+hi! link CmpItemKindStruct GruvboxYellow
+hi! link CmpItemKindTypeParameter GruvboxYellow
 "}}}
 
 " Filetype specific -----------------------------------------------------------

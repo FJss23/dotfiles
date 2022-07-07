@@ -4,6 +4,28 @@ local nvim_lsp = require 'lspconfig'
 local cmp = require 'cmp'
 local luasnip = require 'luasnip'
 
+require("nvim-lsp-installer").setup({})
+
+require("lsp_signature").setup({})
+
+require'nvim-treesitter.configs'.setup({
+  context_commentstring = {
+    enable = true
+  },
+  autotag = {
+    enable = true
+  },
+  highlight = { enable = true },
+  incremental_selection = { enable = true },
+  textobjects = { enable = true },
+})
+
+require("treesitter-context").setup({
+    enable = false
+})
+
+require('nvim-treesitter.configs').setup({})
+
 -- ................................................................................
 -- Configuring Icons that will appear next to errors
 
@@ -13,6 +35,12 @@ vim.diagnostic.config({
   underline = true,
   update_in_insert = false,
   severity_sort = false,
+  float = {
+      source = 'always',
+      border = 'rounded',
+      show_header = true,
+      focusable = false,
+  }
 })
 
 vim.o.updatetime = 350
@@ -36,26 +64,29 @@ local on_attach = function(client, bufnr)
     vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 
     local bufopts = {noremap = true, silent = true, buffer = bufnr}
+    vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
+    vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
     vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
     vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
-    vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
     vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
-    vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
+    vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
     vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, bufopts)
     vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, bufopts)
     vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, bufopts)
-    vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
     vim.keymap.set('n', '<space>gW', vim.lsp.buf.workspace_symbol, bufopts)
+    vim.keymap.set('n', '<space>gw', vim.lsp.buf.document_symbol, bufopts)
     vim.keymap.set('n', '<space>fc', vim.lsp.buf.formatting, bufopts)
     vim.keymap.set('n', '<space>ai', vim.lsp.buf.incoming_calls, bufopts)
     vim.keymap.set('n', '<space>ao', vim.lsp.buf.outgoing_calls, bufopts)
-    vim.keymap.set('n', '<space>gw', vim.lsp.buf.document_symbol, bufopts)
 end
 
 -- ................................................................................
 -- Configuration for completion using: cmp-nvim-lsp, cmp-buffer, cmp-path and nvim-cmp
 
 cmp.setup({
+    completion= {
+        autocomplete = false
+    },
     snippet = {expand = function(args) luasnip.lsp_expand(args.body) end},
     formatting = {
         format = function(entry, vim_item)
@@ -65,176 +96,212 @@ cmp.setup({
         end
     },
     mapping = cmp.mapping.preset.insert({
-        ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-        ['<C-f>'] = cmp.mapping.scroll_docs(4),
-        ['<C-Space>'] = cmp.mapping.complete(),
-        ['<C-e>'] = cmp.mapping.abort(),
-        ['<CR>'] = cmp.mapping.confirm({select = true})
+      ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+      ['<C-f>'] = cmp.mapping.scroll_docs(4),
+      ['<C-Space>'] = cmp.mapping.complete(),
+      ['<C-e>'] = cmp.mapping.abort(),
+      ['<CR>'] = cmp.mapping.confirm({ select = true }),
     }),
     sources = cmp.config.sources({
         {name = 'nvim_lsp'},
-        {name = 'buffer', max_item_count = 10},
+        {name = 'buffer', keyword_length = 5},
     }, {{name = 'buffer'}}),
-    enabled = false
-    -- enabled = function ()
-    --     local context = require('cmp.config.context')
-    --     if vim.api.nvim_get_mode() == 'c' then
-    --         return true
-    --     else
-    --         return not context.in_treesitter_capture("comment")
-    --         and not context.in_syntax_group("Comment")
-    --     end
-    -- end
+    enabled = function ()
+        local context = require('cmp.config.context')
+        if vim.api.nvim_get_mode() == 'c' then
+            return true
+        else
+            return not context.in_treesitter_capture("comment")
+            and not context.in_syntax_group("Comment")
+        end
+    end
 })
 
 local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 
+-- local sumneko_root_path = home .. "/.local/share/nvim/lsp_servers/sumneko_lua/extension/server"
+-- local sumneko_binary = sumneko_root_path .. "/bin/lua-language-server"
+
+nvim_lsp.sumneko_lua.setup({ on_attach = on_attach, capabilities = capabilities })
+nvim_lsp.tsserver.setup({ on_attach = on_attach, capabilities = capabilities })
+nvim_lsp.jsonls.setup({ on_attach = on_attach, capabilities = capabilities })
+nvim_lsp.html.setup({ on_attach = on_attach, capabilities = capabilities })
+nvim_lsp.cssls.setup({ on_attach = on_attach, capabilities = capabilities })
+nvim_lsp.gopls.setup({ on_attach = on_attach, capabilities = capabilities })
+
+local formatting = require('null-ls').builtins.formatting
+local diagnostics = require('null-ls').builtins.diagnostics
+local code_actions = require('null-ls').builtins.code_actions
+local completion = require('null-ls').builtins.completion
+
+require('null-ls').setup({
+    sources = {
+        formatting.prettier.with({
+            prefer_local = "node_modules/.bin",
+        }),
+        diagnostics.eslint.with({
+            prefer_local = "node_modules/.bin",
+        }),
+        code_actions.eslint.with({
+            prefer_local = "node_modules/.bin",
+        }),
+        diagnostics.luacheck.with({
+            command = home .. "/.asdf/installs/lua/5.4.4/luarocks/bin/luacheck",
+        }),
+        completion.luasnip,
+    }
+})
 -- ................................................................................
 -- LSP: CSS, JSON, HTML, CSS Modules, Tailwind CSS, Bash and Docker
 
-local servers = {'cssls', 'jsonls', 'html', 'cssmodules_ls', 'tailwindcss', 'bashls', 'dockerls'}
+-- local servers = {'cssls', 'jsonls', 'html', 'cssmodules_ls', 'tailwindcss', 'bashls', 'dockerls'}
 
-for _, lsp in ipairs(servers) do
-    nvim_lsp[lsp].setup {capabilities = capabilities, on_attach = on_attach, flags = {debounce_text_changes = 150}}
-end
+-- for _, lsp in ipairs(servers) do
+--     nvim_lsp[lsp].setup {capabilities = capabilities, on_attach = on_attach, flags = {debounce_text_changes = 150}}
+-- end
 
 -- ................................................................................
 -- LSP: Javascript / Typescript
 
-nvim_lsp.tsserver.setup {
-    capabilities = capabilites,
-    on_attach = function(client, bufnr)
-        if client.config.flags then client.config.flags.allow_incremental_sync = true end
-        client.resolved_capabilities.document_formatting = false
-        on_attach(client, bufnr)
-    end,
-    flags = {debounce_text_changes = 150}
-}
+-- nvim_lsp.tsserver.setup {
+--     capabilities = capabilites,
+--     on_attach = function(client, bufnr)
+--         if client.config.flags then client.config.flags.allow_incremental_sync = true end
+--         client.resolved_capabilities.document_formatting = false
+--         on_attach(client, bufnr)
+--     end,
+--     flags = {debounce_text_changes = 150}
+-- }
 
--- ................................................................................
--- LSP: C
+-- -- ................................................................................
+-- -- LSP: C
 
-nvim_lsp.ccls.setup {init_options = {cache = {directory = ".ccls-cache"}}, flags = {debounce_text_changes = 150}}
+-- nvim_lsp.ccls.setup {init_options = {cache = {directory = ".ccls-cache"}}, flags = {debounce_text_changes = 150}}
 
--- ................................................................................
--- LSP: Lua
+-- -- ................................................................................
+-- -- LSP: Lua
 
-local sumneko_root_path = home .. "/.lua-language-server"
-local sumneko_binary = sumneko_root_path .. "/bin/Linux/lua-language-server"
-local runtime_path = vim.split(package.path, ';')
+-- local sumneko_root_path = home .. "/.lua-language-server"
+-- local sumneko_binary = sumneko_root_path .. "/bin/Linux/lua-language-server"
+-- local runtime_path = vim.split(package.path, ';')
 
-table.insert(runtime_path, "lua/?.lua")
-table.insert(runtime_path, "lua/?/init.lua")
+-- table.insert(runtime_path, "lua/?.lua")
+-- table.insert(runtime_path, "lua/?/init.lua")
 
-nvim_lsp.sumneko_lua.setup {
-    capabilities = capabilities,
-    on_attach = on_attach,
-    lags = {debounce_text_changes = 150},
-    cmd = {sumneko_binary, "-E", sumneko_root_path .. "/main.lua"},
-    settings = {
-        Lua = {
-            runtime = {version = 'LuaJIT', path = runtime_path},
-            diagnostics = {globals = {'vim'}},
-            workspace = {library = vim.api.nvim_get_runtime_file("", true)},
-            telemetry = {enable = false}
-        }
-    }
-}
+-- nvim_lsp.sumneko_lua.setup {
+--     capabilities = capabilities,
+--     on_attach = on_attach,
+--     lags = {debounce_text_changes = 150},
+--     cmd = {sumneko_binary, "-E", sumneko_root_path .. "/main.lua"},
+--     settings = {
+--         Lua = {
+--             runtime = {version = 'LuaJIT', path = runtime_path},
+--             diagnostics = {globals = {'vim'}},
+--             workspace = {library = vim.api.nvim_get_runtime_file("", true)},
+--             telemetry = {enable = false}
+--         }
+--     }
+-- }
 
--- ................................................................................
--- LSP: Rust-analyzer
+-- -- ................................................................................
+-- -- LSP: Rust-analyzer
 
-nvim_lsp.rust_analyzer.setup {
-    capabilities = capabilities,
-    on_attach = on_attach,
-    settings = {
-        ["rust-analyzer"] = {
-            assist = {importGranularity = "module", importPrefix = "self"},
-            cargo = {loadOutDirsFromCheck = true},
-            procMacro = {enable = true}
-        }
-    }
-}
+-- nvim_lsp.rust_analyzer.setup {
+--     capabilities = capabilities,
+--     on_attach = on_attach,
+--     settings = {
+--         ["rust-analyzer"] = {
+--             assist = {importGranularity = "module", importPrefix = "self"},
+--             cargo = {loadOutDirsFromCheck = true},
+--             procMacro = {enable = true}
+--         }
+--     }
+-- }
 
--- ................................................................................
--- LSP: Go
+-- -- ................................................................................
+-- -- LSP: Go
 
-nvim_lsp.gopls.setup {
-    on_attach = on_attach,
-    capabilities = capabilities,
-    cmd = {"gopls", "serve"},
-    filetypes = {"go", "gomod"},
-    root_dir = nvim_lsp.util.root_pattern("go.work", "go.mod", ".git"),
-    settings = {
-      gopls = {
-        analyses = {
-          unusedparams = true,
-          shadow = true,
-        },
-        staticcheck = true,
-      },
-    },
-    init_options = {
-        usePlaceholders = true
-    }
-  }
+-- nvim_lsp.gopls.setup {
+--     on_attach = on_attach,
+--     capabilities = capabilities,
+--     cmd = {"gopls", "serve"},
+--     filetypes = {"go", "gomod"},
+--     root_dir = nvim_lsp.util.root_pattern("go.work", "go.mod", ".git"),
+--     settings = {
+--       gopls = {
+--         analyses = {
+--           unusedparams = true,
+--           shadow = true,
+--         },
+--         staticcheck = true,
+--       },
+--     },
+--     init_options = {
+--         usePlaceholders = true,
+--         codelenses = {
+--             test = true
+--         }
+--     }
+--   }
 
-function OrgImports(wait_ms)
-    local params = vim.lsp.util.make_range_params()
-    params.context = {only = {"source.organizeImports"}}
-    local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, wait_ms)
-    for _, res in pairs(result or {}) do
-      for _, r in pairs(res.result or {}) do
-        if r.edit then
-          vim.lsp.util.apply_workspace_edit(r.edit, "UTF-8")
-        else
-          vim.lsp.buf.execute_command(r.command)
-        end
-      end
-    end
-end
+-- function OrgImports(wait_ms)
+--     local params = vim.lsp.util.make_range_params()
+--     params.context = {only = {"source.organizeImports"}}
+--     local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, wait_ms)
+--     for _, res in pairs(result or {}) do
+--       for _, r in pairs(res.result or {}) do
+--         if r.edit then
+--           vim.lsp.util.apply_workspace_edit(r.edit, "UTF-8")
+--         else
+--           vim.lsp.buf.execute_command(r.command)
+--         end
+--       end
+--     end
+-- end
 
--- ................................................................................
--- LSP: EFM
+-- -- ................................................................................
+-- -- LSP: EFM
 
-local eslint = {
-  lintCommand = "./node_modules/.bin/eslint -f unix --stdin --stdin-filename ${INPUT}",
-  lintStdin = true,
-  lintFormats = {"%f:%l:%c: %m"},
-  rootMarkers = {
-    '.eslintrc',
-    '.eslintrc.cjs',
-    '.eslintrc.js',
-    '.eslintrc.json',
-    '.eslintrc.yaml',
-    '.eslintrc.yml',
-    'package.json',
-  },
-}
+-- local prettier = {formatCommand = "./node_modules/.bin/prettier --stdin-filepath ${INPUT}", formatStdin = true}
 
-local lua_check = {
-    lintCommand = home .. "/.asdf/installs/lua/5.4.4/luarocks/bin/luacheck --codes --no-color --quiet ${INPUT}",
-    lintStdin = true,
-    lintFormats = {'%.%#:%l:%c: (%t%n) %m'},
-    rootMarkers = { '.luacheckrc' },
-}
+-- local eslint = {
+--   lintCommand = "./node_modules/.bin/eslint -f unix --stdin --stdin-filename ${INPUT}",
+--   lintStdin = true,
+--   lintFormats = {"%f:%l:%c: %m"},
+--   rootMarkers = {
+--     '.eslintrc',
+--     '.eslintrc.cjs',
+--     '.eslintrc.js',
+--     '.eslintrc.json',
+--     '.eslintrc.yaml',
+--     '.eslintrc.yml',
+--     'package.json',
+--   },
+-- }
 
-local languages = {
-  typescript = {eslint},
-  javascript = {eslint},
-  typescriptreact = {eslint},
-  javascriptreact = {eslint},
-  lua = {lua_check}
-}
+-- local lua_check = {
+--     lintCommand = home .. "/.asdf/installs/lua/5.4.4/luarocks/bin/luacheck --codes --no-color --quiet ${INPUT}",
+--     lintStdin = true,
+--     lintFormats = {'%.%#:%l:%c: (%t%n) %m'},
+--     rootMarkers = { '.luacheckrc' },
+-- }
 
-nvim_lsp.efm.setup {
-  cmd = { home .. "/.efm-langserver/efm-langserver"},
-  init_options = {documentFormatting = true},
-  flags = {
-    debounce_text_changes = 150,
-  },
-  settings = {rootMarkers = {".git/"}, languages = languages, log_level = 1, log_file = home .. '/.efm-langserver/efm.log'},
-}
+-- local languages = {
+--   typescript = {eslint, prettier},
+--   javascript = {eslint, prettier},
+--   typescriptreact = {eslint, prettier},
+--   javascriptreact = {eslint, prettier},
+--   lua = {lua_check}
+-- }
+
+-- nvim_lsp.efm.setup {
+--   cmd = { home .. "/.efm-langserver/efm-langserver"},
+--   init_options = {documentFormatting = true},
+--   flags = {
+--     debounce_text_changes = 150,
+--   },
+--   settings = {rootMarkers = {".git/"}, languages = languages, log_level = 1, log_file = home .. '/.efm-langserver/efm.log'},
+-- }
 
 -- ................................................................................
 -- Status line configuration
@@ -297,19 +364,3 @@ vim.api.nvim_exec([[
   augroup END
 ]], false)
 
-require('neogen').setup()
-
-require("lsp_signature").setup({})
-
-require'nvim-treesitter.configs'.setup {
-  autotag = {
-    enable = true
-  },
-  highlight = { enable = false },
-  incremental_selection = { enable = true },
-  textobjects = { enable = true },
-}
-
-require("treesitter-context").setup({
-    enable = false
-})

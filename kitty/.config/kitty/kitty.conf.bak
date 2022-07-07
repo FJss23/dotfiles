@@ -7,7 +7,7 @@ adjust_line_height 3
 tab_bar_style powerline
 editor nvim
 tab_switch_strategy left
-# background_opacity 0.92
+# background_opacity 0.80
 window_padding_width 2
 
 # Remaps
@@ -18,10 +18,6 @@ map ctrl+shift+k next_window
 
 map f11 launch --cwd=current
 map f12 launch --cwd=current --type=tab
-
-# theme: Tempus Tempest
-# author: Protesilaos Stavrou (https://protesilaos.com)
-# description: A green-scale, subtle theme for late night hackers (WCAG AAA compliant)
 
 # cursor #b6e0ca
 # cursor_text_color #282b2b
@@ -64,6 +60,6 @@ map f12 launch --cwd=current --type=tab
 
 
 # BEGIN_KITTY_THEME
-# Gruvbox Dark
+# One Half
 include current-theme.conf
 # END_KITTY_THEME

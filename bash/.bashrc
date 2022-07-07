@@ -194,10 +194,6 @@ export EDITOR="$VISUAL"
 
 # export VIMINIT="source ~/.vim/vimrc"
 
-if test -n "$KITTY_INSTALLATION_DIR" -a -e "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; 
-  then source "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; 
-fi
-
 export GOROOT="$HOME/.asdf/installs/golang/1.18/go"
 export GOPATH=$(go env GOPATH)
 export PATH="$PATH:$(go env GOPATH)/bin"

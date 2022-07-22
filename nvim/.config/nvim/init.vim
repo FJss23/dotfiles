@@ -2,7 +2,7 @@ syntax on
 filetype plugin indent on
 
 set path+=**
-set signcolumn=auto
+set signcolumn=yes
 set smartindent
 set tabstop=2
 set softtabstop=2
@@ -20,7 +20,7 @@ set guicursor=
 set termguicolors
 set showmode
 set number
-set nuw=5
+set nuw=2
 
 " ................................................................................
 " Plugins
@@ -31,6 +31,7 @@ Plug 'https://github.com/williamboman/nvim-lsp-installer'
 Plug 'https://github.com/hrsh7th/nvim-cmp'
 Plug 'https://github.com/hrsh7th/cmp-nvim-lsp'
 Plug 'https://github.com/hrsh7th/cmp-buffer'
+Plug 'https://github.com/hrsh7th/cmp-path'
 Plug 'https://github.com/ray-x/lsp_signature.nvim'
 Plug 'https://github.com/jose-elias-alvarez/null-ls.nvim'
 Plug 'https://github.com/nvim-lua/plenary.nvim'
@@ -39,7 +40,8 @@ Plug 'https://github.com/romgrk/nvim-treesitter-context'
 Plug 'https://github.com/JoosepAlviste/nvim-ts-context-commentstring'
 Plug 'https://github.com/L3MON4D3/LuaSnip'
 
-Plug 'https://github.com/EdenEast/nightfox.nvim'
+" Plug 'https://github.com/EdenEast/nightfox.nvim'
+Plug 'https://github.com/gruvbox-community/gruvbox'
 Plug 'https://github.com/ntpeters/vim-better-whitespace'
 Plug 'https://github.com/vim-test/vim-test'
 Plug 'https://github.com/chrisbra/Colorizer'
@@ -153,7 +155,7 @@ smap <silent><expr> <C-E> luasnip#choice_active() ? '<Plug>luasnip-next-choice' 
 " ................................................................................
 " Other global stuff
 
-colorscheme nightfox
+colorscheme gruvbox
 
 if executable("rg")
     set grepprg=rg\ --vimgrep\ --smart-case\ --hidden
@@ -164,18 +166,23 @@ autocmd FileType go setlocal omnifunc=v:lua.vim.lsp.omnifunc
 
 autocmd FileType lua,go setlocal shiftwidth=4 tabstop=4
 
-autocmd BufWritePre *.go lua OrgImports(1000)
+" autocmd BufWritePre *.go lua OrgImports(1000)
 
 autocmd BufWinEnter,WinEnter *.svelte set syntax=html
 
 autocmd FileType html setlocal shiftwidth=2 tabstop=2
 
-hi DiagnosticSignWarn guibg=NONE guifg=gold
-hi DiagnosticSignError guibg=NONE guifg=red
-hi DiagnosticSignHint guibg=NONE guifg=green
-hi DiagnosticSignInfo guibg=NONE guifg=blue
-
 command! BufOnly execute '%bdelete|edit #|normal `"'
+
+" hi! link TSMethod Normal
+" hi! link TSTag Include
+" hi! link TSTagDelimiter Identifier
+" hi! link TSFunction Normal
+" hi! link TSTitle Normal
+
+" hi! link StatusLine Normal
+" hi! link SignColumn Folded
+" hi! link LineNr Folded
 
 " ................................................................................
 " Colorized configuration
@@ -236,7 +243,6 @@ let g:netrw_list_hide = '\(^\|\s\s\)\zs\.\S\+'
 let g:netrw_banner = 0
 
 hi! link netrwMarkFile Search
-hi! link StatusLine Normal
 
 function! NetrwMapping()
   nmap <buffer> <leader>da :Sexplore<CR>

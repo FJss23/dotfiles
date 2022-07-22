@@ -12,3 +12,6 @@
 
 [mergetool "vimdiff"]
     cmd = nvim -d $LOCAL $REMOTE $MERGED -c
+[user]
+	email = uo252473@uniovi.es
+	name = FJss23

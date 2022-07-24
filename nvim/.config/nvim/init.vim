@@ -2,7 +2,7 @@ syntax on
 filetype plugin indent on
 
 set path+=**
-set signcolumn=yes
+set signcolumn=auto
 set smartindent
 set tabstop=2
 set softtabstop=2
@@ -35,12 +35,8 @@ Plug 'https://github.com/hrsh7th/cmp-path'
 Plug 'https://github.com/ray-x/lsp_signature.nvim'
 Plug 'https://github.com/jose-elias-alvarez/null-ls.nvim'
 Plug 'https://github.com/nvim-lua/plenary.nvim'
-Plug 'https://github.com/nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-Plug 'https://github.com/romgrk/nvim-treesitter-context'
-Plug 'https://github.com/JoosepAlviste/nvim-ts-context-commentstring'
 Plug 'https://github.com/L3MON4D3/LuaSnip'
 
-" Plug 'https://github.com/EdenEast/nightfox.nvim'
 Plug 'https://github.com/gruvbox-community/gruvbox'
 Plug 'https://github.com/ntpeters/vim-better-whitespace'
 Plug 'https://github.com/vim-test/vim-test'
@@ -174,16 +170,6 @@ autocmd FileType html setlocal shiftwidth=2 tabstop=2
 
 command! BufOnly execute '%bdelete|edit #|normal `"'
 
-" hi! link TSMethod Normal
-" hi! link TSTag Include
-" hi! link TSTagDelimiter Identifier
-" hi! link TSFunction Normal
-" hi! link TSTitle Normal
-
-" hi! link StatusLine Normal
-" hi! link SignColumn Folded
-" hi! link LineNr Folded
-
 " ................................................................................
 " Colorized configuration
 
@@ -281,6 +267,11 @@ function! TermToggle(height)
 endfunction
 
 autocmd BufWinEnter,WinEnter term://* startinsert
+
+" ................................................................................
+" Status line
+
+set statusline=\ %f\ %h%w%m%r%=%{FugitiveStatusline()}\ %y\ %-14.(%l,%c%V%)\ %P
 
 " ................................................................................
 " Disabling some built in plugins

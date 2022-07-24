@@ -11,34 +11,13 @@ require("nvim-lsp-installer").setup({})
 
 require("lsp_signature").setup({})
 
-require'nvim-treesitter.configs'.setup({
-  context_commentstring = {
-    enable = true
-  },
-  autotag = {
-    enable = true
-  },
-  highlight = {
-      enable = false,
-      -- disable = { "javascript", "javascriptreact", "lua" },
-  },
-  incremental_selection = { enable = true },
-  textobjects = { enable = true },
-})
-
-require("treesitter-context").setup({
-    enable = false
-})
-
-require('nvim-treesitter.configs').setup({})
-
 -- ................................................................................
 -- Custom symbols
 
 local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
 for type, icon in pairs(signs) do
   local hl = "DiagnosticSign" .. type
-  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
+  vim.fn.sign_define(hl, { text = icon, texthl = hl })
 end
 -- ................................................................................
 -- Code action sign (with virtual text)
@@ -113,7 +92,7 @@ vim.diagnostic.config({
   severity_sort = false,
   float = {
       source = 'always',
-      border = 'rounded',
+      -- border = 'rounded',
       show_header = true,
       focusable = false,
   }
@@ -214,8 +193,7 @@ cmp.setup({
         if vim.api.nvim_get_mode() == 'c' then
             return true
         else
-            return not context.in_treesitter_capture("comment")
-            and not context.in_syntax_group("Comment")
+            return not context.in_syntax_group("Comment")
         end
     end
 })
@@ -257,93 +235,3 @@ require('null-ls').setup({
         completion.luasnip,
     }
 })
-
--- ................................................................................
--- Status line configuration
-
-local function filepath()
-    local fpath = vim.fn.fnamemodify(vim.fn.expand "%", ":~:.:h")
-    if fpath == "" or fpath == "." then return " " end
-
-    return string.format(" %%<%s/", fpath)
-end
-
-local function filename()
-    local fname = vim.fn.expand "%:t"
-    if fname == "" then return "" end
-    return fname .. " "
-end
-
-local function lsp()
-    local count = {}
-    local levels = {errors = "Error", warnings = "Warn", info = "Info", hints = "Hint"}
-
-    for k, level in pairs(levels) do count[k] = vim.tbl_count(vim.diagnostic.get(0, {severity = level})) end
-
-    return "[E" .. count["errors"] .. " W" .. count["warnings"] .. " H" .. count["hints"] .. " I" .. count["info"] ..
-               "]"
-end
-
-local function filetype() return "[" .. string.format("%s", vim.bo.filetype) .. "]" end
-
-local function lineinfo()
-    if vim.bo.filetype == "alpha" then return "" end
-    return " %l,%c %L "
-end
-
-local vcs = function()
-    local git_info = vim.fn["fugitive#statusline"]()
-    if git_info then
-        local branch_name = git_info:sub(6, git_info:len() - 2)
-        return table.concat {" [", branch_name, "] "}
-    end
-    return " [NO VCS]"
-end
-
-statusline = {}
-
-statusline.active = function()
-    return table.concat {
-        " [%n]",filepath(), filename(), "%m%r", "%=", lsp(), vcs(),
-        "%{ &ff != 'unix' ? '['.&ff.'] ' : '' }", filetype(), lineinfo()
-    }
-end
-
-function statusline.inactive() return " %F" end
-
-vim.api.nvim_exec([[
-  augroup Statusline
-  au!
-  au WinEnter,BufEnter * setlocal statusline=%!v:lua.statusline.active()
-  au WinLeave,BufLeave * setlocal statusline=%!v:lua.statusline.inactive()
-  augroup END
-]], false)
-
--- ................................................................................
--- Define borders on global stuffs
-
-vim.cmd [[autocmd! ColorScheme * highlight NormalFloat guibg=#1f2335]]
-vim.cmd [[autocmd! ColorScheme * highlight FloatBorder guifg=white guibg=#1f2335]]
-
-local border = {
-      {"🭽", "FloatBorder"},
-      {"▔", "FloatBorder"},
-      {"🭾", "FloatBorder"},
-      {"▕", "FloatBorder"},
-      {"🭿", "FloatBorder"},
-      {"▁", "FloatBorder"},
-      {"🭼", "FloatBorder"},
-      {"▏", "FloatBorder"},
-}
-
-local handlers =  {
-  ["textDocument/hover"] =  vim.lsp.with(vim.lsp.handlers.hover, {border = border}),
-  ["textDocument/signatureHelp"] =  vim.lsp.with(vim.lsp.handlers.signature_help, {border = border }),
-}
-
-local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
-function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
-  opts = opts or {}
-  opts.border = opts.border or border
-  return orig_util_open_floating_preview(contents, syntax, opts, ...)
-end

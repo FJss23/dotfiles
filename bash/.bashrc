@@ -172,7 +172,7 @@ function get_hostname() {
   fi
 }
 
-export PS1="\u@\`get_hostname\`:\W\[\e[33m\]\`parse_git_branch\`\[\e[m\]$ "
+export PS1="\u@\`get_hostname\`:\w\[\e[33m\]\`parse_git_branch\`\[\e[m\]\n$ "
 
 alias fd="fdfind"
 alias ssh='kitty +kitten ssh'

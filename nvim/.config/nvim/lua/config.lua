@@ -1,101 +1,46 @@
 local home = os.getenv("HOME")
-local opts = {noremap = true, silent = true}
-local nvim_lsp = require 'lspconfig'
+local lsp_route = home .. "/.local/share/nvim/lsp_servers"
+local opts = { noremap = true, silent = true }
 local cmp = require 'cmp'
 local luasnip = require 'luasnip'
 
 -- ................................................................................
--- Lua plugin setup
+-- Lua plugins setup
 
-require("nvim-lsp-installer").setup({})
+require("nvim-treesitter.configs").setup({})
 
-require("lsp_signature").setup({})
+require('gitsigns').setup({})
+
+require('Comment').setup({})
+
+require('treesitter-context').setup({
+    highlight = { enable = true },
+    indent = { enable = true }
+})
 
 -- ................................................................................
--- Custom symbols
+-- Custom symbols for LSP
 
-local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
+local signs = { Error = "", Warn = "", Hint = "", Info = "" }
 for type, icon in pairs(signs) do
-  local hl = "DiagnosticSign" .. type
-  vim.fn.sign_define(hl, { text = icon, texthl = hl })
+    local hl = "DiagnosticSign" .. type
+    vim.fn.sign_define(hl, { text = icon, texthl = hl })
 end
--- ................................................................................
--- Code action sign (with virtual text)
-
-code_action = {}
-
-local function get_namespace()
-    return vim.api.nvim_create_namespace("mycodeactionsign")
-end
-
-local function indication_virtual_text(bufnr, line)
-    local namespace = get_namespace()
-    vim.api.nvim_buf_clear_namespace(bufnr, namespace, 0, -1)
-    if not line then return end
-    local icon_with_indent = "  " .. ""
-    vim.api.nvim_buf_set_extmark(bufnr, namespace, line, -1, {
-        virt_text = { { icon_with_indent, "MyCodeActionSign" } },
-        virt_text_pos = "overlay",
-        hl_mode = "combine",
-    })
-end
-
--- TODO: apply this on for file types with language server available
-local codeaction_indication = function (do_clear)
-    local bufnr = vim.api.nvim_get_current_buf()
-    if do_clear == "clear" then
-        return indication_virtual_text(bufnr)
-    end
-    local context = { diagnostics = vim.lsp.diagnostic.get_line_diagnostics() }
-    local params = vim.lsp.util.make_range_params()
-    params.context = context
-    local line = params.range.start.line
-    vim.lsp.buf_request(bufnr, "textDocument/codeAction", params, function(_, _, result)
-        if not result or type(result) ~= "table" or vim.tbl_isempty(result) then
-            return indication_virtual_text(bufnr)
-        else
-            return indication_virtual_text(bufnr, line)
-        end
-    end)
-end
-
-code_action.listener = function()
-    local augroup = vim.api.nvim_create_augroup("CodeActionIndication", {clear = true})
-
-    vim.api.nvim_create_autocmd("CursorHold", {
-        pattern = "*.*",
-        group = augroup,
-        callback = function()
-            codeaction_indication()
-        end
-    })
-
-    vim.api.nvim_create_autocmd("CursorMoved", {
-        pattern = "*.*",
-        group = augroup,
-        callback = function()
-            codeaction_indication("clear")
-        end
-    })
-end
-
-vim.api.nvim_set_hl(0, 'MyCodeActionSign', {fg = "gray40", bg = "NONE"})
 
 -- ................................................................................
 -- Configuring appearence of diagnostics
 
 vim.diagnostic.config({
-  virtual_text = false,
-  signs = true,
-  underline = true,
-  update_in_insert = false,
-  severity_sort = false,
-  float = {
-      source = 'always',
-      -- border = 'rounded',
-      show_header = true,
-      focusable = false,
-  }
+    virtual_text = true,
+    signs = true,
+    underline = true,
+    update_in_insert = false,
+    severity_sort = false,
+    float = {
+        source = 'always',
+        show_header = true,
+        focusable = false,
+    }
 })
 
 vim.o.updatetime = 350
@@ -112,7 +57,7 @@ vim.keymap.set('n', '<space>N', vim.diagnostic.goto_next, opts)
 local on_attach = function(client, bufnr)
     vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 
-    local bufopts = {noremap = true, silent = true, buffer = bufnr}
+    local bufopts = { noremap = true, silent = true, buffer = bufnr }
     vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
     vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
     vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
@@ -128,67 +73,55 @@ local on_attach = function(client, bufnr)
     vim.keymap.set('n', '<space>ai', vim.lsp.buf.incoming_calls, bufopts)
     vim.keymap.set('n', '<space>ao', vim.lsp.buf.outgoing_calls, bufopts)
 
-    -- if client then
-    --     code_action.listener()
-    -- end
-
     if client.server_capabilities.documentHighlightProvider then
-      vim.cmd [[
+        vim.cmd [[
         hi! LspReferenceRead cterm=bold ctermbg=red guibg=gray18
         hi! LspReferenceText cterm=bold ctermbg=red guibg=gray18
         hi! LspReferenceWrite cterm=bold ctermbg=red guibg=gray18
       ]]
-      vim.api.nvim_create_augroup('lsp_document_highlight', {
-        clear = false
-      })
-      vim.api.nvim_clear_autocmds({
-        buffer = bufnr,
-        group = 'lsp_document_highlight',
-      })
-      vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
-        group = 'lsp_document_highlight',
-        buffer = bufnr,
-        callback = vim.lsp.buf.document_highlight,
-      })
-      vim.api.nvim_create_autocmd('CursorMoved', {
-        group = 'lsp_document_highlight',
-        buffer = bufnr,
-        callback = vim.lsp.buf.clear_references,
-      })
-   end
+        vim.api.nvim_create_augroup('lsp_document_highlight', {
+            clear = false
+        })
+        vim.api.nvim_clear_autocmds({
+            buffer = bufnr,
+            group = 'lsp_document_highlight',
+        })
+        vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
+            group = 'lsp_document_highlight',
+            buffer = bufnr,
+            callback = vim.lsp.buf.document_highlight,
+        })
+        vim.api.nvim_create_autocmd('CursorMoved', {
+            group = 'lsp_document_highlight',
+            buffer = bufnr,
+            callback = vim.lsp.buf.clear_references,
+        })
+    end
 end
 
 -- ................................................................................
--- Configuration for completion using: cmp-nvim-lsp, cmp-buffer, cmp-path and nvim-cmp
+-- Configuration for completion
 
 cmp.setup({
-    window = {
-        documentation = cmp.config.window.bordered(),
-    },
-    completion= {
-        autocomplete = false
-    },
-    snippet = {expand = function(args) luasnip.lsp_expand(args.body) end},
+    snippet = { expand = function(args) luasnip.lsp_expand(args.body) end },
     formatting = {
         format = function(entry, vim_item)
-            vim_item.menu =
-                ({buffer = "[Buffer]", nvim_lsp = "[LSP]", luasnip = "[LuaSnip]", nvim_lua = "[Lua]"})[entry.source.name]
+            vim_item.menu = ({ buffer = "[Buffer]", nvim_lsp = "[LSP]", luasnip = "[LuaSnip]", nvim_lua = "[Lua]" })[
+                entry.source.name]
             return vim_item
         end
     },
     mapping = cmp.mapping.preset.insert({
-      ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-      ['<C-f>'] = cmp.mapping.scroll_docs(4),
-      ['<C-Space>'] = cmp.mapping.complete(),
-      ['<C-e>'] = cmp.mapping.abort(),
-      ['<CR>'] = cmp.mapping.confirm({ select = true }),
+        ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+        ['<C-f>'] = cmp.mapping.scroll_docs(4),
+        ['<C-Space>'] = cmp.mapping.complete(),
+        ['<C-e>'] = cmp.mapping.abort(),
+        ['<CR>'] = cmp.mapping.confirm({ select = true }),
     }),
     sources = cmp.config.sources({
-        {name = 'nvim_lsp'},
-        {name = 'path'},
-        {name = 'buffer', keyword_length = 3, max_item_count = 10,},
+        { name = 'nvim_lsp' },
     }),
-    enabled = function ()
+    enabled = function()
         local context = require('cmp.config.context')
         if vim.api.nvim_get_mode() == 'c' then
             return true
@@ -198,40 +131,98 @@ cmp.setup({
     end
 })
 
--- ................................................................................
--- Attach each language server being used
-
 local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 
-nvim_lsp.sumneko_lua.setup({ on_attach = on_attach, capabilities = capabilities })
-nvim_lsp.tsserver.setup({ on_attach = on_attach, capabilities = capabilities })
-nvim_lsp.jsonls.setup({ on_attach = on_attach, capabilities = capabilities })
-nvim_lsp.html.setup({ on_attach = on_attach, capabilities = capabilities })
-nvim_lsp.cssls.setup({ on_attach = on_attach, capabilities = capabilities })
-nvim_lsp.gopls.setup({ on_attach = on_attach, capabilities = capabilities })
+-- ................................................................................
+-- JSON
 
-local formatting = require('null-ls').builtins.formatting
-local diagnostics = require('null-ls').builtins.diagnostics
-local code_actions = require('null-ls').builtins.code_actions
-local completion = require('null-ls').builtins.completion
+require('lspconfig').jsonls.setup({ on_attach = on_attach, capabilities = capabilities })
 
 -- ................................................................................
--- Configuration for linters and formatters
+-- CSS
 
-require('null-ls').setup({
-    sources = {
-        formatting.prettier.with({
-            prefer_local = "node_modules/.bin",
-        }),
-        diagnostics.eslint.with({
-            prefer_local = "node_modules/.bin",
-        }),
-        code_actions.eslint.with({
-            prefer_local = "node_modules/.bin",
-        }),
-        diagnostics.luacheck.with({
-            command = home .. "/.asdf/installs/lua/5.4.4/luarocks/bin/luacheck",
-        }),
-        completion.luasnip,
+require('lspconfig').cssls.setup({ on_attach = on_attach, capabilities = capabilities })
+
+-- ................................................................................
+-- HTML
+
+require('lspconfig').html.setup({ on_attach = on_attach, capabilities = capabilities })
+
+-- ................................................................................
+-- JAVASCRIP/TYPESCRIPT
+
+require('lspconfig').tsserver.setup({ on_attach = on_attach, capabilities = capabilities })
+
+-- ................................................................................
+-- GO
+
+require('lspconfig').gopls.setup({ on_attach = on_attach, capabilities = capabilities })
+
+-- ................................................................................
+-- LUA (special settings, because of neovim. It can make the lsp slow)
+
+require('lspconfig').sumneko_lua.setup({
+    cmd = { lsp_route .. "/sumneko_lua/extension/server/bin/lua-language-server" },
+    settings = {
+        Lua = {
+            runtime = {
+                version = 'LuaJIT',
+            },
+            diagnostics = {
+                globals = { 'vim' },
+            },
+            workspace = {
+                library = vim.api.nvim_get_runtime_file("", true),
+            },
+            telemetry = {
+                enable = false,
+            },
+        },
+    },
+    on_attach = on_attach,
+    capabilities = capabilities,
+})
+
+-- ................................................................................
+-- EFM (linters and formatters)
+
+local prettier = {
+    formatCommand = "./node_modules/.bin/prettier --stdin-filepath ${INPUT}",
+    formatStdin = true
+}
+local eslint = {
+    lintCommand = "./node_modules/.bin/eslint -f unix --stdin --stdin-filename ${INPUT}",
+    lintStdin = true,
+    lintFormats = { "%f:%l:%c: %m" },
+    rootMakers = {
+        '.eslintrc',
+        '.eslintrc.cjs',
+        '.eslintrc.js',
+        '.eslintrc.json',
+        '.eslintrc.yaml',
+        '.eslintrc.yml',
+        'package.json',
     }
+}
+local luacheck = {
+    lintCommand = home .. "/.asdf/installs/lua/5.4.4/luarocks/bin/luacheck %s --codes --no-color --quiet -",
+    lintStdin = true,
+    lintFormats = { "%.%#:%l:%c: (%t%n) %m" },
+    rootMakers = { ".luacheckrc" }
+}
+local languages = {
+    typescript = { prettier, eslint },
+    javascript = { prettier, eslint },
+    typescriptreact = { prettier, eslint },
+    javascriptreact = { prettier, eslint },
+    lua = { luacheck },
+}
+
+require('lspconfig').efm.setup({
+    cmd = { lsp_route .. "/efm/efm-langserver" },
+    init_options = { documentFormatting = true, codeAction = true },
+    filetypes = { 'typescript', 'javascript', 'typescriptreact', 'javascriptreact', 'markdown', 'lua' },
+    settings = { languages = languages, log_level = 1, log_file = lsp_route .. "/efm/efm.log" },
+    on_attach = on_attach,
+    capabilities = capabilities,
 })

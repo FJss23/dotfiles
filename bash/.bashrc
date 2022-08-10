@@ -192,8 +192,6 @@ export SDKMAN_DIR="/home/frandev/.sdkman"
 export VISUAL=nvim
 export EDITOR="$VISUAL"
 
-# export VIMINIT="source ~/.vim/vimrc"
-
 export GOROOT="$HOME/.asdf/installs/golang/1.18/go"
 export GOPATH=$(go env GOPATH)
 export PATH="$PATH:$(go env GOPATH)/bin"

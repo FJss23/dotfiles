@@ -17,7 +17,7 @@ set spellsuggest=best,9
 set wildignore+=*.png,*.jpg,*jpg,*/.git/*,*/node_modules/*
 set nowrap
 set guicursor=
-set termguicolors
+" set termguicolors
 set showmode
 set number
 set nuw=2
@@ -26,32 +26,35 @@ set nuw=2
 " Plugins
 
 call plug#begin('~/.local/share/nvim/plugged')
+" Syntax
+Plug 'https://github.com/nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'https://github.com/EdenEast/nightfox.nvim'
+
+" Lsp
 Plug 'https://github.com/neovim/nvim-lspconfig'
-Plug 'https://github.com/williamboman/nvim-lsp-installer'
 Plug 'https://github.com/hrsh7th/nvim-cmp'
 Plug 'https://github.com/hrsh7th/cmp-nvim-lsp'
-Plug 'https://github.com/hrsh7th/cmp-buffer'
-Plug 'https://github.com/hrsh7th/cmp-path'
-Plug 'https://github.com/ray-x/lsp_signature.nvim'
-Plug 'https://github.com/jose-elias-alvarez/null-ls.nvim'
-Plug 'https://github.com/nvim-lua/plenary.nvim'
+
+" Git
+Plug 'https://github.com/lewis6991/gitsigns.nvim'
+
+" Snippets
 Plug 'https://github.com/L3MON4D3/LuaSnip'
 
-Plug 'https://github.com/gruvbox-community/gruvbox'
-Plug 'https://github.com/ntpeters/vim-better-whitespace'
-Plug 'https://github.com/vim-test/vim-test'
+" Utility
+Plug 'https://github.com/nvim-treesitter/nvim-treesitter-context'
 Plug 'https://github.com/chrisbra/Colorizer'
 Plug 'https://github.com/mattn/emmet-vim'
-Plug 'https://github.com/AndrewRadev/splitjoin.vim'
 Plug 'https://github.com/editorconfig/editorconfig-vim'
 Plug 'https://github.com/junegunn/vim-easy-align'
-Plug 'https://github.com/tpope/vim-fugitive'
-Plug 'https://github.com/tpope/vim-surround'
-Plug 'https://github.com/tpope/vim-commentary'
+Plug 'https://github.com/numToStr/Comment.nvim'
 Plug 'https://github.com/tpope/vim-dispatch'
-Plug 'https://github.com/tpope/vim-endwise'
 Plug 'https://github.com/mbbill/undotree'
+
+" Search
 Plug 'https://github.com/junegunn/fzf.vim'
+
+
 call plug#end()
 
 " ................................................................................
@@ -100,19 +103,12 @@ nnoremap <leader>md :delm!<CR> :delm A-Z0-9<CR>
 nnoremap <space>O :<c-u>put! =repeat(nr2char(10), v:count1)<cr>'[
 nnoremap <space>o :<c-u>put =repeat(nr2char(10), v:count1)<cr>
 
-nnoremap n nzz
-nnoremap N Nzz
-nnoremap / ms/
-nnoremap ? ms?
-
 nnoremap <Leader>da :Sexplore<CR>
 nnoremap <leader>dd :Sexplore %:p:h<CR>
 nnoremap <Leader>df :let @/=expand("%:t") <Bar> execute 'Sexplore' expand("%:h") <Bar> normal n<CR>
 
 nnoremap <silent> <F2> :set spell!<cr>
 inoremap <silent> <F2> <C-O>:set spell!<cr>
-
-nnoremap <F3> :TSContextToggle<cr>
 
 nnoremap <F4> :UndotreeToggle<CR>
 
@@ -151,7 +147,7 @@ smap <silent><expr> <C-E> luasnip#choice_active() ? '<Plug>luasnip-next-choice' 
 " ................................................................................
 " Other global stuff
 
-colorscheme gruvbox
+" colorscheme nightfox
 
 if executable("rg")
     set grepprg=rg\ --vimgrep\ --smart-case\ --hidden
@@ -176,11 +172,6 @@ command! BufOnly execute '%bdelete|edit #|normal `"'
 let g:colorizer_auto_filetype = 'css,html,javacript,typescript,javascriptreact,typescriptreact'
 let g:colorizer_colornames = 0
 let g:colorizer_skip_comments = 1
-
-" ................................................................................
-" Editor config configuration
-
-let g:EditorConfig_exclude_patterns = ['fugitive://.*']
 
 " ................................................................................
 " FZF configuration
@@ -269,11 +260,6 @@ endfunction
 autocmd BufWinEnter,WinEnter term://* startinsert
 
 " ................................................................................
-" Status line
-
-set statusline=\ %f\ %h%w%m%r%=%{FugitiveStatusline()}\ %y\ %-14.(%l,%c%V%)\ %P
-
-" ................................................................................
 " Disabling some built in plugins
 
 let g:loaded_matchparen = 1
@@ -290,6 +276,9 @@ let g:loaded_zipPlugin = 1
 " ................................................................................
 " Lua files
 
+autocmd CursorHold,CursorHoldI * lua require('code_action_utils').code_action_listener()
+
 lua <<EOF
 require('config')
 EOF
+

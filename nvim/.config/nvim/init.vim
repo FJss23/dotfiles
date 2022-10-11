@@ -17,8 +17,8 @@ set spellsuggest=best,9
 set wildignore+=*.png,*.jpg,*jpg,*/.git/*,*/node_modules/*
 set nowrap
 set guicursor=
-" set termguicolors
-set showmode
+set termguicolors
+set noshowmode
 set number
 set nuw=2
 
@@ -28,12 +28,12 @@ set nuw=2
 call plug#begin('~/.local/share/nvim/plugged')
 " Syntax
 Plug 'https://github.com/nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-Plug 'https://github.com/EdenEast/nightfox.nvim'
 
 " Lsp
 Plug 'https://github.com/neovim/nvim-lspconfig'
 Plug 'https://github.com/hrsh7th/nvim-cmp'
 Plug 'https://github.com/hrsh7th/cmp-nvim-lsp'
+Plug 'https://github.com/hrsh7th/cmp-path'
 
 " Git
 Plug 'https://github.com/lewis6991/gitsigns.nvim'
@@ -43,18 +43,21 @@ Plug 'https://github.com/L3MON4D3/LuaSnip'
 
 " Utility
 Plug 'https://github.com/nvim-treesitter/nvim-treesitter-context'
-Plug 'https://github.com/chrisbra/Colorizer'
+Plug 'https://github.com/NvChad/nvim-colorizer.lua'
 Plug 'https://github.com/mattn/emmet-vim'
 Plug 'https://github.com/editorconfig/editorconfig-vim'
-Plug 'https://github.com/junegunn/vim-easy-align'
-Plug 'https://github.com/numToStr/Comment.nvim'
+Plug 'https://github.com/tpope/vim-commentary'
 Plug 'https://github.com/tpope/vim-dispatch'
 Plug 'https://github.com/mbbill/undotree'
+Plug 'https://github.com/Kasama/nvim-custom-diagnostic-highlight'
+Plug 'https://github.com/windwp/nvim-ts-autotag'
+Plug 'https://github.com/JoosepAlviste/nvim-ts-context-commentstring'
+Plug 'https://github.com/kyazdani42/nvim-web-devicons'
+Plug 'https://github.com/kyazdani42/nvim-tree.lua'
+Plug 'https://github.com/windwp/nvim-autopairs'
 
 " Search
 Plug 'https://github.com/junegunn/fzf.vim'
-
-
 call plug#end()
 
 " ................................................................................
@@ -103,19 +106,16 @@ nnoremap <leader>md :delm!<CR> :delm A-Z0-9<CR>
 nnoremap <space>O :<c-u>put! =repeat(nr2char(10), v:count1)<cr>'[
 nnoremap <space>o :<c-u>put =repeat(nr2char(10), v:count1)<cr>
 
-nnoremap <Leader>da :Sexplore<CR>
-nnoremap <leader>dd :Sexplore %:p:h<CR>
-nnoremap <Leader>df :let @/=expand("%:t") <Bar> execute 'Sexplore' expand("%:h") <Bar> normal n<CR>
+nnoremap <Leader>da :NvimTreeToggle<CR>
+nnoremap <leader>dd :NvimTreeFindFile<CR>
 
 nnoremap <silent> <F2> :set spell!<cr>
 inoremap <silent> <F2> <C-O>:set spell!<cr>
 
 nnoremap <F4> :UndotreeToggle<CR>
 
-xmap ga <Plug>(EasyAlign)
-nmap ga <Plug>(EasyAlign)
-
 nnoremap <leader>ff :Files<CR>
+nnoremap <leader>fr :History<CR>
 nnoremap <leader>fg :Rg<CR>
 nnoremap <leader>fh :FZF ~<CR>
 
@@ -147,7 +147,7 @@ smap <silent><expr> <C-E> luasnip#choice_active() ? '<Plug>luasnip-next-choice' 
 " ................................................................................
 " Other global stuff
 
-" colorscheme nightfox
+colorscheme gruvbox
 
 if executable("rg")
     set grepprg=rg\ --vimgrep\ --smart-case\ --hidden
@@ -158,20 +158,9 @@ autocmd FileType go setlocal omnifunc=v:lua.vim.lsp.omnifunc
 
 autocmd FileType lua,go setlocal shiftwidth=4 tabstop=4
 
-" autocmd BufWritePre *.go lua OrgImports(1000)
-
-autocmd BufWinEnter,WinEnter *.svelte set syntax=html
-
 autocmd FileType html setlocal shiftwidth=2 tabstop=2
 
 command! BufOnly execute '%bdelete|edit #|normal `"'
-
-" ................................................................................
-" Colorized configuration
-
-let g:colorizer_auto_filetype = 'css,html,javacript,typescript,javascriptreact,typescriptreact'
-let g:colorizer_colornames = 0
-let g:colorizer_skip_comments = 1
 
 " ................................................................................
 " FZF configuration
@@ -210,27 +199,6 @@ augroup quickfix
     autocmd QuickFixCmdPost lgetexpr lwindow
 augroup END
 
-
-" ................................................................................
-" Netrw basic configuration
-
-let g:netrw_localcopydircmd = 'cp -r'
-let g:netrw_localrmdir='rm -r'
-let g:netrw_list_hide = '\(^\|\s\s\)\zs\.\S\+'
-let g:netrw_banner = 0
-
-hi! link netrwMarkFile Search
-
-function! NetrwMapping()
-  nmap <buffer> <leader>da :Sexplore<CR>
-  nmap <buffer> <leader>dd :Sexplore %:p:h<CR>
-endfunction
-
-augroup netrw_mapping
-  autocmd!
-  autocmd filetype netrw call NetrwMapping()
-augroup END
-
 " ................................................................................
 " Terminal usage
 
@@ -266,6 +234,7 @@ let g:loaded_matchparen = 1
 let g:loaded_matchit = 1
 let g:loaded_2html_plugin = 1
 let g:loaded_getscriptPlugin = 1
+let g:loaded_netrwPlugin = 1
 let g:loaded_gzip = 1
 let g:loaded_logipat = 1
 let g:loaded_rrhelper = 1
@@ -275,8 +244,6 @@ let g:loaded_zipPlugin = 1
 
 " ................................................................................
 " Lua files
-
-autocmd CursorHold,CursorHoldI * lua require('code_action_utils').code_action_listener()
 
 lua <<EOF
 require('config')

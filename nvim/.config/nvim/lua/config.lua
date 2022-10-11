@@ -7,16 +7,38 @@ local luasnip = require 'luasnip'
 -- ................................................................................
 -- Lua plugins setup
 
-require("nvim-treesitter.configs").setup({})
-
-require('gitsigns').setup({})
-
-require('Comment').setup({})
-
+require("nvim-treesitter.configs").setup({
+    highlight = {
+        enable = true,
+    },
+    autotag = { enable = true },
+    context_commentstring = {
+        enable = true,
+    },
+    indent = {
+        enable = true
+    }
+})
 require('treesitter-context').setup({
     highlight = { enable = true },
     indent = { enable = true }
 })
+require('nvim-autopairs').setup({})
+require('gitsigns').setup({})
+require('colorizer').setup({})
+require('nvim-custom-diagnostic-highlight').setup({})
+require('nvim-tree').setup({
+    view = {
+        width = 40,
+        side = "right"
+    },
+    renderer = {
+        icons =  {
+            git_placement = "after"
+        }
+    }
+})
+require('nvim-web-devicons').setup({})
 
 -- ................................................................................
 -- Custom symbols for LSP
@@ -31,7 +53,9 @@ end
 -- Configuring appearence of diagnostics
 
 vim.diagnostic.config({
-    virtual_text = true,
+    virtual_text = { 
+        source = "always" 
+    },
     signs = true,
     underline = true,
     update_in_insert = false,
@@ -60,6 +84,7 @@ local on_attach = function(client, bufnr)
     local bufopts = { noremap = true, silent = true, buffer = bufnr }
     vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
     vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
+    vim.keymap.set('i', '<C-k>', vim.lsp.buf.signature_help, bufopts)
     vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
     vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
     vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
@@ -120,6 +145,7 @@ cmp.setup({
     }),
     sources = cmp.config.sources({
         { name = 'nvim_lsp' },
+        { name = 'path' },
     }),
     enabled = function()
         local context = require('cmp.config.context')
@@ -157,6 +183,12 @@ require('lspconfig').tsserver.setup({ on_attach = on_attach, capabilities = capa
 -- GO
 
 require('lspconfig').gopls.setup({ on_attach = on_attach, capabilities = capabilities })
+
+-- ................................................................................
+-- CSS_MODULES
+
+require('lspconfig').cssmodules_ls.setup({ on_attach = on_attach, capabilities = capabilities })
+
 
 -- ................................................................................
 -- LUA (special settings, because of neovim. It can make the lsp slow)
@@ -226,3 +258,6 @@ require('lspconfig').efm.setup({
     on_attach = on_attach,
     capabilities = capabilities,
 })
+
+require('code_action_utils').listener()
+require('status_line')

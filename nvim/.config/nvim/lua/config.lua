@@ -189,6 +189,15 @@ require('lspconfig').gopls.setup({ on_attach = on_attach, capabilities = capabil
 
 require('lspconfig').cssmodules_ls.setup({ on_attach = on_attach, capabilities = capabilities })
 
+-- ................................................................................
+-- TAILWINDCSS
+
+require('lspconfig').tailwindcss.setup({ on_attach = on_attach, capabilities = capabilities })
+
+-- ................................................................................
+-- DOCKER
+
+require('lspconfig').dockerls.setup({ on_attach = on_attach, capabilities = capabilities })
 
 -- ................................................................................
 -- LUA (special settings, because of neovim. It can make the lsp slow)

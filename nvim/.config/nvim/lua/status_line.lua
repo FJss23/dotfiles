@@ -1,35 +1,5 @@
 -- based on https://nuxsh.is-a.dev/blog/custom-nvim-statusline.html
 
-local modes = {
-  ["n"] = "NORMAL",
-  ["no"] = "NORMAL",
-  ["v"] = "VISUAL",
-  ["V"] = "VISUAL LINE",
-  [""] = "VISUAL BLOCK",
-  ["s"] = "SELECT",
-  ["S"] = "SELECT LINE",
-  [""] = "SELECT BLOCK",
-  ["i"] = "INSERT",
-  ["ic"] = "INSERT",
-  ["R"] = "REPLACE",
-  ["Rv"] = "VISUAL REPLACE",
-  ["c"] = "COMMAND",
-  ["cv"] = "VIM EX",
-  ["ce"] = "EX",
-  ["r"] = "PROMPT",
-  ["rm"] = "MOAR",
-  ["r?"] = "CONFIRM",
-  ["!"] = "SHELL",
-  ["t"] = "TERMINAL",
-}
-
-
-
-local function mode()
-  local current_mode = vim.api.nvim_get_mode().mode
-  return string.format("  %s ", modes[current_mode]):upper()
-end
-
 local function filepath()
   local fpath = vim.fn.fnamemodify(vim.fn.expand "%", ":~:.:h")
   if fpath == "" or fpath == "." then
@@ -66,34 +36,34 @@ local function lsp()
   local info = ""
 
   if count["errors"] ~= 0 then
-    errors = "  " .. count["errors"]
+    errors = "E:" .. count["errors"]
   end
   if count["warnings"] ~= 0 then
-    warnings = "  " .. count["warnings"]
+    warnings = "W:" .. count["warnings"]
   end
   if count["hints"] ~= 0 then
-    hints = "  " .. count["hints"]
+    hints = "H:" .. count["hints"]
   end
   if count["info"] ~= 0 then
-    info = "  " .. count["info"]
+    info = "I:" .. count["info"]
   end
 
   if errors == "" and warnings == "" and hints == "" and info == "" then
       return ""
   else
-    return errors .. " " .. warnings .. " " ..  hints .. " " .. info .. " "
+    return "| " .. errors .. "" .. warnings .. "" ..  hints .. "" .. info .. " "
   end
 end
 
 local function filetype()
-  return string.format("  %s ", vim.bo.filetype):upper()
+  return string.format("| %s ", vim.bo.filetype):upper()
 end
 
 local function lineinfo()
   if vim.bo.filetype == "alpha" then
     return ""
   end
-  return "並%P %l:%c "
+  return "| 並%P %l:%c "
 end
 
 local vcs = function()
@@ -101,9 +71,9 @@ local vcs = function()
   if not git_info or git_info.head == "" then
     return ""
   end
-  local added = git_info.added and (" +" .. git_info.added .. " ") or ""
-  local changed = git_info.changed and (" ~" .. git_info.changed .. " ") or ""
-  local removed = git_info.removed and (" -" .. git_info.removed .. " ") or ""
+  local added = git_info.added and ("+" .. git_info.added .. " ") or ""
+  local changed = git_info.changed and ("~" .. git_info.changed .. " ") or ""
+  local removed = git_info.removed and ("-" .. git_info.removed .. " ") or ""
   if git_info.added == 0 then
     added = ""
   end
@@ -117,8 +87,7 @@ local vcs = function()
      added,
      changed,
      removed,
-     " ",
-     " ",
+     " ",
      git_info.head,
      " ",
   }
@@ -128,17 +97,12 @@ Statusline = {}
 
 Statusline.active = function()
   return table.concat {
-    "%#MatchParen#",
-    mode(),
-    "%#Statusline#",
+    "%#BufferCurrent#",
     filepath(),
     filename(),
     "%=",
-    "%#MatchParen#",
     vcs(),
-    "%#debugPC#",
     lsp(),
-    "%#IncSearch#",
     filetype(),
     lineinfo(),
   }

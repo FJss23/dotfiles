@@ -18,8 +18,7 @@ set wildignore+=*.png,*.jpg,*jpg,*/.git/*,*/node_modules/*
 set nowrap
 set guicursor=
 set termguicolors
-set noshowmode
-set number
+set number relativenumber
 set nuw=2
 
 " ................................................................................
@@ -28,6 +27,7 @@ set nuw=2
 call plug#begin('~/.local/share/nvim/plugged')
 " Syntax
 Plug 'https://github.com/nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'https://github.com/folke/tokyonight.nvim'
 
 " Lsp
 Plug 'https://github.com/neovim/nvim-lspconfig'
@@ -45,7 +45,6 @@ Plug 'https://github.com/L3MON4D3/LuaSnip'
 Plug 'https://github.com/nvim-treesitter/nvim-treesitter-context'
 Plug 'https://github.com/NvChad/nvim-colorizer.lua'
 Plug 'https://github.com/mattn/emmet-vim'
-Plug 'https://github.com/editorconfig/editorconfig-vim'
 Plug 'https://github.com/tpope/vim-commentary'
 Plug 'https://github.com/tpope/vim-dispatch'
 Plug 'https://github.com/mbbill/undotree'
@@ -57,7 +56,9 @@ Plug 'https://github.com/kyazdani42/nvim-tree.lua'
 Plug 'https://github.com/windwp/nvim-autopairs'
 
 " Search
-Plug 'https://github.com/junegunn/fzf.vim'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.0' }
+Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
 call plug#end()
 
 " ................................................................................
@@ -114,10 +115,11 @@ inoremap <silent> <F2> <C-O>:set spell!<cr>
 
 nnoremap <F4> :UndotreeToggle<CR>
 
-nnoremap <leader>ff :Files<CR>
-nnoremap <leader>fr :History<CR>
-nnoremap <leader>fg :Rg<CR>
-nnoremap <leader>fh :FZF ~<CR>
+nnoremap <leader>ff <cmd>Telescope find_files<cr>
+nnoremap <leader>fg <cmd>Telescope live_grep<cr>
+nnoremap <leader>fb <cmd>Telescope grep_string<cr>
+nnoremap <leader>fh <cmd>Telescope help_tags<cr>
+nnoremap <leader>fo <cmd>Telescope old_files<cr>
 
 nnoremap ñ :Rgrep <cword>*<CR>
 nnoremap <leader>ñ :Rgrep <cword>%:p:h/*<CR>
@@ -144,10 +146,15 @@ snoremap <silent> <S-Tab> <cmd>lua require('luasnip').jump(-1)<Cr>
 imap <silent><expr> <C-E> luasnip#choice_active() ? '<Plug>luasnip-next-choice' : '<C-E>'
 smap <silent><expr> <C-E> luasnip#choice_active() ? '<Plug>luasnip-next-choice' : '<C-E>'
 
+map! qw {
+map! wq }
+map! qq (
+map! ww )
+
 " ................................................................................
 " Other global stuff
 
-colorscheme gruvbox
+colorscheme tokyonight-night
 
 if executable("rg")
     set grepprg=rg\ --vimgrep\ --smart-case\ --hidden

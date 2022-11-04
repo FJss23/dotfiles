@@ -1,6 +1,7 @@
 require("nvim-treesitter.configs").setup({
     highlight = {
         enable = true,
+        disable = { "javascript", "typescript", "javascriptreact", "typescriptreact", "go", "lua" },
     },
     autotag = { enable = true },
     context_commentstring = {
@@ -19,25 +20,9 @@ require('treesitter-context').setup({
 require('telescope').setup({})
 require('telescope').load_extension('fzf')
 
-require('nvim-autopairs').setup({})
-
-require('gitsigns').setup({})
-
 require('colorizer').setup({})
 
 require('nvim-custom-diagnostic-highlight').setup({})
-
-require('nvim-tree').setup({
-    view = {
-        width = 40,
-        side = "right"
-    },
-    renderer = {
-        icons =  {
-            git_placement = "after"
-        }
-    }
-})
 
 require('nvim-web-devicons').setup({})
 

@@ -1,15 +1,15 @@
 local home = os.getenv("HOME")
 local lsp_route = home .. "/.local/share/nvim/lsp_servers"
 local opts = { noremap = true, silent = true }
-local cmp = require 'cmp'
-local luasnip = require 'luasnip'
+local cmp = require('cmp')
+local luasnip = require('luasnip')
 
 -- ................................................................................
 -- Configuring appearence of diagnostics
 
 vim.diagnostic.config({
-    virtual_text = { 
-        source = "always" 
+    virtual_text = {
+        source = "always"
     },
     signs = true,
     underline = true,
@@ -21,6 +21,12 @@ vim.diagnostic.config({
         focusable = false,
     }
 })
+
+local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
+for type, icon in pairs(signs) do
+  local hl = "DiagnosticSign" .. type
+  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
+end
 
 vim.o.updatetime = 350
 
@@ -82,12 +88,45 @@ end
 -- ................................................................................
 -- Configuration for completion
 
+local kind_icons = {
+  Text = "",
+  Method = "",
+  Function = "",
+  Constructor = "",
+  Field = "",
+  Variable = "",
+  Class = "ﴯ",
+  Interface = "",
+  Module = "",
+  Property = "ﰠ",
+  Unit = "",
+  Value = "",
+  Enum = "",
+  Keyword = "",
+  Snippet = "",
+  Color = "",
+  File = "",
+  Reference = "",
+  Folder = "",
+  EnumMember = "",
+  Constant = "",
+  Struct = "",
+  Event = "",
+  Operator = "",
+  TypeParameter = ""
+}
+
 cmp.setup({
     snippet = { expand = function(args) luasnip.lsp_expand(args.body) end },
     formatting = {
         format = function(entry, vim_item)
-            vim_item.menu = ({ buffer = "[Buffer]", nvim_lsp = "[LSP]", luasnip = "[LuaSnip]", nvim_lua = "[Lua]" })[
-                entry.source.name]
+            vim_item.kind = string.format("%s %s", kind_icons[vim_item.kind], vim_item.kind)
+            vim_item.menu = ({
+                buffer = "[Buffer]",
+                nvim_lsp = "[LSP]",
+                luasnip = "[LuaSnip]",
+                nvim_lua = "[Lua]"
+            })[entry.source.name]
             return vim_item
         end
     },

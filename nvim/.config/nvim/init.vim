@@ -2,7 +2,7 @@ syntax on
 filetype plugin indent on
 
 set path+=**
-set signcolumn=auto
+set signcolumn=yes
 set smartindent
 set tabstop=2
 set softtabstop=2
@@ -27,16 +27,13 @@ set nuw=2
 call plug#begin('~/.local/share/nvim/plugged')
 " Syntax
 Plug 'https://github.com/nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-Plug 'https://github.com/folke/tokyonight.nvim'
+" Plug 'https://github.com/folke/tokyonight.nvim'
 
 " Lsp
 Plug 'https://github.com/neovim/nvim-lspconfig'
 Plug 'https://github.com/hrsh7th/nvim-cmp'
 Plug 'https://github.com/hrsh7th/cmp-nvim-lsp'
 Plug 'https://github.com/hrsh7th/cmp-path'
-
-" Git
-Plug 'https://github.com/lewis6991/gitsigns.nvim'
 
 " Snippets
 Plug 'https://github.com/L3MON4D3/LuaSnip'
@@ -52,8 +49,6 @@ Plug 'https://github.com/Kasama/nvim-custom-diagnostic-highlight'
 Plug 'https://github.com/windwp/nvim-ts-autotag'
 Plug 'https://github.com/JoosepAlviste/nvim-ts-context-commentstring'
 Plug 'https://github.com/kyazdani42/nvim-web-devicons'
-Plug 'https://github.com/kyazdani42/nvim-tree.lua'
-Plug 'https://github.com/windwp/nvim-autopairs'
 
 " Search
 Plug 'nvim-lua/plenary.nvim'
@@ -148,13 +143,14 @@ smap <silent><expr> <C-E> luasnip#choice_active() ? '<Plug>luasnip-next-choice' 
 
 map! qw {
 map! wq }
-map! qq (
-map! ww )
+map! qq [
+map! ww ]
 
 " ................................................................................
 " Other global stuff
 
-colorscheme tokyonight-night
+" colorscheme tokyonight-moon
+colorscheme gruvbox
 
 if executable("rg")
     set grepprg=rg\ --vimgrep\ --smart-case\ --hidden
@@ -167,25 +163,9 @@ autocmd FileType lua,go setlocal shiftwidth=4 tabstop=4
 
 autocmd FileType html setlocal shiftwidth=2 tabstop=2
 
+autocmd BufNewFile,BufRead *.tsx,*.jsx set filetype=typescriptreact
+
 command! BufOnly execute '%bdelete|edit #|normal `"'
-
-" ................................................................................
-" FZF configuration
-
-set runtimepath^=~/.fzf
-let g:fzf_layout = { 'down': '~30%' }
-let g:fzf_preview_window = ['right:40%:hidden', 'ctrl-/']
-
-" ................................................................................
-" Function to identify highlight groups
-" https://stackoverflow.com/questions/10692289/proper-html-attribute-highlighting-in-vim thanks!
-
-function! SynStack()
-    if !exists("*synstack")
-        return
-    endif
-    echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
-endfunc
 
 " ................................................................................
 " QuickFix specific stuff
@@ -205,6 +185,18 @@ augroup quickfix
     autocmd QuickFixCmdPost cgetexpr cwindow
     autocmd QuickFixCmdPost lgetexpr lwindow
 augroup END
+
+" ................................................................................
+" Netrw stuff (dd -> dir of the current file | da -> current working dir)
+
+let g:netrw_keepdir = 0
+let g:netrw_list_hide = '\(^\|\s\s\)\zs\.\S\+'
+let g:netrw_localcopydircmd = 'cp -r'
+hi! link netrwMarkFile Search
+
+nnoremap <leader>dd :Lexplore %:p:h<CR>
+nnoremap <Leader>da :Lexplore<CR>
+nnoremap <Leader>dk :Texplore<CR>
 
 " ................................................................................
 " Terminal usage
@@ -241,7 +233,6 @@ let g:loaded_matchparen = 1
 let g:loaded_matchit = 1
 let g:loaded_2html_plugin = 1
 let g:loaded_getscriptPlugin = 1
-let g:loaded_netrwPlugin = 1
 let g:loaded_gzip = 1
 let g:loaded_logipat = 1
 let g:loaded_rrhelper = 1

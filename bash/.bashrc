@@ -192,11 +192,9 @@ export SDKMAN_DIR="/home/frandev/.sdkman"
 export VISUAL=nvim
 export EDITOR="$VISUAL"
 
-export GOROOT="$HOME/.asdf/installs/golang/1.19/go"
-export GOPATH=$(go env GOPATH)
-export PATH="$PATH:$(go env GOPATH)/bin"
-
 . "$HOME/.cargo/env"
+
+if test -n "$KITTY_INSTALLATION_DIR" -a -e "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; then source "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; fi
 
 # BEGIN_KITTY_SHELL_INTEGRATION
 if test -n "$KITTY_INSTALLATION_DIR" -a -e "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; then source "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; fi

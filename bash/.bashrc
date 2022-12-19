@@ -186,9 +186,6 @@ export FZF_ALT_C_COMMAND="fdfind -t d . $HOME"
 . $HOME/.asdf/asdf.sh
 . $HOME/.asdf/completions/asdf.bash
 
-export SDKMAN_DIR="/home/frandev/.sdkman"
-[[ -s "/home/frandev/.sdkman/bin/sdkman-init.sh" ]] && source "/home/frandev/.sdkman/bin/sdkman-init.sh"
-
 export VISUAL=nvim
 export EDITOR="$VISUAL"
 
@@ -198,6 +195,8 @@ export PATH="$PATH:$(go env GOPATH)/bin"
 
 . "$HOME/.cargo/env"
 
-# BEGIN_KITTY_SHELL_INTEGRATION
 if test -n "$KITTY_INSTALLATION_DIR" -a -e "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; then source "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; fi
-# END_KITTY_SHELL_INTEGRATION
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"

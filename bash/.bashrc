@@ -189,14 +189,9 @@ export FZF_ALT_C_COMMAND="fdfind -t d . $HOME"
 export VISUAL=nvim
 export EDITOR="$VISUAL"
 
-export GOROOT="$HOME/.asdf/installs/golang/1.19/go"
-export GOPATH=$(go env GOPATH)
-export PATH="$PATH:$(go env GOPATH)/bin"
-
 . "$HOME/.cargo/env"
 
 if test -n "$KITTY_INSTALLATION_DIR" -a -e "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; then source "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; fi
 
-#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"

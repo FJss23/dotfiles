@@ -11,14 +11,11 @@ require('packer').startup(function(use)
   use 'wbthomason/packer.nvim'
   use {
     'neovim/nvim-lspconfig',
-    requires = {
-      'williamboman/mason.nvim',
-      'williamboman/mason-lspconfig.nvim',
-    },
+    requires = { 'williamboman/mason.nvim', 'williamboman/mason-lspconfig.nvim' },
   }
   use {
     'hrsh7th/nvim-cmp',
-    requires = { 'hrsh7th/cmp-nvim-lsp', 'L3MON4D3/LuaSnip', 'saadparwaiz1/cmp_luasnip' },
+    requires = { 'hrsh7th/cmp-nvim-lsp', 'L3MON4D3/LuaSnip', 'saadparwaiz1/cmp_luasnip', 'hrsh7th/cmp-buffer', 'hrsh7th/cmp-path' },
   }
   use {
     'nvim-treesitter/nvim-treesitter',
@@ -37,10 +34,12 @@ require('packer').startup(function(use)
   use 'NvChad/nvim-colorizer.lua'
   use 'mattn/emmet-vim'
   use 'windwp/nvim-ts-autotag'
-  use 'https://github.com/jremmen/vim-ripgrep'
+  use 'jremmen/vim-ripgrep'
   use 'editorconfig/editorconfig-vim'
-  use { 'nvim-telescope/telescope.nvim', branch = '0.1.x', requires = { 'nvim-lua/plenary.nvim' } }
-  use { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make', cond = vim.fn.executable 'make' == 1 }
+  -- use { 'nvim-telescope/telescope.nvim', branch = '0.1.x', requires = { 'nvim-lua/plenary.nvim' } }
+  -- use { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make', cond = vim.fn.executable 'make' == 1 }
+  use 'preservim/nerdtree'
+  use 'ctrlpvim/ctrlp.vim'
 
   if is_bootstrap then
     require('packer').sync()
@@ -66,14 +65,9 @@ vim.opt.spellsuggest = {'best', '9'}
 vim.o.updatetime = 250
 vim.wo.signcolumn = 'no'
 vim.o.termguicolors = true
-vim.opt.wildignore:append({'*.png', '*.jpg', '*/.git/*', '*/node_modules/*'})
--- vim.cmd.colorscheme 'tokyonight-night'
+vim.opt.wildignore:append({'*.png', '*.jpg', '*/.git/*', '*/node_modules/*', '*/tmp/*', '*.so', '*.zip'})
 vim.cmd.colorscheme 'gruvbox'
 vim.o.completeopt = 'menuone,noselect'
-
-vim.g.netrw_localcopydircmd = 'cp -r'
-vim.g.netrw_list_hide = [[\(^\|\s\s\)\zs\.\S\+]]
-vim.cmd [[hi! link netrwMarkFile Search]]
 
 
 local kopts = {silent = true}
@@ -124,6 +118,9 @@ vim.keymap.set('i', '<silent> <F2>', '<C-O><cmd>set spell!<CR>', kopts)
 
 vim.keymap.set('n', '<leader>sc', '<cmd>e $MYVIMRC<CR>', kopts)
 
+vim.keymap.set('n', '<leader>dd', '<cmd>:NERDTreeToggle<CR>', kopts)
+vim.keymap.set('n', '<leader>da', '<cmd>:NERDTreeFind<CR>', kopts)
+
 
 local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
 vim.api.nvim_create_autocmd('TextYankPost', {
@@ -147,9 +144,12 @@ require('lualine').setup {
         'filename',
         path = 1,
       }
-    }
+    },
   }
 }
+
+vim.g.ctrlp_user_command = 'fdfind %s --type f'
+vim.g.ctrlp_user_command = {'.git', 'cd %s && git ls-files -co --exclude-standard'}
 
 require('Comment').setup()
 
@@ -157,32 +157,32 @@ require('luasnip.loaders.from_snipmate').lazy_load()
 
 require('colorizer').setup({})
 
-require('telescope').setup {
-  defaults = {
-    mappings = {
-      i = {
-        ['<C-u>'] = false,
-        ['<C-d>'] = false,
-      },
-    },
-  },
-}
+-- require('telescope').setup {
+--   defaults = {
+--     mappings = {
+--       i = {
+--         ['<C-u>'] = false,
+--         ['<C-d>'] = false,
+--       },
+--     },
+--   },
+-- }
+--
+-- pcall(require('telescope').load_extension, 'fzf')
 
-pcall(require('telescope').load_extension, 'fzf')
-
-vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
-vim.keymap.set('n', '<leader>sb', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
-vim.keymap.set('n', '<leader>/', function()
-  require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
-    winblend = 10,
-    previewer = false,
-  })
-end, { desc = '[/] Fuzzily search in current buffer]' })
-
-vim.keymap.set('n', '<leader>sf', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
-vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc = '[S]earch [H]elp' })
-vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { desc = '[S]earch current [W]ord' })
-vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
+-- vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
+-- vim.keymap.set('n', '<leader>sb', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
+-- vim.keymap.set('n', '<leader>/', function()
+--   require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
+--     winblend = 10,
+--     previewer = false,
+--   })
+-- end, { desc = '[/] Fuzzily search in current buffer]' })
+--
+-- vim.keymap.set('n', '<leader>sf', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
+-- vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc = '[S]earch [H]elp' })
+-- vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { desc = '[S]earch current [W]ord' })
+-- vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
 
 require('nvim-treesitter.configs').setup {
   ensure_installed = { 'c', 'cpp', 'lua', 'python', 'rust', 'typescript', 'help', 'json', 'html', 'css' },
@@ -214,20 +214,20 @@ require('nvim-treesitter.configs').setup {
       enable = true,
       set_jumps = true, -- whether to set jumps in the jumplist
       goto_next_start = {
-        [']m'] = '@function.outer',
-        [']]'] = '@class.outer',
+        ['çm'] = '@function.outer',
+        ['çç'] = '@class.outer',
       },
       goto_next_end = {
-        [']M'] = '@function.outer',
-        [']['] = '@class.outer',
+        ['çM'] = '@function.outer',
+        ['ç;'] = '@class.outer',
       },
       goto_previous_start = {
-        ['[m'] = '@function.outer',
-        ['[['] = '@class.outer',
+        [';m'] = '@function.outer',
+        [';;'] = '@class.outer',
       },
       goto_previous_end = {
-        ['[M'] = '@function.outer',
-        ['[]'] = '@class.outer',
+        [';M'] = '@function.outer',
+        [';ç'] = '@class.outer',
       },
     },
     swap = {
@@ -356,7 +356,7 @@ cmp.setup {
     end
   },
   mapping = cmp.mapping.preset.insert {
-    ['<C-d>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
     ['<C-f>'] = cmp.mapping.scroll_docs(4),
     ['<C-Space>'] = cmp.mapping.complete(),
     ['<C-e>'] = cmp.mapping.abort(),
@@ -364,7 +364,7 @@ cmp.setup {
       behavior = cmp.ConfirmBehavior.Replace,
       select = true,
     },
-    ['<Tab>'] = cmp.mapping(function(fallback)
+    ['<C-ñ>'] = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_next_item()
       elseif luasnip.expand_or_jumpable() then
@@ -373,7 +373,7 @@ cmp.setup {
         fallback()
       end
     end, { 'i', 's' }),
-    ['<S-Tab>'] = cmp.mapping(function(fallback)
+    ['Ñ'] = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_prev_item()
       elseif luasnip.jumpable(-1) then
@@ -386,6 +386,8 @@ cmp.setup {
   sources = {
     { name = 'nvim_lsp' },
     { name = 'luasnip' },
+    { name = 'path' },
+    { name = 'buffer' },
   },
   enabled = function()
     local context = require('cmp.config.context')

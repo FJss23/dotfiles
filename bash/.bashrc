@@ -174,8 +174,13 @@ function get_hostname() {
 
 export PS1="\u@\`get_hostname\`:\w\[\e[33m\]\`parse_git_branch\`\[\e[m\]\n$ "
 
+export LC_ALL=en_IN.UTF-8
+export LANG=en_IN.UTF-8
+
 alias fd="fdfind"
 alias ssh='kitty +kitten ssh'
+alias tmux='tmux -u'
+alias neov='~/Apps/neovide/neovide'
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 export FZF_DEFAULT_OPS="--extended"
@@ -191,11 +196,5 @@ export EDITOR="$VISUAL"
 
 . "$HOME/.cargo/env"
 
-if test -n "$KITTY_INSTALLATION_DIR" -a -e "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; then source "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; fi
-
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
-
-# BEGIN_KITTY_SHELL_INTEGRATION
-if test -n "$KITTY_INSTALLATION_DIR" -a -e "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; then source "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; fi
-# END_KITTY_SHELL_INTEGRATION

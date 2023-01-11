@@ -15,7 +15,7 @@ require('packer').startup(function(use)
   }
   use {
     'hrsh7th/nvim-cmp',
-    requires = { 'hrsh7th/cmp-nvim-lsp', 'L3MON4D3/LuaSnip', 'saadparwaiz1/cmp_luasnip', 'hrsh7th/cmp-buffer', 'hrsh7th/cmp-path' },
+    requires = { 'hrsh7th/cmp-nvim-lsp', 'L3MON4D3/LuaSnip', 'hrsh7th/cmp-buffer', 'hrsh7th/cmp-path', 'saadparwaiz1/cmp_luasnip' },
   }
   use {
     'nvim-treesitter/nvim-treesitter',
@@ -23,21 +23,22 @@ require('packer').startup(function(use)
       pcall(require('nvim-treesitter.install').update { with_sync = true })
     end,
   }
-  use {
-    'nvim-treesitter/nvim-treesitter-textobjects',
-    after = 'nvim-treesitter',
-  }
-  use 'gruvbox-community/gruvbox'
-  use 'folke/tokyonight.nvim'
+  use { 'nvim-treesitter/nvim-treesitter-textobjects', after = 'nvim-treesitter' }
+
+  use { 'nvim-tree/nvim-tree.lua', requires = { 'nvim-tree/nvim-web-devicons' } }
+
+  use "lewpoly/sherbet.nvim"
   use 'nvim-lualine/lualine.nvim'
   use 'numToStr/Comment.nvim'
   use 'NvChad/nvim-colorizer.lua'
   use 'mattn/emmet-vim'
-  use 'windwp/nvim-ts-autotag'
   use 'jremmen/vim-ripgrep'
   use 'editorconfig/editorconfig-vim'
-  use 'preservim/nerdtree'
-  use 'ctrlpvim/ctrlp.vim'
+
+  use { 'nvim-telescope/telescope.nvim', branch = '0.1.x', requires = { 'nvim-lua/plenary.nvim' } }
+  use { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make', cond = vim.fn.executable 'make' == 1 }
+
+  use 'jose-elias-alvarez/null-ls.nvim'
 
   if is_bootstrap then
     require('packer').sync()
@@ -64,8 +65,10 @@ vim.o.updatetime = 250
 vim.wo.signcolumn = 'no'
 vim.o.termguicolors = true
 vim.opt.wildignore:append({'*.png', '*.jpg', '*/.git/*', '*/node_modules/*', '*/tmp/*', '*.so', '*.zip'})
-vim.cmd.colorscheme 'gruvbox'
 vim.o.completeopt = 'menuone,noselect'
+vim.cmd.colorscheme 'sherbet'
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
 
 
 local kopts = {silent = true}
@@ -77,11 +80,10 @@ vim.keymap.set('i', 'wq', '}', kopts)
 vim.keymap.set('i', 'qq', '[', kopts)
 vim.keymap.set('i', 'ww', ']', kopts)
 vim.keymap.set('i', 'jk', '<Esc>', kopts)
-vim.keymap.set('n', '<leader>ww', '<cmd>w<cr>', kopts)
+vim.keymap.set('n', '<leader>wf', '<cmd>w<cr>', kopts)
 vim.keymap.set('n', '<leader>qq', '<cmd>q<cr>', kopts)
-vim.keymap.set('n', '<leader>fd', ':find ', kopts)
 vim.keymap.set('n', '<leader>rg', ':Rg ', kopts)
-vim.keymap.set('n', 'ññ', '<cmd>Rg<CR>', kopts)
+vim.keymap.set('n', '<leader>rw', '<cmd>Rg<CR>', kopts)
 
 vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv", kopts)
 vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv", kopts)
@@ -116,8 +118,8 @@ vim.keymap.set('i', '<silent> <F2>', '<C-O><cmd>set spell!<CR>', kopts)
 
 vim.keymap.set('n', '<leader>sc', '<cmd>e $MYVIMRC<CR>', kopts)
 
-vim.keymap.set('n', '<leader>dd', '<cmd>:NERDTreeToggle<CR>', kopts)
-vim.keymap.set('n', '<leader>da', '<cmd>:NERDTreeFind<CR>', kopts)
+vim.keymap.set('n', '<leader>dd', '<cmd>:NvimTreeToggle<CR>', kopts)
+vim.keymap.set('n', '<leader>da', '<cmd>:NvimTreeFindFile<CR>', kopts)
 
 
 local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
@@ -132,7 +134,6 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 require('lualine').setup {
   options = {
     icons_enabled = false,
-    theme = 'gruvbox',
     component_separators = '|',
     section_separators = '',
   },
@@ -146,18 +147,39 @@ require('lualine').setup {
   }
 }
 
-vim.g.ctrlp_user_command = 'fdfind %s --type f'
-vim.g.ctrlp_user_command = {'.git', 'cd %s && git ls-files -co --exclude-standard'}
-
 require('Comment').setup()
 
-require('luasnip.loaders.from_snipmate').lazy_load()
+require('luasnip.loaders.from_snipmate').lazy_load({ paths = './snippets' })
 
 require('colorizer').setup({})
 
+require("nvim-tree").setup({
+  view = {
+    side = "right"
+  },
+  git = {
+    enable = false
+  }
+})
+
+local null_ls = require("null-ls")
+null_ls.setup({
+  sources = {
+    null_ls.builtins.formatting.prettier.with({
+      prefer_local = "node_modules/.bin"
+    }),
+    null_ls.builtins.diagnostics.eslint.with({
+      prefer_local = "node_modules/.bin"
+    }),
+    null_ls.builtins.code_actions.eslint.with({
+      prefer_local = "node_modules/.bin"
+    }),
+  },
+})
+
 require('nvim-treesitter.configs').setup {
-  ensure_installed = { 'c', 'cpp', 'lua', 'python', 'rust', 'typescript', 'help', 'json', 'html', 'css' },
-  highlight = { enable = false },
+  ensure_installed = { 'lua', 'javascript', 'typescript', 'help', 'json', 'html', 'css' },
+  highlight = { enable = true },
   indent = { enable = true },
   incremental_selection = {
     enable = true,
@@ -185,20 +207,20 @@ require('nvim-treesitter.configs').setup {
       enable = true,
       set_jumps = true, -- whether to set jumps in the jumplist
       goto_next_start = {
-        ['çm'] = '@function.outer',
-        ['çç'] = '@class.outer',
+        ['ça'] = '@function.outer',
+        ['çs'] = '@class.outer',
       },
       goto_next_end = {
-        ['çM'] = '@function.outer',
-        ['ç;'] = '@class.outer',
+        ['çd'] = '@function.outer',
+        ['çf'] = '@class.outer',
       },
       goto_previous_start = {
-        [';m'] = '@function.outer',
-        [';;'] = '@class.outer',
+        ['çq'] = '@function.outer',
+        ['çw'] = '@class.outer',
       },
       goto_previous_end = {
-        [';M'] = '@function.outer',
-        [';ç'] = '@class.outer',
+        ['çe'] = '@function.outer',
+        ['çr'] = '@class.outer',
       },
     },
     swap = {
@@ -213,10 +235,48 @@ require('nvim-treesitter.configs').setup {
   },
 }
 
-vim.diagnostic.config({
-  virtual_text = {
-    source = "always"
+require('telescope').setup {
+  defaults = {
+    mappings = {
+      i = {
+        ['<C-u>'] = false,
+        ['<C-d>'] = false,
+      },
+    },
   },
+}
+
+-- Enable telescope fzf native, if installed
+pcall(require('telescope').load_extension, 'fzf')
+
+local tl_builtin = require('telescope.builtin')
+local tl_themes = require('telescope.themes')
+
+vim.keymap.set('n', '<leader>?', function() 
+  tl_builtin.oldfiles(tl_themes.get_ivy({ previewer = false, height = 10 })) 
+end, { desc = '[?] Find recently opened files' })
+
+vim.keymap.set('n', '<leader>sb', function()
+  tl_builtin.buffers(tl_themes.get_ivy({ previewer = false, height = 10 }))
+end, { desc = '[ ] Find existing buffers' })
+
+vim.keymap.set('n', '<leader>/', function()
+  tl_builtin.current_buffer_fuzzy_find(tl_themes.get_dropdown({ winblend = 10, previewer = false }))
+end, { desc = '[/] Fuzzily search in current buffer]' })
+
+vim.keymap.set('n', '<leader>sf', function() 
+  tl_builtin.find_files(tl_themes.get_dropdown({ winblend = 10, previewer = false })) 
+end, { desc = '[S]earch [F]iles' })
+
+vim.keymap.set('n', '<leader>sh', tl_builtin.help_tags, { desc = '[S]earch [H]elp' })
+vim.keymap.set('n', '<leader>sw', tl_builtin.grep_string, { desc = '[S]earch current [W]ord' })
+vim.keymap.set('n', '<leader>sg', tl_builtin.live_grep, { desc = '[S]earch by [G]rep' })
+vim.keymap.set('n', '<leader>sd', tl_builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
+
+vim.diagnostic.config({
+  virtual_text = false --[[{
+    source = "always"
+  }--]],
   signs = true,
   underline = true,
   update_in_insert = true,
@@ -273,7 +333,7 @@ end
 
 require('mason').setup()
 
-local servers = { 'clangd', 'rust_analyzer', 'tsserver', 'sumneko_lua', 'cssls', 'cssmodules_ls', 'eslint' }
+local servers = { 'tsserver', 'cssls', 'cssmodules_ls', 'jsonls' }
 
 require('mason-lspconfig').setup {
   ensure_installed = servers,
@@ -289,27 +349,6 @@ for _, lsp in ipairs(servers) do
   }
 end
 
-local runtime_path = vim.split(package.path, ';')
-table.insert(runtime_path, 'lua/?.lua')
-table.insert(runtime_path, 'lua/?/init.lua')
-
-require('lspconfig').sumneko_lua.setup {
-  on_attach = on_attach,
-  capabilities = capabilities,
-  settings = {
-    Lua = {
-      runtime = {
-        version = 'LuaJIT',
-        path = runtime_path,
-      },
-      diagnostics = {
-        globals = { 'vim' },
-      },
-      workspace = { library = vim.api.nvim_get_runtime_file('', true) },
-      telemetry = { enable = false },
-    },
-  },
-}
 
 local cmp = require 'cmp'
 local luasnip = require 'luasnip'
@@ -356,9 +395,9 @@ cmp.setup {
   },
   sources = {
     { name = 'nvim_lsp' },
-    { name = 'luasnip' },
     { name = 'path' },
     { name = 'buffer' },
+    { name = 'luasnip' },
   },
   enabled = function()
     local context = require('cmp.config.context')

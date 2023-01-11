@@ -253,11 +253,11 @@ local tl_builtin = require('telescope.builtin')
 local tl_themes = require('telescope.themes')
 
 vim.keymap.set('n', '<leader>?', function() 
-  tl_builtin.oldfiles(tl_themes.get_ivy({ previewer = false, height = 10 })) 
+  tl_builtin.oldfiles(tl_themes.get_dropdown({ previewer = false, height = 10 })) 
 end, { desc = '[?] Find recently opened files' })
 
 vim.keymap.set('n', '<leader>sb', function()
-  tl_builtin.buffers(tl_themes.get_ivy({ previewer = false, height = 10 }))
+  tl_builtin.buffers(tl_themes.get_dropdown({ previewer = false, height = 10 }))
 end, { desc = '[ ] Find existing buffers' })
 
 vim.keymap.set('n', '<leader>/', function()
@@ -396,8 +396,8 @@ cmp.setup {
   sources = {
     { name = 'nvim_lsp' },
     { name = 'path' },
-    { name = 'buffer' },
-    { name = 'luasnip' },
+    { name = 'buffer', max_item_count = 7 },
+    { name = 'luasnip', max_item_count = 3 },
   },
   enabled = function()
     local context = require('cmp.config.context')

@@ -6,33 +6,6 @@ snippet ex
 # require
 snippet re
 	const ${1} = require('${2:module_name}');
-# EventEmitter
-snippet on
-	on('${1:event_name}', function(${2:stream}) {
-	  ${3}
-	});
-snippet emit
-	emit('${1:event_name}', ${2:args});
-snippet once
-	once('${1:event_name}', function(${2:stream}) {
-	  ${3}
-	});
-# http. User js function snippet as handler
-snippet http
-	http.createServer(${1:handler}).listen(${2:port_number});
-# net 
-snippet net
-	net.createServer(function(${1:socket}){
-		${1}.on('data', function('data'){
-		  ${2}
-		]});
-		${1}.on('end', function(){
-		  ${3}
-		});
-	}).listen(${4:8124});
-# Stream snippets
-snippet pipe
-	pipe(${1:stream})${2}
 # Express snippets
 snippet eget
 	${1:app}.get('${2:route}', ${3:handler});
@@ -50,3 +23,4 @@ snippet stdout
 snippet stderr
 	process.stderr
 
+# vim: ts=2 sts=2 sw=2 et

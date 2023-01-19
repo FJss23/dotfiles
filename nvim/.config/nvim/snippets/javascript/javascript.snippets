@@ -1,9 +1,4 @@
 # Functions
-# prototype
-snippet proto
-	${1:class_name}.prototype.${2:method_name} = function(${3}) {
-		${0:${VISUAL}}
-	};
 # Function
 snippet fun "function"
 	function ${1:function_name}(${2}) {
@@ -28,25 +23,6 @@ snippet vaf
 snippet vf
 	var ${1:function_name} = function $1(${2}) {
 		${0:${VISUAL}}
-	};
-# Immediate function
-snippet (f
-	(function(${1}) {
-		${0:${VISUAL}}
-	}(${2}));
-# Minify safe iife
-snippet ;fe
-	;(function(${1}) {
-		${0:${VISUAL}}
-	}(${2}))
-# self-defining function
-snippet sdf
-	var ${1:function_name} = function (${2:argument}) {
-		${3}
-
-		$1 = function ($2) {
-			${0:${VISUAL}}
-		};
 	};
 # Flow control
 # if
@@ -128,74 +104,6 @@ snippet :f
 # hasOwnProperty
 snippet has
 	hasOwnProperty(${0})
-# singleton
-snippet sing
-	function ${1:Singleton} (${2:argument}) {
-		// the cached instance
-		var instance;
-
-		// rewrite the constructor
-		$1 = function $1($2) {
-			return instance;
-		};
-
-		// carry over the prototype properties
-		$1.prototype = this;
-
-		// the instance
-		instance = new $1();
-
-		// reset the constructor pointer
-		instance.constructor = $1;
-
-		${0}
-
-		return instance;
-	}
-# Crockford's object function
-snippet obj
-	function object(o) {
-		function F() {}
-		F.prototype = o;
-		return new F();
-	}
-# Define multiple properties
-snippet props
-	var ${1:my_object} = Object.defineProperties(
-		${2:new Object()},
-		{
-			${3:property} : {
-				get : function $1_$3_getter() {
-					// getter code
-				},
-				set : function $1_$3_setter(value) {
-					// setter code
-				},
-				value        : ${4:value},
-				writeable    : ${5:boolean},
-				enumerable   : ${6:boolean},
-				configurable : ${0:boolean}
-			}
-		}
-	);
-# Define single property
-snippet prop
-	Object.defineProperty(
-		${1:object},
-		'${2:property}',
-		{
-			get : function $1_$2_getter() {
-				// getter code
-			},
-			set : function $1_$2_setter(value) {
-				// setter code
-			},
-			value        : ${3:value},
-			writeable    : ${4:boolean},
-			enumerable   : ${5:boolean},
-			configurable : ${0:boolean}
-		}
-	);
 # Documentation
 # docstring
 snippet /**
@@ -358,3 +266,4 @@ snippet as "async"
 snippet aw "await"
 	await ${0:${VISUAL}}
 
+# vim: ts=2 sts=2 sw=2 et

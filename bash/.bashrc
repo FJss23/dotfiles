@@ -180,7 +180,7 @@ export LANG=en_IN.UTF-8
 alias fd="fdfind"
 alias ssh='kitty +kitten ssh'
 alias tmux='tmux -u'
-alias neov='~/Apps/neovide/neovide'
+alias v='nvim'
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 export FZF_DEFAULT_OPS="--extended"

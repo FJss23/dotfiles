@@ -1,41 +1,34 @@
-local install_path = vim.fn.stdpath 'data' .. '/site/pack/packer/start/packer.nvim'
-local is_bootstrap = false
+local Plug = vim.fn['plug#']
 
-if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
-  is_bootstrap = true
-  vim.fn.execute('!git clone https://github.com/wbthomason/packer.nvim ' .. install_path)
-  vim.cmd [[packadd packer.nvim]]
-end
+local github = 'https://github.com/'
 
-require('packer').startup(function(use)
-  use 'wbthomason/packer.nvim'
-  use 'neovim/nvim-lspconfig'
-  use { 'hrsh7th/nvim-cmp', requires = { 'hrsh7th/cmp-nvim-lsp', 'dcampos/nvim-snippy' }, }
-  use {
-    'nvim-treesitter/nvim-treesitter',
-    run = function()
-      pcall(require('nvim-treesitter.install').update { with_sync = true })
-    end,
-  }
-  use { 'nvim-treesitter/nvim-treesitter-textobjects', after = 'nvim-treesitter' }
-  use { 'nvim-tree/nvim-tree.lua' }
-  use 'lewpoly/sherbet.nvim'
-  use 'nvim-lualine/lualine.nvim'
-  use 'tpope/vim-commentary'
-  use 'NvChad/nvim-colorizer.lua'
-  use 'mattn/emmet-vim'
-  use 'editorconfig/editorconfig-vim'
-  use 'tpope/vim-surround'
-  use 'windwp/nvim-ts-autotag'
-  use 'junegunn/fzf.vim'
-
-  if is_bootstrap then
-    require('packer').sync()
-  end
-end)
+vim.call('plug#begin', '~/.config/nvim/plugged')
+Plug('neovim/nvim-lspconfig')
+Plug('hrsh7th/nvim-cmp')
+Plug('hrsh7th/cmp-nvim-lsp' )
+Plug('dcampos/nvim-snippy')
+Plug('nvim-treesitter/nvim-treesitter')
+Plug('nvim-treesitter/nvim-treesitter-textobjects')
+Plug('nvim-tree/nvim-tree.lua')
+Plug('lewpoly/sherbet.nvim')
+Plug('nvim-lualine/lualine.nvim')
+Plug('numToStr/Comment.nvim')
+Plug('NvChad/nvim-colorizer.lua')
+Plug('mattn/emmet-vim')
+Plug('gpanders/editorconfig.nvim')
+Plug('tpope/vim-surround')
+Plug('windwp/nvim-ts-autotag')
+Plug('junegunn/fzf', {['do'] = vim.fn['fzf#install']})
+Plug('junegunn/fzf.vim')
+Plug('JoosepAlviste/nvim-ts-context-commentstring')
+vim.call('plug#end')
 
 vim.opt.path:append({'**'})
-vim.o.hlsearch = false
+vim.g.splitright = true
+vim.g.splitbelow = true
+vim.o.cursorline = true
+vim.g.hlsearch = true
+vim.g.incsearch = true
 vim.wo.number = true
 vim.o.mouse = 'a'
 vim.o.wrap = false
@@ -106,8 +99,22 @@ vim.keymap.set('n', '<leader>f', '<cmd>Format<CR>', kopts)
 vim.keymap.set('n', '<leader>dd', '<cmd>:NvimTreeToggle<CR>', kopts)
 vim.keymap.set('n', '<leader>da', '<cmd>:NvimTreeFindFile<CR>', kopts)
 
+vim.keymap.set('n', '<leader>?', '<cmd>History<CR>', { desc = '[?] Find recently opened files' })
+vim.keymap.set('n', '<leader>sb', '<cmd>Buffers<CR>', { desc = '[ ] Find existing buffers' })
+vim.keymap.set('n', '<leader>/', '<cmd>BLines<CR>', { desc = '[/] Fuzzily search in current buffer]' })
+vim.keymap.set('n', '<leader>sf', '<cmd>Files<CR>', { desc = '[S]earch [F]iles' })
+vim.keymap.set('n', '<leader>sh', '<cmd>Helptags<CR>', { desc = '[S]earch [H]elp' })
+vim.keymap.set('n', '<leader>sw', ':Rg ', { desc = '[S]earch current [W]ord' })
+vim.keymap.set('n', '<leader>sg', '<cmd>Rg<CR>', { desc = '[S]earch by [G]rep' })
+
+vim.keymap.set('n', '<leader>dp', vim.diagnostic.goto_prev)
+vim.keymap.set('n', '<leader>dn', vim.diagnostic.goto_next)
+vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float)
+vim.keymap.set('n', '<leader>qe', vim.diagnostic.setloclist)
+
 
 local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
+
 vim.api.nvim_create_autocmd('TextYankPost', {
   callback = function()
     vim.highlight.on_yank()
@@ -115,6 +122,15 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   group = highlight_group,
   pattern = '*',
 })
+
+vim.api.nvim_create_autocmd('TermOpen', {
+  callback = function()
+    vim.g.number = false
+    vim.g.relativenumber = false
+  end,
+  pattern = '*',
+})
+
 
 require('lualine').setup {
   options = {
@@ -146,6 +162,10 @@ require('snippy').setup({
 
 require('colorizer').setup({})
 
+require('Comment').setup({
+  pre_hook = require('ts_context_commentstring.integrations.comment_nvim').create_pre_hook(),
+})
+
 require("nvim-tree").setup({
   view = { side = "right", width = 40 },
   renderer = { 
@@ -161,6 +181,10 @@ require('nvim-treesitter.configs').setup {
   highlight = { enable = true },
   indent = { enable = true },
   autotag = { enable = true },
+  context_commentstring = {
+    enable = true,
+    enabled_autocmd = false,
+  },
   incremental_selection = {
     enable = true,
     keymaps = {
@@ -215,14 +239,6 @@ require('nvim-treesitter.configs').setup {
   },
 }
 
-vim.keymap.set('n', '<leader>?', '<cmd>History<CR>', { desc = '[?] Find recently opened files' })
-vim.keymap.set('n', '<leader>sb', '<cmd>Buffers<CR>', { desc = '[ ] Find existing buffers' })
-vim.keymap.set('n', '<leader>/', '<cmd>BLines<CR>', { desc = '[/] Fuzzily search in current buffer]' })
-vim.keymap.set('n', '<leader>sf', '<cmd>Files<CR>', { desc = '[S]earch [F]iles' })
-vim.keymap.set('n', '<leader>sh', '<cmd>Helptags<CR>', { desc = '[S]earch [H]elp' })
-vim.keymap.set('n', '<leader>sw', ':Rg ', { desc = '[S]earch current [W]ord' })
-vim.keymap.set('n', '<leader>sg', '<cmd>Rg<CR>', { desc = '[S]earch by [G]rep' })
-
 vim.diagnostic.config({
   virtual_text = false,
   signs = true,
@@ -235,11 +251,6 @@ vim.diagnostic.config({
     focusable = false,
   }
 })
-
-vim.keymap.set('n', '<leader>dp', vim.diagnostic.goto_prev)
-vim.keymap.set('n', '<leader>dn', vim.diagnostic.goto_next)
-vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float)
-vim.keymap.set('n', '<leader>qe', vim.diagnostic.setloclist)
 
 local on_attach = function(_, bufnr)
   local nmap = function(keys, func, desc)
@@ -347,6 +358,10 @@ cmp.setup {
   },
 }
 
+if vim.fn.executable('rg') then
+  vim.g.grepprg = 'rg --vimgrep --smart-case --hidden'
+  vim.g.grepformat = '%f:%l:%c:%m'
+end
 
 vim.cmd[[
 
@@ -356,14 +371,8 @@ augroup quickfix
 	autocmd QuickFixCmdPost lgetexpr lwindow
 augroup END
 
-set runtimepath^=~/.fzf
 let g:fzf_layout = { 'down': '~30%' }
 let g:fzf_preview_window = ['right:40%:hidden', 'ctrl-/']
-
-if executable("rg")
-  set grepprg=rg\ --vimgrep\ --smart-case\ --hidden
-  set grepformat=%f:%l:%c:%m
-endif
 
 function! Grep(...)
 	return system(join([&grepprg] + [expandcmd(join(a:000, ' '))], ' '))
@@ -371,8 +380,6 @@ endfunction
 
 command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<f-args>)
 command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<f-args>)
-
-autocmd TermOpen * setlocal nonumber norelativenumber
 
 let g:fzf_action = {
   \ 'ctrl-t': 'tab split',

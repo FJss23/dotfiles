@@ -1,7 +1,7 @@
 local wezterm = require 'wezterm'
 
 return {
-	font_size = 11,
+	font_size = 10,
 	font = wezterm.font 'JetBrains Mono',
 	check_for_updates = false,
 	hide_tab_bar_if_only_one_tab = true,
@@ -19,10 +19,10 @@ return {
 		{ key = "ñ", mods = "LEADER",       action=wezterm.action{SplitHorizontal={domain="CurrentPaneDomain"}}},
 		{ key = "z", mods = "LEADER",       action="TogglePaneZoomState" },
 		{ key = "t", mods = "LEADER",       action=wezterm.action{SpawnTab="CurrentPaneDomain"}},
-		{ key = "h", mods = "CTRL",       action=wezterm.action{ActivatePaneDirection="Left"}},
-		{ key = "j", mods = "CTRL",       action=wezterm.action{ActivatePaneDirection="Down"}},
-		{ key = "k", mods = "CTRL",       action=wezterm.action{ActivatePaneDirection="Up"}},
-		{ key = "l", mods = "CTRL",       action=wezterm.action{ActivatePaneDirection="Right"}},
+		{ key = "h", mods = "LEADER",       action=wezterm.action{ActivatePaneDirection="Left"}},
+		{ key = "j", mods = "LEADER",       action=wezterm.action{ActivatePaneDirection="Down"}},
+		{ key = "k", mods = "LEADER",       action=wezterm.action{ActivatePaneDirection="Up"}},
+		{ key = "l", mods = "LEADER",       action=wezterm.action{ActivatePaneDirection="Right"}},
 		{ key = "H", mods = "LEADER|SHIFT", action=wezterm.action{AdjustPaneSize={"Left", 2}}},
 		{ key = "J", mods = "LEADER|SHIFT", action=wezterm.action{AdjustPaneSize={"Down", 2}}},
 		{ key = "K", mods = "LEADER|SHIFT", action=wezterm.action{AdjustPaneSize={"Up", 2}}},
@@ -36,9 +36,9 @@ return {
 		{ key = "7", mods = "LEADER",       action=wezterm.action{ActivateTab=6}},
 		{ key = "8", mods = "LEADER",       action=wezterm.action{ActivateTab=7}},
 		{ key = "9", mods = "LEADER",       action=wezterm.action{ActivateTab=8}},
-		{ key = "c", mods = "LEADER", action=wezterm.action{CloseCurrentTab={confirm=true}}},
+		{ key = "c", mods = "LEADER", 	    action=wezterm.action{CloseCurrentTab={confirm=true}}},
 		{ key = "x", mods = "LEADER",       action=wezterm.action{CloseCurrentPane={confirm=true}}},
-		{ key = "v", mods="SHIFT|CTRL",     action = "Paste"},
-		{ key = "c", mods="SHIFT|CTRL",     action = "Copy"},
+		{ key = "v", mods = "SHIFT|CTRL",   action = "Paste"},
+		{ key = "c", mods = "SHIFT|CTRL",   action = "Copy"},
 	}
 }

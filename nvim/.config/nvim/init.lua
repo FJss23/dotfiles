@@ -19,16 +19,14 @@ require('packer').startup(function(use)
   }
   use { 'nvim-treesitter/nvim-treesitter-textobjects', after = 'nvim-treesitter' }
   use { 'nvim-tree/nvim-tree.lua' }
-  use "lewpoly/sherbet.nvim"
+  use 'lewpoly/sherbet.nvim'
   use 'nvim-lualine/lualine.nvim'
-  use 'numToStr/Comment.nvim'
+  use 'tpope/vim-commentary'
   use 'NvChad/nvim-colorizer.lua'
   use 'mattn/emmet-vim'
   use 'editorconfig/editorconfig-vim'
-  use 'JoosepAlviste/nvim-ts-context-commentstring'
   use 'tpope/vim-surround'
   use 'windwp/nvim-ts-autotag'
-  use { 'junegunn/fzf', run = ":call fzf#install()" }
   use 'junegunn/fzf.vim'
 
   if is_bootstrap then
@@ -134,10 +132,6 @@ require('lualine').setup {
   }
 }
 
-require('Comment').setup {
-  pre_hook = require('ts_context_commentstring.integrations.comment_nvim').create_pre_hook(),
-}
-
 require('snippy').setup({
   mappings = {
     is = {
@@ -153,8 +147,13 @@ require('snippy').setup({
 require('colorizer').setup({})
 
 require("nvim-tree").setup({
-  view = { side = "right", adaptive_size = true },
-  git = { enable = true },
+  view = { side = "right", width = 40 },
+  renderer = { 
+    icons = { 
+      show = { file = false, folder = false },
+      git_placement = "after"
+    } 
+  }
 })
 
 require('nvim-treesitter.configs').setup {
@@ -170,10 +169,6 @@ require('nvim-treesitter.configs').setup {
       scope_incremental = '<c-s>',
       node_decremental = '<c-backspace>',
     },
-  },
-  context_commentstring = {
-    enable = true,
-    enable_autocmd = false,
   },
   textobjects = {
     select = {
@@ -292,7 +287,9 @@ for _, lsp in ipairs(servers) do
 end
 
 local home = os.getenv('HOME')
+
 local prettier = { formatCommand = "prettier --stdin --stdin-filepath ${INPUT}", formatStdin = true }
+
 local languages = {
   typescript = { prettier }, 
   javascript = { prettier }, 
@@ -384,4 +381,5 @@ let g:fzf_action = {
   \ 'ctrl-q': 'fill_quickfix'}
 
 ]]
+
 -- vim: ts=2 sts=2 sw=2 et

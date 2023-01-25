@@ -114,6 +114,10 @@ vim.keymap.set('n', '<leader>dn', vim.diagnostic.goto_next)
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float)
 vim.keymap.set('n', '<leader>qe', vim.diagnostic.setloclist)
 
+vim.keymap.set('n', '<leader>gg', '<cmd>LazyGit<CR>')
+vim.keymap.set('n', '<leader>gc', '<cmd>LazyGitFilter<CR>')
+vim.keymap.set('n', '<leader>gb', '<cmd>LazyGitFilterCurrentFile<CR>')
+
 
 local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
 

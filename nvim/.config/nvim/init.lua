@@ -21,11 +21,13 @@ Plug('windwp/nvim-ts-autotag')
 Plug('junegunn/fzf', {['do'] = vim.fn['fzf#install']})
 Plug('junegunn/fzf.vim')
 Plug('JoosepAlviste/nvim-ts-context-commentstring')
+Plug('jremmen/vim-ripgrep')
+Plug('kdheepak/lazygit.nvim')
 vim.call('plug#end')
 
 vim.opt.path:append({'**'})
-vim.g.splitright = true
-vim.g.splitbelow = true
+vim.o.splitright = true
+vim.o.splitbelow = true
 vim.o.cursorline = true
 vim.g.hlsearch = true
 vim.g.incsearch = true
@@ -62,8 +64,8 @@ vim.keymap.set('i', 'ww', ']', kopts)
 vim.keymap.set('i', 'jk', '<Esc>', kopts)
 vim.keymap.set('n', '<leader>wf', '<cmd>w<cr>', kopts)
 vim.keymap.set('n', '<leader>qq', '<cmd>q<cr>', kopts)
-vim.keymap.set('n', '<leader>rw', '<cmd>Grep<cword><CR>', kopts)
-vim.keymap.set('n', '<leader>rg', ':Grep', kopts)
+vim.keymap.set('n', '<leader>rw', '<cmd>Rg<CR>', kopts)
+vim.keymap.set('n', '<leader>rg', ':Rg ', kopts)
 
 vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv", kopts)
 vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv", kopts)
@@ -123,10 +125,11 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   pattern = '*',
 })
 
+
 vim.api.nvim_create_autocmd('TermOpen', {
   callback = function()
-    vim.g.number = false
-    vim.g.relativenumber = false
+    vim.o.number = false
+    vim.o.relativenumber = false
   end,
   pattern = '*',
 })
@@ -336,7 +339,7 @@ local snippy = require 'snippy'
 cmp.setup {
   snippet = {
     expand = function(args)
-      snippy.lsp_expand(args.body)
+      snippy.expand_snippets(args.body)
     end,
   },
   formatting = {
@@ -365,27 +368,19 @@ end
 
 vim.cmd[[
 
-augroup quickfix
-	autocmd!
-	autocmd QuickFixCmdPost cgetexpr cwindow
-	autocmd QuickFixCmdPost lgetexpr lwindow
-augroup END
-
 let g:fzf_layout = { 'down': '~30%' }
 let g:fzf_preview_window = ['right:40%:hidden', 'ctrl-/']
-
-function! Grep(...)
-	return system(join([&grepprg] + [expandcmd(join(a:000, ' '))], ' '))
-endfunction
-
-command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<f-args>)
-command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<f-args>)
 
 let g:fzf_action = {
   \ 'ctrl-t': 'tab split',
   \ 'ctrl-x': 'split',
   \ 'ctrl-v': 'vsplit',
   \ 'ctrl-q': 'fill_quickfix'}
+
+hi DiagnosticUnderlineError ctermfg=red guifg=#db4b4b cterm=undercurl gui=undercurl
+hi DiagnosticUnderlineWarn ctermfg=yellow guifg=#eeaf58 cterm=undercurl gui=undercurl
+hi DiagnosticUnderlineInfo ctermfg=red guifg=#1cbc9b cterm=undercurl gui=undercurl
+hi DiagnosticUnderlineHint ctermfg=blue guifg=#4bc1fe cterm=undercurl gui=undercurl
 
 ]]
 

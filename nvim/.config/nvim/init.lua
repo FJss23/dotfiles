@@ -9,9 +9,7 @@ Plug('hrsh7th/cmp-nvim-lsp' )
 Plug('dcampos/nvim-snippy')
 Plug('nvim-treesitter/nvim-treesitter')
 Plug('nvim-treesitter/nvim-treesitter-textobjects')
-Plug('nvim-tree/nvim-tree.lua')
 Plug('lewpoly/sherbet.nvim')
-Plug('nvim-lualine/lualine.nvim')
 Plug('numToStr/Comment.nvim')
 Plug('NvChad/nvim-colorizer.lua')
 Plug('mattn/emmet-vim')
@@ -41,8 +39,10 @@ vim.o.undofile = true
 vim.o.ignorecase = true
 vim.o.smartcase = true
 vim.o.swapfile = false
-vim.o.showmode = false
 vim.o.scrolloff = 7
+vim.o.shiftwidth = 4 -- when > use 4 spaces
+vim.o.tabstop = 4 -- show existing tab with 4 spaces
+vim.o.expandtab = true -- insert 4 spaces when pressing tab
 vim.opt.spellsuggest = {'best', '9'}
 vim.o.updatetime = 250
 vim.wo.signcolumn = 'no'
@@ -50,8 +50,8 @@ vim.o.termguicolors = true
 vim.opt.wildignore:append({'*.png', '*.jpg', '*/.git/*', '*/node_modules/*', '*/tmp/*', '*.so', '*.zip'})
 vim.o.completeopt = 'menuone,noselect'
 vim.cmd.colorscheme 'sherbet'
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
+vim.g.netrw_banner = false
+vim.g.netrw_localcopydircmd = 'cp -r' -- Recursive copy
 
 
 local kopts = {silent = true}
@@ -98,8 +98,8 @@ vim.keymap.set('i', '<silent> <F2>', '<C-O><cmd>set spell!<CR>', kopts)
 vim.keymap.set('n', '<leader>sc', '<cmd>e $MYVIMRC<CR>', kopts)
 vim.keymap.set('n', '<leader>f', '<cmd>Format<CR>', kopts)
 
-vim.keymap.set('n', '<leader>dd', '<cmd>:NvimTreeToggle<CR>', kopts)
-vim.keymap.set('n', '<leader>da', '<cmd>:NvimTreeFindFile<CR>', kopts)
+vim.keymap.set('n', '<leader>dd', ':Lexplore %:p:h<CR>', kopts) -- open netrw in the dir of the current file
+vim.keymap.set('n', '<leader>da', ':Lexplore<CR>', kopts) -- open netrw en the current working dir
 
 vim.keymap.set('n', '<leader>?', '<cmd>History<CR>', { desc = '[?] Find recently opened files' })
 vim.keymap.set('n', '<leader>sb', '<cmd>Buffers<CR>', { desc = '[ ] Find existing buffers' })
@@ -122,173 +122,147 @@ vim.keymap.set('n', '<leader>gb', '<cmd>LazyGitFilterCurrentFile<CR>')
 local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
 
 vim.api.nvim_create_autocmd('TextYankPost', {
-  callback = function()
-    vim.highlight.on_yank()
-  end,
-  group = highlight_group,
-  pattern = '*',
+    callback = function()
+        vim.highlight.on_yank()
+    end,
+    group = highlight_group,
+    pattern = '*',
 })
 
 
 vim.api.nvim_create_autocmd('TermOpen', {
-  callback = function()
-    vim.o.number = false
-    vim.o.relativenumber = false
-  end,
-  pattern = '*',
+    callback = function()
+        vim.o.number = false
+        vim.o.relativenumber = false
+    end,
+    pattern = '*',
 })
 
 
-require('lualine').setup {
-  options = {
-    icons_enabled = false,
-    component_separators = '|',
-    section_separators = '',
-  },
-  sections = {
-    lualine_c = {
-      {
-        'filename',
-        path = 1,
-      }
-    },
-  }
-}
-
 require('snippy').setup({
-  mappings = {
-    is = {
-      ['<c-r>'] = 'expand_or_advance',
-      ['<c-t>'] = 'previous',
+    mappings = {
+        is = {
+            ['<c-r>'] = 'expand_or_advance',
+            ['<c-t>'] = 'previous',
+        },
+        nx = {
+            ['<leader>x'] = 'cut_text',
+        },
     },
-    nx = {
-      ['<leader>x'] = 'cut_text',
-    },
-  },
 })
 
 require('colorizer').setup({})
 
 require('Comment').setup({
-  pre_hook = require('ts_context_commentstring.integrations.comment_nvim').create_pre_hook(),
-})
-
-require("nvim-tree").setup({
-  view = { side = "right", width = 40 },
-  renderer = { 
-    icons = { 
-      show = { file = false, folder = false },
-      git_placement = "after"
-    } 
-  }
+    pre_hook = require('ts_context_commentstring.integrations.comment_nvim').create_pre_hook(),
 })
 
 require('nvim-treesitter.configs').setup {
-  ensure_installed = { 'lua', 'javascript', 'typescript', 'help', 'json', 'html', 'css' },
-  highlight = { enable = true },
-  indent = { enable = true },
-  autotag = { enable = true },
-  context_commentstring = {
-    enable = true,
-    enabled_autocmd = false,
-  },
-  incremental_selection = {
-    enable = true,
-    keymaps = {
-      init_selection = '<c-space>',
-      node_incremental = '<c-space>',
-      scope_incremental = '<c-s>',
-      node_decremental = '<c-backspace>',
+    ensure_installed = { 'lua', 'javascript', 'typescript', 'help', 'json', 'html', 'css' },
+    highlight = { enable = true },
+    indent = { enable = true },
+    autotag = { enable = true },
+    context_commentstring = {
+        enable = true,
+        enabled_autocmd = false,
     },
-  },
-  textobjects = {
-    select = {
-      enable = true,
-      lookahead = true, -- Automatically jump forward to textobj, similar to targets.vim
-      keymaps = {
-        ['aa'] = '@parameter.outer',
-        ['ia'] = '@parameter.inner',
-        ['af'] = '@function.outer',
-        ['if'] = '@function.inner',
-        ['ac'] = '@class.outer',
-        ['ic'] = '@class.inner',
-      },
+    incremental_selection = {
+        enable = true,
+        keymaps = {
+            init_selection = '<c-space>',
+            node_incremental = '<c-space>',
+            scope_incremental = '<c-s>',
+            node_decremental = '<c-backspace>',
+        },
     },
-    move = {
-      enable = true,
-      set_jumps = true, -- whether to set jumps in the jumplist
-      goto_next_start = {
-        ['ça'] = '@function.outer',
-        ['çs'] = '@class.outer',
-      },
-      goto_next_end = {
-        ['çd'] = '@function.outer',
-        ['çf'] = '@class.outer',
-      },
-      goto_previous_start = {
-        ['çq'] = '@function.outer',
-        ['çw'] = '@class.outer',
-      },
-      goto_previous_end = {
-        ['çe'] = '@function.outer',
-        ['çr'] = '@class.outer',
-      },
+    textobjects = {
+        select = {
+            enable = true,
+            lookahead = true, -- Automatically jump forward to textobj, similar to targets.vim
+            keymaps = {
+                ['aa'] = '@parameter.outer',
+                ['ia'] = '@parameter.inner',
+                ['af'] = '@function.outer',
+                ['if'] = '@function.inner',
+                ['ac'] = '@class.outer',
+                ['ic'] = '@class.inner',
+            },
+        },
+        move = {
+            enable = true,
+            set_jumps = true, -- whether to set jumps in the jumplist
+            goto_next_start = {
+                ['ça'] = '@function.outer',
+                ['çs'] = '@class.outer',
+            },
+            goto_next_end = {
+                ['çd'] = '@function.outer',
+                ['çf'] = '@class.outer',
+            },
+            goto_previous_start = {
+                ['çq'] = '@function.outer',
+                ['çw'] = '@class.outer',
+            },
+            goto_previous_end = {
+                ['çe'] = '@function.outer',
+                ['çr'] = '@class.outer',
+            },
+        },
+        swap = {
+            enable = true,
+            swap_next = {
+                ['<leader>a'] = '@parameter.inner',
+            },
+            swap_previous = {
+                ['<leader>A'] = '@parameter.inner',
+            },
+        },
     },
-    swap = {
-      enable = true,
-      swap_next = {
-        ['<leader>a'] = '@parameter.inner',
-      },
-      swap_previous = {
-        ['<leader>A'] = '@parameter.inner',
-      },
-    },
-  },
 }
 
 vim.diagnostic.config({
-  virtual_text = false,
-  signs = true,
-  underline = true,
-  update_in_insert = true,
-  severity_sort = false,
-  float = {
-    source = 'always',
-    show_header = true,
-    focusable = false,
-  }
+    virtual_text = false,
+    signs = true,
+    underline = true,
+    update_in_insert = true,
+    severity_sort = false,
+    float = {
+        source = 'always',
+        show_header = true,
+        focusable = false,
+    }
 })
 
 local on_attach = function(_, bufnr)
-  local nmap = function(keys, func, desc)
-    if desc then
-      desc = 'LSP: ' .. desc
+    local nmap = function(keys, func, desc)
+        if desc then
+            desc = 'LSP: ' .. desc
+        end
+        vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
     end
-    vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
-  end
 
-  nmap('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
-  nmap('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
-  nmap('gd', vim.lsp.buf.definition, '[G]oto [D]efinition')
-  nmap('gr', vim.lsp.buf.references, '[G]oto [R]eferences')
-  nmap('gI', vim.lsp.buf.implementation, '[G]oto [I]mplementation')
-  nmap('<leader>D', vim.lsp.buf.type_definition, 'Type [D]efinition')
-  nmap('<leader>ds', vim.lsp.buf.document_symbol, '[D]ocument [S]ymbols')
-  nmap('<leader>ws', vim.lsp.buf.workspace_symbol, '[W]orkspace [S]ymbols')
-  nmap('K', vim.lsp.buf.hover, 'Hover Documentation')
-  vim.keymap.set({ 'n', 'i' }, '<C-k>', vim.lsp.buf.signature_help, { buffer = bufnr, desc = 'Signature Documentation' })
-  nmap('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
-  nmap('<leader>wa', vim.lsp.buf.add_workspace_folder, '[W]orkspace [A]dd Folder')
-  nmap('<leader>wr', vim.lsp.buf.remove_workspace_folder, '[W]orkspace [R]emove Folder')
-  nmap('<leader>wl', function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end, '[W]orkspace [L]ist Folders')
+    nmap('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
+    nmap('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
+    nmap('gd', vim.lsp.buf.definition, '[G]oto [D]efinition')
+    nmap('gr', vim.lsp.buf.references, '[G]oto [R]eferences')
+    nmap('gI', vim.lsp.buf.implementation, '[G]oto [I]mplementation')
+    nmap('<leader>D', vim.lsp.buf.type_definition, 'Type [D]efinition')
+    nmap('<leader>ds', vim.lsp.buf.document_symbol, '[D]ocument [S]ymbols')
+    nmap('<leader>ws', vim.lsp.buf.workspace_symbol, '[W]orkspace [S]ymbols')
+    nmap('K', vim.lsp.buf.hover, 'Hover Documentation')
+    vim.keymap.set({ 'n', 'i' }, '<C-k>', vim.lsp.buf.signature_help, { buffer = bufnr, desc = 'Signature Documentation' })
+    nmap('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+    nmap('<leader>wa', vim.lsp.buf.add_workspace_folder, '[W]orkspace [A]dd Folder')
+    nmap('<leader>wr', vim.lsp.buf.remove_workspace_folder, '[W]orkspace [R]emove Folder')
+    nmap('<leader>wl', function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end, '[W]orkspace [L]ist Folders')
 
-  vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
-    if vim.lsp.buf.format then
-      vim.lsp.buf.format()
-    elseif vim.lsp.buf.formatting then
-      vim.lsp.buf.formatting()
-    end
-  end, { desc = 'Format current buffer with LSP' })
+    vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
+        if vim.lsp.buf.format then
+            vim.lsp.buf.format()
+        elseif vim.lsp.buf.formatting then
+            vim.lsp.buf.formatting()
+        end
+    end, { desc = 'Format current buffer with LSP' })
 end
 
 
@@ -298,10 +272,10 @@ local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
 for _, lsp in ipairs(servers) do
-  require('lspconfig')[lsp].setup {
-    on_attach = on_attach,
-    capabilities = capabilities,
-  }
+    require('lspconfig')[lsp].setup {
+        on_attach = on_attach,
+        capabilities = capabilities,
+    }
 end
 
 local home = os.getenv('HOME')
@@ -309,83 +283,81 @@ local home = os.getenv('HOME')
 local prettier = { formatCommand = "prettier --stdin --stdin-filepath ${INPUT}", formatStdin = true }
 
 local languages = {
-  typescript = { prettier }, 
-  javascript = { prettier }, 
-  javascriptreact = { prettier }, 
-  typescriptreact = { prettier }, 
-  json = { prettier }, 
-  css = { prettier }
+    typescript = { prettier }, 
+    javascript = { prettier }, 
+    javascriptreact = { prettier }, 
+    typescriptreact = { prettier }, 
+    json = { prettier }, 
+    css = { prettier }
 }
 
 require('lspconfig').efm.setup {
-  cmd = {  home .. '/.efm-langserver/bin/efm-langserver' },
-  init_options = { documentFormatting = true, codeAction = true },
-  filetypes = { 'typescriptreact', 'javascriptreact', 'javascript', 'typescript', 'json', 'css' },
-  settings = { languages = languages },
-  on_attach = on_attach,
-  capabilities = capabilities,
+    cmd = {  home .. '/.efm-langserver/bin/efm-langserver' },
+    init_options = { documentFormatting = true, codeAction = true },
+    filetypes = { 'typescriptreact', 'javascriptreact', 'javascript', 'typescript', 'json', 'css' },
+    settings = { languages = languages },
+    on_attach = on_attach,
+    capabilities = capabilities,
 }
 
 require'lspconfig'.eslint.setup {
-  on_attach = on_attach,
-  capabilities = capabilities,
-  settings = {
-    codeActionOnSave = {
-      enable = true,
-      mode = "all"
-    },
-  }
+    on_attach = on_attach,
+    capabilities = capabilities,
+    settings = {
+        codeActionOnSave = {
+            enable = true,
+            mode = "all"
+        },
+    }
 }
 
 local cmp = require 'cmp'
 local snippy = require 'snippy'
 
 cmp.setup {
-  snippet = {
-    expand = function(args)
-      snippy.expand_snippets(args.body)
-    end,
-  },
-  formatting = {
-    format = function (entry, vim_item)
-      vim_item.menu = ({ buffer = '[Buffer]', nvim_lsp = '[LSP]', snippy = '[Snippy]', nvim_lua = '[Lua]' })[entry.source.name]
-      return vim_item
-    end
-  },
-  mapping = cmp.mapping.preset.insert {
-    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-f>'] = cmp.mapping.scroll_docs(4),
-    ['<C-Space>'] = cmp.mapping.complete(),
-    ['<C-e>'] = cmp.mapping.abort(),
-    ['<CR>'] = cmp.mapping.confirm { behavior = cmp.ConfirmBehavior.Replace, select = true, },
-  },
-  sources = {
-    { name = 'nvim_lsp' },
-    { name = 'snippy' },
-  },
+    snippet = {
+        expand = function(args)
+            snippy.expand_snippets(args.body)
+        end,
+    },
+    formatting = {
+        format = function (entry, vim_item)
+            vim_item.menu = ({ buffer = '[Buffer]', nvim_lsp = '[LSP]', snippy = '[Snippy]', nvim_lua = '[Lua]' })[entry.source.name]
+            return vim_item
+        end
+    },
+    mapping = cmp.mapping.preset.insert {
+        ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+        ['<C-f>'] = cmp.mapping.scroll_docs(4),
+        ['<C-Space>'] = cmp.mapping.complete(),
+        ['<C-e>'] = cmp.mapping.abort(),
+        ['<CR>'] = cmp.mapping.confirm { behavior = cmp.ConfirmBehavior.Replace, select = true, },
+    },
+    sources = {
+        { name = 'nvim_lsp' },
+        { name = 'snippy' },
+    },
 }
 
 if vim.fn.executable('rg') then
-  vim.g.grepprg = 'rg --vimgrep --smart-case --hidden'
-  vim.g.grepformat = '%f:%l:%c:%m'
+    vim.g.grepprg = 'rg --vimgrep --smart-case --hidden'
+    vim.g.grepformat = '%f:%l:%c:%m'
 end
 
 vim.cmd[[
-
 let g:fzf_layout = { 'down': '~30%' }
 let g:fzf_preview_window = ['right:40%:hidden', 'ctrl-/']
 
 let g:fzf_action = {
-  \ 'ctrl-t': 'tab split',
-  \ 'ctrl-x': 'split',
-  \ 'ctrl-v': 'vsplit',
-  \ 'ctrl-q': 'fill_quickfix'}
+\ 'ctrl-t': 'tab split',
+\ 'ctrl-x': 'split',
+\ 'ctrl-v': 'vsplit',
+\ 'ctrl-q': 'fill_quickfix'}
 
 hi DiagnosticUnderlineError ctermfg=red guifg=#db4b4b cterm=undercurl gui=undercurl
 hi DiagnosticUnderlineWarn ctermfg=yellow guifg=#eeaf58 cterm=undercurl gui=undercurl
 hi DiagnosticUnderlineInfo ctermfg=red guifg=#1cbc9b cterm=undercurl gui=undercurl
 hi DiagnosticUnderlineHint ctermfg=blue guifg=#4bc1fe cterm=undercurl gui=undercurl
 
+hi! link netrwMarkFile Search
 ]]
-
--- vim: ts=2 sts=2 sw=2 et

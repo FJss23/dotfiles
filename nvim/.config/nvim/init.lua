@@ -48,6 +48,7 @@ vim.o.completeopt = 'menuone,noselect'
 vim.cmd.colorscheme 'sherbet'
 vim.g.netrw_banner = false
 vim.g.netrw_localcopydircmd = 'cp -r' -- Recursive copy
+vim.o.cmdheight = 0
 
 
 local kopts = {silent = true}
@@ -354,4 +355,6 @@ hi DiagnosticUnderlineInfo ctermfg=red guifg=#1cbc9b cterm=undercurl gui=undercu
 hi DiagnosticUnderlineHint ctermfg=blue guifg=#4bc1fe cterm=undercurl gui=undercurl
 
 hi! link netrwMarkFile Search
+hi! link Todo diffFileId
+hi StatusLine gui=bold guibg=#373940
 ]]

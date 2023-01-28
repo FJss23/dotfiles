@@ -181,6 +181,7 @@ alias fd="fdfind"
 alias ssh='kitty +kitten ssh'
 alias tmux='tmux -u'
 alias v='nvim'
+alias lg='lazygit'
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 export FZF_DEFAULT_OPS="--extended"

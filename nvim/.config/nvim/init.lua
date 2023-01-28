@@ -13,14 +13,9 @@ Plug('lewpoly/sherbet.nvim')
 Plug('numToStr/Comment.nvim')
 Plug('NvChad/nvim-colorizer.lua')
 Plug('mattn/emmet-vim')
-Plug('gpanders/editorconfig.nvim')
 Plug('tpope/vim-surround')
-Plug('windwp/nvim-ts-autotag')
-Plug('junegunn/fzf', {['do'] = vim.fn['fzf#install']})
+Plug('$XDG_DATA_HOME/fzf')
 Plug('junegunn/fzf.vim')
-Plug('JoosepAlviste/nvim-ts-context-commentstring')
-Plug('jremmen/vim-ripgrep')
-Plug('kdheepak/lazygit.nvim')
 vim.call('plug#end')
 
 vim.opt.path:append({'**'})
@@ -64,8 +59,11 @@ vim.keymap.set('i', 'ww', ']', kopts)
 vim.keymap.set('i', 'jk', '<Esc>', kopts)
 vim.keymap.set('n', '<leader>wf', '<cmd>w<cr>', kopts)
 vim.keymap.set('n', '<leader>qq', '<cmd>q<cr>', kopts)
-vim.keymap.set('n', '<leader>rw', '<cmd>Rg<CR>', kopts)
-vim.keymap.set('n', '<leader>rg', ':Rg ', kopts)
+vim.keymap.set('n', '<leader>rw', ':grep<c-r><c-w><CR>', kopts)
+vim.keymap.set('n', '<leader>rg', ':grep ', kopts)
+vim.keymap.set('n', '<leader>fd', ':find ', kopts)
+
+vim.keymap.set('n', '<c-space>', [[<cmd>lua require('cmp').complete()]], kopts)
 
 vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv", kopts)
 vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv", kopts)
@@ -112,11 +110,7 @@ vim.keymap.set('n', '<leader>sg', '<cmd>Rg<CR>', { desc = '[S]earch by [G]rep' }
 vim.keymap.set('n', '<leader>dp', vim.diagnostic.goto_prev)
 vim.keymap.set('n', '<leader>dn', vim.diagnostic.goto_next)
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float)
-vim.keymap.set('n', '<leader>qe', vim.diagnostic.setloclist)
-
-vim.keymap.set('n', '<leader>gg', '<cmd>LazyGit<CR>')
-vim.keymap.set('n', '<leader>gc', '<cmd>LazyGitFilter<CR>')
-vim.keymap.set('n', '<leader>gb', '<cmd>LazyGitFilterCurrentFile<CR>')
+vim.keymap.set('n', '<leader>le', vim.diagnostic.setloclist)
 
 
 local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
@@ -151,21 +145,16 @@ require('snippy').setup({
     },
 })
 
-require('colorizer').setup({})
-
-require('Comment').setup({
-    pre_hook = require('ts_context_commentstring.integrations.comment_nvim').create_pre_hook(),
+require('colorizer').setup({
+    filetypes = { 'css' }
 })
+
+require('Comment').setup({})
 
 require('nvim-treesitter.configs').setup {
     ensure_installed = { 'lua', 'javascript', 'typescript', 'help', 'json', 'html', 'css' },
     highlight = { enable = true },
     indent = { enable = true },
-    autotag = { enable = true },
-    context_commentstring = {
-        enable = true,
-        enabled_autocmd = false,
-    },
     incremental_selection = {
         enable = true,
         keymaps = {
@@ -315,6 +304,9 @@ local cmp = require 'cmp'
 local snippy = require 'snippy'
 
 cmp.setup {
+    completion = {
+        autocomplete = false
+    },
     snippet = {
         expand = function(args)
             snippy.expand_snippets(args.body)
@@ -339,12 +331,13 @@ cmp.setup {
     },
 }
 
-if vim.fn.executable('rg') then
-    vim.g.grepprg = 'rg --vimgrep --smart-case --hidden'
-    vim.g.grepformat = '%f:%l:%c:%m'
-end
 
 vim.cmd[[
+if executable("rg")
+  set grepprg=rg\ --vimgrep\ --smart-case\ --hidden
+  set grepformat=%f:%l:%c:%m
+endif
+
 let g:fzf_layout = { 'down': '~30%' }
 let g:fzf_preview_window = ['right:40%:hidden', 'ctrl-/']
 

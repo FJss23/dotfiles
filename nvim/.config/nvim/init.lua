@@ -1,6 +1,7 @@
 local Plug = vim.fn['plug#']
 
 local github = 'https://github.com/'
+local home = os.getenv('HOME')
 
 vim.call('plug#begin', '~/.config/nvim/plugged')
 Plug('neovim/nvim-lspconfig')
@@ -14,7 +15,7 @@ Plug('numToStr/Comment.nvim')
 Plug('NvChad/nvim-colorizer.lua')
 Plug('mattn/emmet-vim')
 Plug('tpope/vim-surround')
-Plug('$XDG_DATA_HOME/fzf')
+Plug(home .. '/.fzf')
 Plug('junegunn/fzf.vim')
 vim.call('plug#end')
 
@@ -75,7 +76,6 @@ vim.keymap.set('n', '<Right>', '<cmd>vertical resize -2<CR>', kopts)
 
 vim.keymap.set('n', '<leader><leader>', '<c-^>', kopts)
 vim.keymap.set('n', '<leader>,', ':ls<CR>:b<space>', kopts)
-vim.keymap.set('n', '<leader>bk', [[<cmd>bp\|bd! #<CR>]], kopts)
 
 vim.keymap.set('n', '<leader>co', '<cmd>copen<CR>', kopts)
 vim.keymap.set('n', '<leader>ck', '<cmd>cclose<CR>', kopts)
@@ -89,9 +89,6 @@ vim.keymap.set('n', '<leader>lp', '<cmd>lprevious<CR>', kopts)
 
 vim.keymap.set('n', '<leader>tk', '<cmd>tabclose<CR>', kopts)
 vim.keymap.set('n', '<leader>tn', '<cmd>tabnew<CR>', kopts)
-
-vim.keymap.set('n', '<silent> <F2>', '<cmd>set spell!<CR>', kopts)
-vim.keymap.set('i', '<silent> <F2>', '<C-O><cmd>set spell!<CR>', kopts)
 
 vim.keymap.set('n', '<leader>sc', '<cmd>e $MYVIMRC<CR>', kopts)
 vim.keymap.set('n', '<leader>f', '<cmd>Format<CR>', kopts)
@@ -267,7 +264,6 @@ for _, lsp in ipairs(servers) do
     }
 end
 
-local home = os.getenv('HOME')
 
 local prettier = { formatCommand = "prettier --stdin --stdin-filepath ${INPUT}", formatStdin = true }
 
@@ -333,6 +329,11 @@ cmp.setup {
 
 
 vim.cmd[[
+nnoremap <leader>bk <cmd>bp\|bd! #<CR>
+
+nnoremap <silent> <F2> <cmd>set spell!<CR>
+inoremap <silent> <F2> <C-O><cmd>set spell!<CR>
+
 if executable("rg")
   set grepprg=rg\ --vimgrep\ --smart-case\ --hidden
   set grepformat=%f:%l:%c:%m

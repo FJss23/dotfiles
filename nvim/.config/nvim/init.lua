@@ -17,6 +17,7 @@ Plug('mattn/emmet-vim')
 Plug('tpope/vim-surround')
 Plug(home .. '/.fzf')
 Plug('junegunn/fzf.vim')
+Plug('sbdchd/neoformat')
 vim.call('plug#end')
 
 vim.opt.path:append({'**'})
@@ -44,11 +45,14 @@ vim.wo.signcolumn = 'no'
 vim.o.termguicolors = true
 vim.opt.wildignore:append({'*.png', '*.jpg', '*/.git/*', '*/node_modules/*', '*/tmp/*', '*.so', '*.zip'})
 vim.o.completeopt = 'menuone,noselect'
+vim.g.nofoldenable = true
 vim.cmd.colorscheme 'sherbet'
 vim.g.netrw_banner = false
 vim.g.netrw_localcopydircmd = 'cp -r'       -- Recursive copy
-vim.g.nofoldenable = true
-
+vim.g.netrw_keepdir = true
+vim.g.netrw_list_hide = [[\(^\|\s\s\)\zs\.\S\+]]
+vim.g.netrw_liststyle = 3
+vim.g.netrw_winsize = 15
 
 local kopts = {silent = true}
 vim.g.mapleader = ' '
@@ -91,7 +95,7 @@ vim.keymap.set('n', '<leader>tk', '<cmd>tabclose<CR>', kopts)
 vim.keymap.set('n', '<leader>tn', '<cmd>tabnew<CR>', kopts)
 
 vim.keymap.set('n', '<leader>sc', '<cmd>e $MYVIMRC<CR>', kopts)
-vim.keymap.set('n', '<leader>f', '<cmd>Format<CR>', kopts)
+vim.keymap.set('n', '<leader>f', '<cmd>Neoformat<CR>', kopts)
 vim.keymap.set('n', '<leader>o', '<cmd>OrganizeImports<CR>', kopts)
 
 vim.keymap.set('n', '<leader>dd', ':Lexplore %:p:h<CR>', kopts) -- open netrw in the dir of the current file
@@ -129,7 +133,7 @@ require('colorizer').setup({
 require('Comment').setup({})
 
 require('nvim-treesitter.configs').setup {
-    ensure_installed = { 'lua', 'javascript', 'typescript', 'help', 'json', 'html', 'css' },
+    ensure_installed = { 'go', 'lua', 'javascript', 'typescript', 'help', 'json', 'html', 'css' },
     highlight = { enable = true },
     indent = { enable = true },
     incremental_selection = {
@@ -272,10 +276,10 @@ local function go_org_imports()
     end
 end
 
+local go_path_bin = home .. '/.asdf/installs/golang/1.19/packages/bin/'
+
 lspconfig.gopls.setup {
-    cmd = { home .. '/.asdf/installs/golang/1.19/packages/bin/gopls', 'serve' },
-    filetypes = { 'go', 'gomod' },
-    root_dir = require'lspconfig/util'.root_pattern('go.work', 'go.mod', '.git'),
+    cmd = { go_path_bin .. 'gopls', 'serve' },
     settings = {
         gopls = {
             analyses = {
@@ -293,37 +297,12 @@ lspconfig.gopls.setup {
     }
 }
 
-lspconfig.emmet_ls.setup({
-    on_attach = on_attach,
-    capabilities = capabilities,
-    filetypes = { 'html', 'typescriptreact', 'javascriptreact', 'css', 'sass', 'scss', 'less' },
+lspconfig.golangci_lint_ls.setup {
+    cmd = { go_path_bin .. 'golangci-lint-langserver' },
     init_options = {
-        html = {
-            options = {
-                ["bem.enabled"] = true,
-            },
-        },
-    },
-})
-
-local prettier = { formatCommand = "prettier --stdin --stdin-filepath ${INPUT}", formatStdin = true }
-
-local languages = {
-    typescript = { prettier }, 
-    javascript = { prettier }, 
-    javascriptreact = { prettier }, 
-    typescriptreact = { prettier }, 
-    json = { prettier }, 
-    css = { prettier },
-}
-
-lspconfig.efm.setup {
-    cmd = {  home .. '/.efm-langserver/bin/efm-langserver' },
-    init_options = { documentFormatting = true, codeAction = true },
-    filetypes = { 'typescriptreact', 'javascriptreact', 'javascript', 'typescript', 'json', 'css' },
-    settings = { languages = languages },
-    on_attach = on_attach,
-    capabilities = capabilities,
+        command = { go_path_bin .. 'golangci-lint', 'run', '--out-format', 'json' }
+    }
+    
 }
 
 lspconfig.eslint.setup {
@@ -367,10 +346,6 @@ cmp.setup {
         { name = 'snippy' },
     },
 }
-
-vim.api.nvim_create_user_command('Format', function(_)
-    vim.lsp.buf.format()
-end, { desc = 'Format current buffer with LSP' })
 
 local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
 
@@ -435,5 +410,13 @@ hi DiagnosticUnderlineHint ctermfg=blue guifg=#4bc1fe cterm=undercurl gui=underc
 hi! link netrwMarkFile Search
 hi! link Todo diffFileId
 hi StatusLine gui=bold guibg=#373940
+
+let g:neoformat_enabled_javascript = ['prettier']
+let g:neoformat_enabled_typescript = ['prettier']
+let g:neoformat_enabled_json = ['prettier']
+let g:neoformat_enabled_markdown = ['prettier']
+let g:neoformat_enabled_css = ['prettier']
+let g:neoformat_enabled_html = ['prettier']
+let g:neoformat_enabled_go = ['gofmt']
 ]]
 

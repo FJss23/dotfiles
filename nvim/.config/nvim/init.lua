@@ -27,7 +27,6 @@ vim.g.hlsearch = true
 vim.g.incsearch = true
 vim.wo.number = true
 vim.o.mouse = 'a'
-vim.o.wrap = false
 vim.wo.relativenumber = true
 vim.wo.nuw = 2
 vim.o.breakindent = true
@@ -36,9 +35,9 @@ vim.o.ignorecase = true
 vim.o.smartcase = true
 vim.o.swapfile = false
 vim.o.scrolloff = 7
-vim.o.shiftwidth = 4 -- when > use 4 spaces
-vim.o.tabstop = 4 -- show existing tab with 4 spaces
-vim.o.expandtab = true -- insert 4 spaces when pressing tab
+vim.o.shiftwidth = 4                        -- when > use 4 spaces
+vim.o.tabstop = 4                           -- show existing tab with 4 spaces
+vim.o.expandtab = true                      -- insert 4 spaces when pressing tab
 vim.opt.spellsuggest = {'best', '9'}
 vim.o.updatetime = 250
 vim.wo.signcolumn = 'no'
@@ -47,8 +46,8 @@ vim.opt.wildignore:append({'*.png', '*.jpg', '*/.git/*', '*/node_modules/*', '*/
 vim.o.completeopt = 'menuone,noselect'
 vim.cmd.colorscheme 'sherbet'
 vim.g.netrw_banner = false
-vim.g.netrw_localcopydircmd = 'cp -r' -- Recursive copy
-vim.o.cmdheight = 0
+vim.g.netrw_localcopydircmd = 'cp -r'       -- Recursive copy
+vim.g.nofoldenable = true
 
 
 local kopts = {silent = true}
@@ -59,8 +58,8 @@ vim.keymap.set('i', 'wq', '}', kopts)
 vim.keymap.set('i', 'qq', '[', kopts)
 vim.keymap.set('i', 'ww', ']', kopts)
 vim.keymap.set('i', 'jk', '<Esc>', kopts)
-vim.keymap.set('n', '<leader>wf', '<cmd>w<cr>', kopts)
-vim.keymap.set('n', '<leader>qq', '<cmd>q<cr>', kopts)
+vim.keymap.set('n', '<leader>i', '<cmd>w<cr>', kopts)
+vim.keymap.set('n', '<leader>q', '<cmd>q<cr>', kopts)
 vim.keymap.set('n', '<leader>rw', ':grep<c-r><c-w><CR>', kopts)
 vim.keymap.set('n', '<leader>rg', ':grep ', kopts)
 vim.keymap.set('n', '<leader>fd', ':find ', kopts)
@@ -93,6 +92,7 @@ vim.keymap.set('n', '<leader>tn', '<cmd>tabnew<CR>', kopts)
 
 vim.keymap.set('n', '<leader>sc', '<cmd>e $MYVIMRC<CR>', kopts)
 vim.keymap.set('n', '<leader>f', '<cmd>Format<CR>', kopts)
+vim.keymap.set('n', '<leader>o', '<cmd>OrganizeImports<CR>', kopts)
 
 vim.keymap.set('n', '<leader>dd', ':Lexplore %:p:h<CR>', kopts) -- open netrw in the dir of the current file
 vim.keymap.set('n', '<leader>da', ':Lexplore<CR>', kopts) -- open netrw en the current working dir
@@ -105,31 +105,10 @@ vim.keymap.set('n', '<leader>sh', '<cmd>Helptags<CR>', { desc = '[S]earch [H]elp
 vim.keymap.set('n', '<leader>sw', ':Rg ', { desc = '[S]earch current [W]ord' })
 vim.keymap.set('n', '<leader>sg', '<cmd>Rg<CR>', { desc = '[S]earch by [G]rep' })
 
-vim.keymap.set('n', '<leader>dp', vim.diagnostic.goto_prev)
-vim.keymap.set('n', '<leader>dn', vim.diagnostic.goto_next)
+vim.keymap.set('n', 'dp', vim.diagnostic.goto_prev)
+vim.keymap.set('n', 'dn', vim.diagnostic.goto_next)
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float)
 vim.keymap.set('n', '<leader>le', vim.diagnostic.setloclist)
-
-
-local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
-
-vim.api.nvim_create_autocmd('TextYankPost', {
-    callback = function()
-        vim.highlight.on_yank()
-    end,
-    group = highlight_group,
-    pattern = '*',
-})
-
-
-vim.api.nvim_create_autocmd('TermOpen', {
-    callback = function()
-        vim.o.number = false
-        vim.o.relativenumber = false
-    end,
-    pattern = '*',
-})
-
 
 require('snippy').setup({
     mappings = {
@@ -220,7 +199,7 @@ vim.diagnostic.config({
     }
 })
 
-local on_attach = function(_, bufnr)
+local on_attach = function(client, bufnr)
     local nmap = function(keys, func, desc)
         if desc then
             desc = 'LSP: ' .. desc
@@ -243,28 +222,89 @@ local on_attach = function(_, bufnr)
     nmap('<leader>wr', vim.lsp.buf.remove_workspace_folder, '[W]orkspace [R]emove Folder')
     nmap('<leader>wl', function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end, '[W]orkspace [L]ist Folders')
 
-    vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
-        if vim.lsp.buf.format then
-            vim.lsp.buf.format()
-        elseif vim.lsp.buf.formatting then
-            vim.lsp.buf.formatting()
-        end
-    end, { desc = 'Format current buffer with LSP' })
 end
 
-
 local servers = { 'tsserver', 'cssls', 'cssmodules_ls' }
+local lspconfig = require('lspconfig')
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities.textDocument.completion.completionItem.snippetSupport = true
 capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
 for _, lsp in ipairs(servers) do
-    require('lspconfig')[lsp].setup {
+    lspconfig[lsp].setup {
         on_attach = on_attach,
         capabilities = capabilities,
     }
 end
 
+local function js_org_imports()
+    local params = {
+        command = '_typescript.organizeImports',
+        arguments = { vim.api.nvim_buf_get_name(0) },
+        title = ''
+    }
+    vim.lsp.buf.execute_command(params)
+end
+
+lspconfig.tsserver.setup {
+    on_attach = on_attach,
+    capabilities = capabilities,
+    commands = {
+        OrganizeImports = {
+            js_org_imports,
+            description = 'Orginze js and ts imports'
+        }
+    }
+}
+
+local function go_org_imports()
+    local params = vim.lsp.util.make_range_params()
+    params.context = { only = { 'source.organizeImports' }}
+    local result = vim.lsp.buf_request_sync(0, 'textDocument/codeAction', params, wait_ms)
+    for cid, res in pairs(result or {}) do
+        for _, r in pairs(res.result or {}) do
+            if r.edit then
+                local enc = (vim.lsp.get_client_by_id(cid) or {}).offset_encoding or 'utf-16'
+                vim.lsp.util.apply_workspace_edit(r.edit, enc)
+            end
+        end
+    end
+end
+
+lspconfig.gopls.setup {
+    cmd = { home .. '/.asdf/installs/golang/1.19/packages/bin/gopls', 'serve' },
+    filetypes = { 'go', 'gomod' },
+    root_dir = require'lspconfig/util'.root_pattern('go.work', 'go.mod', '.git'),
+    settings = {
+        gopls = {
+            analyses = {
+                unusedparams = true,
+                shadow = true,
+            },
+            staticcheck = true,
+        }
+    },
+    commands = {
+        OrganizeImports = {
+            go_org_imports,
+            description = 'Orginze go imports'
+        }
+    }
+}
+
+lspconfig.emmet_ls.setup({
+    on_attach = on_attach,
+    capabilities = capabilities,
+    filetypes = { 'html', 'typescriptreact', 'javascriptreact', 'css', 'sass', 'scss', 'less' },
+    init_options = {
+        html = {
+            options = {
+                ["bem.enabled"] = true,
+            },
+        },
+    },
+})
 
 local prettier = { formatCommand = "prettier --stdin --stdin-filepath ${INPUT}", formatStdin = true }
 
@@ -274,10 +314,10 @@ local languages = {
     javascriptreact = { prettier }, 
     typescriptreact = { prettier }, 
     json = { prettier }, 
-    css = { prettier }
+    css = { prettier },
 }
 
-require('lspconfig').efm.setup {
+lspconfig.efm.setup {
     cmd = {  home .. '/.efm-langserver/bin/efm-langserver' },
     init_options = { documentFormatting = true, codeAction = true },
     filetypes = { 'typescriptreact', 'javascriptreact', 'javascript', 'typescript', 'json', 'css' },
@@ -286,7 +326,7 @@ require('lspconfig').efm.setup {
     capabilities = capabilities,
 }
 
-require'lspconfig'.eslint.setup {
+lspconfig.eslint.setup {
     on_attach = on_attach,
     capabilities = capabilities,
     settings = {
@@ -328,6 +368,29 @@ cmp.setup {
     },
 }
 
+vim.api.nvim_create_user_command('Format', function(_)
+    vim.lsp.buf.format()
+end, { desc = 'Format current buffer with LSP' })
+
+local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
+
+vim.api.nvim_create_autocmd('TextYankPost', {
+    callback = function()
+        vim.highlight.on_yank()
+    end,
+    group = highlight_group,
+    pattern = '*',
+})
+
+
+vim.api.nvim_create_autocmd('TermOpen', {
+    callback = function()
+        vim.o.number = false
+        vim.o.relativenumber = false
+    end,
+    pattern = '*',
+})
+
 
 vim.cmd[[
 nnoremap <leader>bk <cmd>bp\|bd! #<CR>
@@ -349,6 +412,21 @@ let g:fzf_action = {
 \ 'ctrl-v': 'vsplit',
 \ 'ctrl-q': 'fill_quickfix'}
 
+let g:fzf_colors =
+\ { 'fg':      ['fg', 'Normal'],
+  \ 'bg':      ['bg', 'Normal'],
+  \ 'hl':      ['fg', 'Comment'],
+  \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+  \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+  \ 'hl+':     ['fg', 'Statement'],
+  \ 'info':    ['fg', 'PreProc'],
+  \ 'border':  ['fg', 'Ignore'],
+  \ 'prompt':  ['fg', 'Conditional'],
+  \ 'pointer': ['fg', 'Exception'],
+  \ 'marker':  ['fg', 'Keyword'],
+  \ 'spinner': ['fg', 'Label'],
+  \ 'header':  ['fg', 'Comment'] }
+
 hi DiagnosticUnderlineError ctermfg=red guifg=#db4b4b cterm=undercurl gui=undercurl
 hi DiagnosticUnderlineWarn ctermfg=yellow guifg=#eeaf58 cterm=undercurl gui=undercurl
 hi DiagnosticUnderlineInfo ctermfg=red guifg=#1cbc9b cterm=undercurl gui=undercurl
@@ -358,3 +436,4 @@ hi! link netrwMarkFile Search
 hi! link Todo diffFileId
 hi StatusLine gui=bold guibg=#373940
 ]]
+

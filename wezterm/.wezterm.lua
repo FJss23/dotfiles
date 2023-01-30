@@ -13,6 +13,7 @@ return {
 		top = 0,
 		bottom = 0,
 	},
+    defuault_prog = { 'fish' },
 	leader = { key = "a", mods = "CTRL" },
 	keys = {
 		{ key = "-", mods = "LEADER",       action=wezterm.action{SplitVertical={domain="CurrentPaneDomain"}}},

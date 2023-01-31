@@ -276,7 +276,7 @@ local function go_org_imports()
     end
 end
 
-local go_path_bin = home .. '/.asdf/installs/golang/1.19/packages/bin/'
+local go_path_bin = home .. '/.asdf/installs/golang/1.19.5/packages/bin/'
 
 lspconfig.gopls.setup {
     cmd = { go_path_bin .. 'gopls', 'serve' },

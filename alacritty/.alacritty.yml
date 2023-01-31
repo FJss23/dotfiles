@@ -122,43 +122,43 @@ font:
     family: JetBrainsMono Nerd Font
 
     # The `style` can be specified to pick a specific face.
-    #style: Regular
+    style: Regular
 
   # Bold font face
-  #bold:
-    # Font family
+  bold:
+    family: JetBrainsMono Nerd Font
     #
     # If the bold family is not specified, it will fall back to the
     # value specified for the normal font.
     #family: monospace
 
     # The `style` can be specified to pick a specific face.
-    #style: Bold
+    style: Bold
 
   # Italic font face
-  #italic:
-    # Font family
+  italic:
+    family: JetBrainsMono Nerd Font
     #
     # If the italic family is not specified, it will fall back to the
     # value specified for the normal font.
     #family: monospace
 
     # The `style` can be specified to pick a specific face.
-    #style: Italic
-
+    style: Italic
+    #
   # Bold italic font face
-  #bold_italic:
-    # Font family
+  bold_italic:
+    family: JetBrainsMono Nerd Font
     #
     # If the bold italic family is not specified, it will fall back to the
     # value specified for the normal font.
     #family: monospace
 
     # The `style` can be specified to pick a specific face.
-    #style: Bold Italic
+    style: Bold Italic
 
   # Point size
-  size: 9.0
+  size: 11.0
 
   # Offset is the extra space around each character. `offset.y` can be thought
   # of as modifying the line spacing, and `offset.x` as modifying the letter

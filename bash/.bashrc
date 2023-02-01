@@ -178,7 +178,6 @@ export LC_ALL=en_IN.UTF-8
 export LANG=en_IN.UTF-8
 
 alias fd="fdfind"
-alias ssh='kitty +kitten ssh'
 alias tmux='tmux -u'
 alias v='nvim'
 alias lg='lazygit'

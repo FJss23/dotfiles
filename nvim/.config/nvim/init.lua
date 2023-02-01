@@ -133,7 +133,7 @@ require('colorizer').setup({
 require('Comment').setup({})
 
 require('nvim-treesitter.configs').setup {
-    ensure_installed = { 'go', 'lua', 'javascript', 'typescript', 'help', 'json', 'html', 'css' },
+    ensure_installed = { 'markdown', 'go', 'lua', 'javascript', 'typescript', 'help', 'json', 'html', 'css' },
     highlight = { enable = true },
     indent = { enable = true },
     incremental_selection = {

@@ -68,8 +68,6 @@ vim.keymap.set('n', '<leader>rw', ':grep<c-r><c-w><CR>', kopts)
 vim.keymap.set('n', '<leader>rg', ':grep ', kopts)
 vim.keymap.set('n', '<leader>fd', ':find ', kopts)
 
-vim.keymap.set('n', '<c-space>', [[<cmd>lua require('cmp').complete()]], kopts)
-
 vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv", kopts)
 vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv", kopts)
 
@@ -279,6 +277,8 @@ end
 local go_path_bin = home .. '/.asdf/installs/golang/1.19.5/packages/bin/'
 
 lspconfig.gopls.setup {
+    on_attach = on_attach,
+    capabilities = capabilities,
     cmd = { go_path_bin .. 'gopls', 'serve' },
     settings = {
         gopls = {
@@ -298,6 +298,8 @@ lspconfig.gopls.setup {
 }
 
 lspconfig.golangci_lint_ls.setup {
+    on_attach = on_attach,
+    capabilities = capabilities,
     cmd = { go_path_bin .. 'golangci-lint-langserver' },
     init_options = {
         command = { go_path_bin .. 'golangci-lint', 'run', '--out-format', 'json' }

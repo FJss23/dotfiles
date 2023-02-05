@@ -1,24 +1,4 @@
-local Plug = vim.fn['plug#']
-
-local github = 'https://github.com/'
 local home = os.getenv('HOME')
-
-vim.call('plug#begin', '~/.config/nvim/plugged')
-Plug('neovim/nvim-lspconfig')
-Plug('hrsh7th/nvim-cmp')
-Plug('hrsh7th/cmp-nvim-lsp' )
-Plug('dcampos/nvim-snippy')
-Plug('nvim-treesitter/nvim-treesitter')
-Plug('nvim-treesitter/nvim-treesitter-textobjects')
-Plug('lewpoly/sherbet.nvim')
-Plug('numToStr/Comment.nvim')
-Plug('NvChad/nvim-colorizer.lua')
-Plug('mattn/emmet-vim')
-Plug('tpope/vim-surround')
-Plug(home .. '/.fzf')
-Plug('junegunn/fzf.vim')
-Plug('sbdchd/neoformat')
-vim.call('plug#end')
 
 vim.opt.path:append({'**'})
 vim.o.splitright = true
@@ -411,7 +391,7 @@ hi DiagnosticUnderlineHint ctermfg=blue guifg=#4bc1fe cterm=undercurl gui=underc
 
 hi! link netrwMarkFile Search
 hi! link Todo diffFileId
-hi StatusLine gui=bold guibg=#373940
+hi StatusLine guibg=#373940
 
 let g:neoformat_enabled_javascript = ['prettier']
 let g:neoformat_enabled_typescript = ['prettier']

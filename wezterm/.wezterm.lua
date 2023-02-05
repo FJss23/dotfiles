@@ -1,8 +1,9 @@
 local wezterm = require 'wezterm'
 
 return {
-	font_size = 10,
-	font = wezterm.font 'JetBrains Mono',
+	font_size = 12,
+	-- font = wezterm.font 'JetBrains Mono',
+	font = wezterm.font 'CodeNewRoman Nerd Font',
 	check_for_updates = false,
 	hide_tab_bar_if_only_one_tab = true,
 	use_fancy_tab_bar = false,

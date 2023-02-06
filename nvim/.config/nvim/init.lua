@@ -32,7 +32,7 @@ vim.g.netrw_localcopydircmd = 'cp -r'       -- Recursive copy
 vim.g.netrw_keepdir = true
 vim.g.netrw_list_hide = [[\(^\|\s\s\)\zs\.\S\+]]
 vim.g.netrw_liststyle = 3
-vim.g.netrw_winsize = 15
+vim.g.netrw_winsize = 30
 
 local kopts = {silent = true}
 vim.g.mapleader = ' '
@@ -79,13 +79,16 @@ vim.keymap.set('n', '<leader>o', '<cmd>OrganizeImports<CR>', kopts)
 vim.keymap.set('n', '<leader>dd', ':Lexplore %:p:h<CR>', kopts) -- open netrw in the dir of the current file
 vim.keymap.set('n', '<leader>da', ':Lexplore<CR>', kopts) -- open netrw en the current working dir
 
-vim.keymap.set('n', '<leader>?', '<cmd>History<CR>', { desc = '[?] Find recently opened files' })
-vim.keymap.set('n', '<leader>sb', '<cmd>Buffers<CR>', { desc = '[ ] Find existing buffers' })
-vim.keymap.set('n', '<leader>/', '<cmd>BLines<CR>', { desc = '[/] Fuzzily search in current buffer]' })
-vim.keymap.set('n', '<leader>sf', '<cmd>Files<CR>', { desc = '[S]earch [F]iles' })
-vim.keymap.set('n', '<leader>sh', '<cmd>Helptags<CR>', { desc = '[S]earch [H]elp' })
-vim.keymap.set('n', '<leader>sw', ':Rg ', { desc = '[S]earch current [W]ord' })
-vim.keymap.set('n', '<leader>sg', '<cmd>Rg<CR>', { desc = '[S]earch by [G]rep' })
+vim.keymap.set('n', '<leader>?', '<cmd>FzfLua oldfiles<CR>', { desc = '[?] Find recently opened files' })
+vim.keymap.set('n', '<leader>sb', '<cmd>FzfLua buffers<CR>', { desc = '[ ] Find existing buffers' })
+vim.keymap.set('n', '<leader>/', '<cmd>FzfLua blines<CR>', { desc = '[/] Fuzzily search in current buffer]' })
+vim.keymap.set('n', '<leader>sf', '<cmd>FzfLua files<CR>', { desc = '[S]earch [F]iles' })
+vim.keymap.set('n', '<leader>sh', '<cmd>FzfLua help_tags<CR>', { desc = '[S]earch [H]elp' })
+vim.keymap.set('n', '<leader>sw', '<cmd>FzfLua grep<CR>', { desc = '[S]earch current [W]ord' })
+vim.keymap.set('n', '<leader>sg', '<cmd>FzfLua live_grep_require<CR>', { desc = '[S]earch by [G]rep' })
+vim.keymap.set('n', '<leader>sñc', '<cmd>FzfLua git_bcommits<CR>', { desc = 'Search commits of the current buffer' })
+vim.keymap.set('n', '<leader>sñb', '<cmd>FzfLua git_branches<CR>', { desc = 'Search branches of the cwd' })
+vim.keymap.set('n', '<leader>sñd', '<cmd>FzfLua lsp_document_diagnostics<CR>', { desc = 'Search diagnostic using LPS' })
 
 vim.keymap.set('n', 'dp', vim.diagnostic.goto_prev)
 vim.keymap.set('n', 'dn', vim.diagnostic.goto_next)
@@ -359,30 +362,6 @@ if executable("rg")
   set grepprg=rg\ --vimgrep\ --smart-case\ --hidden
   set grepformat=%f:%l:%c:%m
 endif
-
-let g:fzf_layout = { 'down': '~30%' }
-let g:fzf_preview_window = ['right:40%:hidden', 'ctrl-/']
-
-let g:fzf_action = {
-\ 'ctrl-t': 'tab split',
-\ 'ctrl-x': 'split',
-\ 'ctrl-v': 'vsplit',
-\ 'ctrl-q': 'fill_quickfix'}
-
-let g:fzf_colors =
-\ { 'fg':      ['fg', 'Normal'],
-  \ 'bg':      ['bg', 'Normal'],
-  \ 'hl':      ['fg', 'Comment'],
-  \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-  \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
-  \ 'hl+':     ['fg', 'Statement'],
-  \ 'info':    ['fg', 'PreProc'],
-  \ 'border':  ['fg', 'Ignore'],
-  \ 'prompt':  ['fg', 'Conditional'],
-  \ 'pointer': ['fg', 'Exception'],
-  \ 'marker':  ['fg', 'Keyword'],
-  \ 'spinner': ['fg', 'Label'],
-  \ 'header':  ['fg', 'Comment'] }
 
 hi DiagnosticUnderlineError ctermfg=red guifg=#db4b4b cterm=undercurl gui=undercurl
 hi DiagnosticUnderlineWarn ctermfg=yellow guifg=#eeaf58 cterm=undercurl gui=undercurl

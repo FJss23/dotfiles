@@ -1,8 +1,0 @@
-- Create your own status line?
-- Create a branch and see if you want to use telescope with the browser and project extensions?
-- See if you still want to continue using efm, maybe you want to use nvim-lint and formatter.nvim?
-- See if you want to use emmet_ls? (it uses completion but works well with jsx files)
-- Test the fish terminal
-- See if you want to split your lua files of neovim
-- Add the logic for copying to your clipboard
-- Change the color of your cursor and check the shortcuts for search the output of wezterm

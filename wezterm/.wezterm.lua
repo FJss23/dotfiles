@@ -2,8 +2,8 @@ local wezterm = require 'wezterm'
 
 return {
 	font_size = 12,
-	-- font = wezterm.font 'JetBrains Mono',
 	font = wezterm.font 'CodeNewRoman Nerd Font',
+    color_scheme = 'Atom',
 	check_for_updates = false,
 	hide_tab_bar_if_only_one_tab = true,
 	use_fancy_tab_bar = false,
@@ -25,10 +25,10 @@ return {
 		{ key = "j", mods = "LEADER",       action=wezterm.action{ActivatePaneDirection="Down"}},
 		{ key = "k", mods = "LEADER",       action=wezterm.action{ActivatePaneDirection="Up"}},
 		{ key = "l", mods = "LEADER",       action=wezterm.action{ActivatePaneDirection="Right"}},
-		{ key = "H", mods = "LEADER|SHIFT", action=wezterm.action{AdjustPaneSize={"Left", 2}}},
-		{ key = "J", mods = "LEADER|SHIFT", action=wezterm.action{AdjustPaneSize={"Down", 2}}},
-		{ key = "K", mods = "LEADER|SHIFT", action=wezterm.action{AdjustPaneSize={"Up", 2}}},
-		{ key = "L", mods = "LEADER|SHIFT", action=wezterm.action{AdjustPaneSize={"Right", 2}}},
+		{ key = "H", mods = "LEADER|SHIFT", action=wezterm.action{AdjustPaneSize={"Left", 10}}},
+		{ key = "J", mods = "LEADER|SHIFT", action=wezterm.action{AdjustPaneSize={"Down", 10}}},
+		{ key = "K", mods = "LEADER|SHIFT", action=wezterm.action{AdjustPaneSize={"Up", 10}}},
+		{ key = "L", mods = "LEADER|SHIFT", action=wezterm.action{AdjustPaneSize={"Right", 10}}},
 		{ key = "1", mods = "LEADER",       action=wezterm.action{ActivateTab=0}},
 		{ key = "2", mods = "LEADER",       action=wezterm.action{ActivateTab=1}},
 		{ key = "3", mods = "LEADER",       action=wezterm.action{ActivateTab=2}},
@@ -40,7 +40,5 @@ return {
 		{ key = "9", mods = "LEADER",       action=wezterm.action{ActivateTab=8}},
 		{ key = "c", mods = "LEADER", 	    action=wezterm.action{CloseCurrentTab={confirm=true}}},
 		{ key = "x", mods = "LEADER",       action=wezterm.action{CloseCurrentPane={confirm=true}}},
-		{ key = "v", mods = "SHIFT|CTRL",   action = "Paste"},
-		{ key = "c", mods = "SHIFT|CTRL",   action = "Copy"},
 	}
 }

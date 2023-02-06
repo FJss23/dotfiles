@@ -3,7 +3,7 @@ local wezterm = require 'wezterm'
 return {
 	font_size = 12,
 	font = wezterm.font 'CodeNewRoman Nerd Font',
-    color_scheme = 'Atom',
+    color_scheme = 'Gruvbox dark, hard (base16)'--[[Banana Blueberry--]],
 	check_for_updates = false,
 	hide_tab_bar_if_only_one_tab = true,
 	use_fancy_tab_bar = false,
@@ -14,7 +14,8 @@ return {
 		top = 0,
 		bottom = 0,
 	},
-    defuault_prog = { 'fish' },
+    initial_cols = 180,
+    initial_rows = 45,
 	leader = { key = "a", mods = "CTRL" },
 	keys = {
 		{ key = "-", mods = "LEADER",       action=wezterm.action{SplitVertical={domain="CurrentPaneDomain"}}},
@@ -40,5 +41,5 @@ return {
 		{ key = "9", mods = "LEADER",       action=wezterm.action{ActivateTab=8}},
 		{ key = "c", mods = "LEADER", 	    action=wezterm.action{CloseCurrentTab={confirm=true}}},
 		{ key = "x", mods = "LEADER",       action=wezterm.action{CloseCurrentPane={confirm=true}}},
-	}
+	},
 }

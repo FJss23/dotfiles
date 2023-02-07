@@ -168,5 +168,8 @@ export EDITOR="$VISUAL"
 
 . "$HOME/.cargo/env"
 
+export ANDROID_HOME=/home/$USER/Android/Sdk
+export PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH
+
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"

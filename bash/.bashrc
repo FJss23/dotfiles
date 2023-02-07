@@ -116,7 +116,6 @@ fi
 # .................................................................................................
 # Custom configuration
 
-# get current branch in git repo
 function parse_git_branch() {
 	BRANCH=`git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
 	if [ ! "${BRANCH}" == "" ]
@@ -144,6 +143,16 @@ export LANG=en_IN.UTF-8
 
 alias fd="fdfind"
 alias v='nvim'
+
+alias ga='git add'
+alias gc='git commit'
+alias gs='git status'
+alias gd='git diff'
+alias gpl='git pull'
+alias gps='git push'
+
+alias dcu='docker-compose up -d'
+alias dcd='docker-compose down'
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 export FZF_DEFAULT_OPS="--extended"

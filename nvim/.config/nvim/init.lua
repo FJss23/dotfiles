@@ -26,7 +26,7 @@ vim.o.termguicolors = true
 vim.opt.wildignore:append({'*.png', '*.jpg', '*/.git/*', '*/node_modules/*', '*/tmp/*', '*.so', '*.zip'})
 vim.o.completeopt = 'menuone,noselect'
 vim.g.foldenable = false
-vim.cmd.colorscheme 'sherbet'
+vim.cmd[[colorscheme sherbet]]
 vim.g.netrw_banner = false
 vim.g.netrw_localcopydircmd = 'cp -r'       -- Recursive copy
 vim.g.netrw_keepdir = true
@@ -329,6 +329,36 @@ cmp.setup {
     },
 }
 
+function status_line() 
+    local file = '%f'
+    local modifiers = '%m%r%h%w%q'
+    local lsp_info = [[%{luaeval("diagnostic_status()")}]]
+    local file_type = '%y'
+    local line_info = '%l/%L:%c'
+    local encoding = '%{&fenc}'  -- ex: utf-8 (sometimes can be empty,  too lazy to write something better)
+    local file_format = '%{&ff}' -- ex: unix
+
+    return table.concat({
+        ' ', file,' ', modifiers,' ', lsp_info, '%=', encoding, ' ', file_type, ' ', file_format, ' | ', line_info, ' '
+    })
+end
+
+-- https://zignar.net/2022/01/21/a-boring-statusline-for-neovim/
+function diagnostic_status()
+  local num_errors = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR })
+  if num_errors > 0 then
+    return ' 💀 ' .. num_errors .. ' '
+  end
+
+  local num_warnings = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.WARN })
+  if num_warnings > 0 then
+    return ' 💩' .. num_warnings .. ' '
+  end
+  return ''
+end
+
+
+
 local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
 
 vim.api.nvim_create_autocmd('TextYankPost', {
@@ -350,6 +380,8 @@ vim.api.nvim_create_autocmd('TermOpen', {
 
 
 vim.cmd[[
+set statusline=%!v:lua.status_line()
+
 nnoremap <leader>bk <cmd>bp\|bd! #<CR>
 
 nnoremap <silent> <F2> <cmd>set spell!<CR>

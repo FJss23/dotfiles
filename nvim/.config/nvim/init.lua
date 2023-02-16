@@ -26,7 +26,7 @@ vim.o.termguicolors = true
 vim.opt.wildignore:append({'*.png', '*.jpg', '*/.git/*', '*/node_modules/*', '*/tmp/*', '*.so', '*.zip'})
 vim.o.completeopt = 'menuone,noselect'
 vim.g.foldenable = false
-vim.cmd[[colorscheme sherbet]]
+vim.cmd.colorscheme('tokyonight')
 vim.g.netrw_banner = false
 vim.g.netrw_localcopydircmd = 'cp -r'       -- Recursive copy
 vim.g.netrw_keepdir = true
@@ -35,8 +35,10 @@ vim.g.netrw_liststyle = 3
 vim.g.netrw_winsize = 30
 
 local kopts = {silent = true}
+
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
+
 vim.keymap.set('i', 'qw', '{', kopts)
 vim.keymap.set('i', 'wq', '}', kopts)
 vim.keymap.set('i', 'qq', '[', kopts)
@@ -76,41 +78,56 @@ vim.keymap.set('n', '<leader>sc', '<cmd>e $MYVIMRC<CR>', kopts)
 vim.keymap.set('n', '<leader>f', '<cmd>Neoformat<CR>', kopts)
 vim.keymap.set('n', '<leader>o', '<cmd>OrganizeImports<CR>', kopts)
 
-vim.keymap.set('n', '<leader>dd', ':Lexplore %:p:h<CR>', kopts) -- open netrw in the dir of the current file
-vim.keymap.set('n', '<leader>da', ':Lexplore<CR>', kopts) -- open netrw en the current working dir
+vim.keymap.set('n', '<leader>dd', ':Lexplore %:p:h<CR>', kopts)     -- open netrw in the dir of the current file
+vim.keymap.set('n', '<leader>da', ':Lexplore<CR>', kopts)           -- open netrw en the current working dir
 
-vim.keymap.set('n', '<leader>?', '<cmd>History<CR>', { desc = '[?] Find recently opened files' })
-vim.keymap.set('n', '<leader>sb', '<cmd>Buffers<CR>', { desc = '[ ] Find existing buffers' })
-vim.keymap.set('n', '<leader>/', '<cmd>BLines<CR>', { desc = '[/] Fuzzily search in current buffer]' })
-vim.keymap.set('n', '<leader>sf', '<cmd>Files<CR>', { desc = '[S]earch [F]iles' })
-vim.keymap.set('n', '<leader>sh', '<cmd>Helptags<CR>', { desc = '[S]earch [H]elp' })
-vim.keymap.set('n', '<leader>sw', ':Rg ', { desc = '[S]earch current [W]ord' })
-vim.keymap.set('n', '<leader>sg', '<cmd>Rg<CR>', { desc = '[S]earch by [G]rep' })
+vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
+vim.keymap.set('n', '<leader>sb', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
+vim.keymap.set('n', '<leader>/', function()
+  require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
+    winblend = 10,
+    previewer = false,
+  })
+end, { desc = '[/] Fuzzily search in current buffer]' })
+vim.keymap.set('n', '<leader>sf', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
+vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc = '[S]earch [H]elp' })
+vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { desc = '[S]earch current [W]ord' })
+vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
+vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
 
 vim.keymap.set('n', 'dp', vim.diagnostic.goto_prev)
 vim.keymap.set('n', 'dn', vim.diagnostic.goto_next)
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float)
 vim.keymap.set('n', '<leader>le', vim.diagnostic.setloclist)
 
-require('snippy').setup({
+require('telescope').setup {
+  defaults = {
     mappings = {
-        is = {
-            ['<c-r>'] = 'expand_or_advance',
-            ['<c-t>'] = 'previous',
-        },
-        nx = {
-            ['<leader>x'] = 'cut_text',
-        },
+      i = {
+        ['<C-u>'] = false,
+        ['<C-d>'] = false,
+      },
     },
-})
+  },
+}
+
+pcall(require('telescope').load_extension, 'fzy_native')
+pcall(require('telescope').load_extension, 'project')
+pcall(require('telescope').load_extension, 'file_browser')
 
 require('colorizer').setup({
-    filetypes = { 'css' }
+    filetypes = { 'css', 'scss' }
 })
 
-require('Comment').setup({})
+require('nvim-web-devicons').setup({})
+
+require('Comment').setup({
+    pre_hook = require('ts_context_commentstring.integrations.comment_nvim').create_pre_hook()
+})
 
 require('nvim-treesitter.configs').setup {
+    context_commentstring = { enable = true, enable_autocmd = false },
+    autotag = { enable = true },
     ensure_installed = { 'markdown', 'go', 'lua', 'javascript', 'typescript', 'help', 'json', 'html', 'css' },
     highlight = { enable = true },
     indent = { enable = true },
@@ -168,6 +185,37 @@ require('nvim-treesitter.configs').setup {
     },
 }
 
+local cmp = require 'cmp'
+local luasnip = require 'luasnip'
+
+cmp.setup {
+    completion = {
+        autocomplete = false
+    },
+    snippet = {
+        expand = function(args)
+            luasnip.lsp_expand(args.body)
+        end,
+    },
+    formatting = {
+        format = function (entry, vim_item)
+            vim_item.menu = ({ nvim_lsp = '[LSP]', luasnip = '[LuaSnip]' })[entry.source.name]
+            return vim_item
+        end
+    },
+    mapping = cmp.mapping.preset.insert {
+        ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+        ['<C-f>'] = cmp.mapping.scroll_docs(4),
+        ['<C-Space>'] = cmp.mapping.complete(),
+        ['<C-e>'] = cmp.mapping.abort(),
+        ['<CR>'] = cmp.mapping.confirm { behavior = cmp.ConfirmBehavior.Replace, select = true, },
+    },
+    sources = {
+        { name = 'nvim_lsp' },
+        { name = 'luasnip' },
+    },
+}
+
 vim.diagnostic.config({
     virtual_text = false,
     signs = true,
@@ -203,14 +251,12 @@ local on_attach = function(client, bufnr)
     nmap('<leader>wa', vim.lsp.buf.add_workspace_folder, '[W]orkspace [A]dd Folder')
     nmap('<leader>wr', vim.lsp.buf.remove_workspace_folder, '[W]orkspace [R]emove Folder')
     nmap('<leader>wl', function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end, '[W]orkspace [L]ist Folders')
-
 end
 
 local servers = { 'tsserver', 'cssls', 'cssmodules_ls' }
 local lspconfig = require('lspconfig')
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities.textDocument.completion.completionItem.snippetSupport = true
 capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
 for _, lsp in ipairs(servers) do
@@ -298,36 +344,20 @@ lspconfig.eslint.setup {
     }
 }
 
-local cmp = require 'cmp'
-local snippy = require 'snippy'
+local function branch_name()
+	local branch = vim.fn.system("git branch --show-current 2> /dev/null | tr -d '\n'")
+	if branch ~= "" then
+		return ' ' .. branch .. " | "
+	else
+		return ""
+	end
+end
 
-cmp.setup {
-    completion = {
-        autocomplete = false
-    },
-    snippet = {
-        expand = function(args)
-            snippy.expand_snippets(args.body)
-        end,
-    },
-    formatting = {
-        format = function (entry, vim_item)
-            vim_item.menu = ({ buffer = '[Buffer]', nvim_lsp = '[LSP]', snippy = '[Snippy]', nvim_lua = '[Lua]' })[entry.source.name]
-            return vim_item
-        end
-    },
-    mapping = cmp.mapping.preset.insert {
-        ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-        ['<C-f>'] = cmp.mapping.scroll_docs(4),
-        ['<C-Space>'] = cmp.mapping.complete(),
-        ['<C-e>'] = cmp.mapping.abort(),
-        ['<CR>'] = cmp.mapping.confirm { behavior = cmp.ConfirmBehavior.Replace, select = true, },
-    },
-    sources = {
-        { name = 'nvim_lsp' },
-        { name = 'snippy' },
-    },
-}
+vim.api.nvim_create_autocmd({"FileType", "BufEnter", "FocusGained"}, {
+	callback = function()
+		vim.b.branch_name = branch_name()
+	end
+})
 
 function status_line() 
     local file = '%f'
@@ -339,7 +369,7 @@ function status_line()
     local file_format = '%{&ff}' -- ex: unix
 
     return table.concat({
-        ' ', file,' ', modifiers,' ', lsp_info, '%=', encoding, ' ', file_type, ' ', file_format, ' | ', line_info, ' '
+        vim.b.branch_name, ' ', file,' ', modifiers,' ', lsp_info, '%=', encoding, ' ', file_type, ' ', file_format, ' | ', line_info, ' '
     })
 end
 
@@ -380,6 +410,24 @@ vim.api.nvim_create_autocmd('TermOpen', {
 
 
 vim.cmd[[
+let g:user_emmet_install_global = 0
+autocmd FileType html,css,javascript,javascriptreact,typescript,typescriptreact EmmetInstall
+
+let g:user_emmet_settings = {
+\  'javascript' : {
+\      'extends' : 'jsx',
+\  },
+\  'typescript' : {
+\      'extends' : 'jsx',
+\  },
+\  'javascript.jsx' : {
+\    'extends' : 'jsx',
+\    'default_attributes': {
+\      'label': [{'htmlFor': ''}],
+\    }
+\  },
+\}
+
 set statusline=%!v:lua.status_line()
 
 nnoremap <leader>bk <cmd>bp\|bd! #<CR>
@@ -392,14 +440,13 @@ if executable("rg")
   set grepformat=%f:%l:%c:%m
 endif
 
-hi DiagnosticUnderlineError ctermfg=red guifg=#db4b4b cterm=undercurl gui=undercurl
-hi DiagnosticUnderlineWarn ctermfg=yellow guifg=#eeaf58 cterm=undercurl gui=undercurl
-hi DiagnosticUnderlineInfo ctermfg=red guifg=#1cbc9b cterm=undercurl gui=undercurl
-hi DiagnosticUnderlineHint ctermfg=blue guifg=#4bc1fe cterm=undercurl gui=undercurl
+hi DiagnosticUnderlineError cterm=undercurl gui=undercurl
+hi DiagnosticUnderlineWarn cterm=undercurl gui=undercurl
+hi DiagnosticUnderlineInfo cterm=undercurl gui=undercurl
+hi DiagnosticUnderlineHint cterm=undercurl gui=undercurl
 
 hi! link netrwMarkFile Search
 hi! link Todo diffFileId
-hi StatusLine guibg=#373940
 
 let g:neoformat_enabled_javascript = ['prettier']
 let g:neoformat_enabled_typescript = ['prettier']
@@ -409,30 +456,14 @@ let g:neoformat_enabled_css = ['prettier']
 let g:neoformat_enabled_html = ['prettier']
 let g:neoformat_enabled_go = ['gofmt']
 
-set rtp+=~/.fzf
 
-let g:fzf_layout = { 'down': '~30%' }
-let g:fzf_preview_window = ['right:40%:hidden', 'ctrl-/']
+hi! link DiagnosticLineNrError DiagnosticError
+hi! link DiagnosticLineNrWarn DiagnosticWarn
+hi! link DiagnosticLineNrInfo DiagnosticInfo
+hi! link DiagnosticLineNrHint DiagnosticHint
 
-let g:fzf_action = {
-\ 'ctrl-t': 'tab split',
-\ 'ctrl-x': 'split',
-\ 'ctrl-v': 'vsplit',
-\ 'ctrl-q': 'fill_quickfix'}
-
-let g:fzf_colors =
-\ { 'fg':      ['fg', 'Normal'],
-  \ 'bg':      ['bg', 'Normal'],
-  \ 'hl':      ['fg', 'Comment'],
-  \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-  \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
-  \ 'hl+':     ['fg', 'Statement'],
-  \ 'info':    ['fg', 'PreProc'],
-  \ 'border':  ['fg', 'Ignore'],
-  \ 'prompt':  ['fg', 'Conditional'],
-  \ 'pointer': ['fg', 'Exception'],
-  \ 'marker':  ['fg', 'Keyword'],
-  \ 'spinner': ['fg', 'Label'],
-  \ 'header':  ['fg', 'Comment'] }
+sign define DiagnosticSignError text= texthl=DiagnosticSignError linehl= numhl=DiagnosticLineNrError
+sign define DiagnosticSignWarn text= texthl=DiagnosticSignWarn linehl= numhl=DiagnosticLineNrWarn
+sign define DiagnosticSignInfo text= texthl=DiagnosticSignInfo linehl= numhl=DiagnosticLineNrInfo
+sign define DiagnosticSignHint text= texthl=DiagnosticSignHint linehl= numhl=DiagnosticLineNrHint
 ]]
-

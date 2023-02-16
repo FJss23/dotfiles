@@ -1,0 +1,64 @@
+#!/bin/bash
+
+function rename_wezterm_title {
+  echo "\x1b]1337;SetUserVar=panetitle=$(echo -n $1 | base64)\x07"
+}
+
+function parse_git_branch() {
+	BRANCH=`git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
+	if [ ! "${BRANCH}" == "" ]
+	then
+		echo " (${BRANCH})"
+	else
+		echo ""
+	fi
+}
+
+
+function get_hostname() {
+  hostname=`hostname`
+  if [[ "$hostname" == "frandev-kubuntu" || "$hostname" == "frandevme-desktop" ]]; then
+    echo "kubuntu"
+  else
+    echo $hostname
+  fi
+}
+
+export PS1="\u@\`get_hostname\`:\w\[\e[33m\]\`parse_git_branch\`\[\e[m\]\n$ "
+
+export LC_ALL=en_IN.UTF-8
+export LANG=en_IN.UTF-8
+
+alias fd="fdfind"
+alias v='nvim'
+
+alias ga='git add'
+alias gc='git commit'
+alias gs='git status'
+alias gd='git diff'
+alias gpl='git pull'
+alias gps='git push'
+
+alias dcu='docker-compose up -d'
+alias dcd='docker-compose down'
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+export FZF_DEFAULT_OPS="--extended"
+export FZF_DEFAULT_COMMAND="fdfind --type f"
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND="fdfind -t d . $HOME"
+
+. $HOME/.asdf/asdf.sh
+. $HOME/.asdf/completions/asdf.bash
+
+export VISUAL=nvim
+export EDITOR="$VISUAL"
+
+. "$HOME/.cargo/env"
+. "$HOME/Apps/z/z.sh"
+
+export ANDROID_HOME=/home/$USER/Android/Sdk
+export PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH
+
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"

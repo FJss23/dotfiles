@@ -1,9 +1,22 @@
 local wezterm = require 'wezterm'
 
+wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_width)
+  local pane_title = tab.active_pane.title
+  local user_title = tab.active_pane.user_vars.panetitle
+
+  if user_title ~= nil and #user_title > 0 then
+    pane_title = user_title
+  end
+
+  return {
+    {Text="  " .. pane_title .. "  "},
+  }
+end)
+
 return {
 	font_size = 12,
 	font = wezterm.font 'CodeNewRoman Nerd Font',
-    color_scheme = 'Gruvbox dark, hard (base16)'--[[Banana Blueberry--]],
+    color_scheme = --[[ 'tokyonight'  ]]'tokyonight-day',
 	check_for_updates = false,
 	hide_tab_bar_if_only_one_tab = true,
 	use_fancy_tab_bar = false,

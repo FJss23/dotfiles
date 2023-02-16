@@ -1,17 +1,32 @@
-[alias]
-    ci = commit
-    co = checkout
-    br = branch
-    di = diff
+# https://www.durdn.com/blog/2012/11/22/must-have-git-aliases-advanced-examples/
 
-[merge]
-    tool = vimdiff
+[alias]
+    ls = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate
+    ll = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --numstat
+    lnc = log --pretty=format:"%h\\ %s\\ [%cn]"
+    lds = log --pretty=format:"%C(yellow)%h\\ %ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --date=short
+    ld = log --pretty=format:"%C(yellow)%h\\ %ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --date=relative
+    le = log --oneline --decorate
+    fl = log -u
+    dl = "!git ll -1"
+    dlc = diff --cached HEAD^
+    dr  = "!f() { git diff "$1"^.."$1"; }; f"
+    lc  = "!f() { git ll "$1"^.."$1"; }; f"
+    diffr  = "!f() { git diff "$1"^.."$1"; }; f"
+    la = "!git config -l | rg alias | cut -c 7-"
 
 [diff]
-    tool = vimdiff
+    tool = nvimdiff
 
-[mergetool "vimdiff"]
-    cmd = nvim -d $LOCAL $REMOTE $MERGED -c
+[difftool "nvimdiff"]
+    cmd = nvim -d \"$LOCAL\" \"$REMOTE\" -c \"wincmd w\" -c \"wincmd L\"
+
+[merge]
+    tool = nvimdiff
+
+[mergetool "nvimdiff"]
+    cmd = nvim -d \"$LOCAL\" \"$MERGED\" \"$BASE\" \"$REMOTE\" -c \"wincmd w\" .c \"wincmd J\"
+
 [user]
 	email = uo252473@uniovi.es
 	name = FJss23

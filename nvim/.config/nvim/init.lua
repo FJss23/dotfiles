@@ -128,7 +128,7 @@ require('Comment').setup({
 require('nvim-treesitter.configs').setup {
     context_commentstring = { enable = true, enable_autocmd = false },
     autotag = { enable = true },
-    ensure_installed = { 'markdown', 'go', 'lua', 'javascript', 'typescript', 'help', 'json', 'html', 'css' },
+    ensure_installed = { 'yaml', 'markdown_inline', 'markdown', 'go', 'lua', 'javascript', 'typescript', 'help', 'json', 'html', 'css' },
     highlight = { enable = true },
     indent = { enable = true },
     incremental_selection = {

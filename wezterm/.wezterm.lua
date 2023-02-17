@@ -16,7 +16,7 @@ end)
 return {
 	font_size = 12,
 	font = wezterm.font 'CodeNewRoman Nerd Font',
-    color_scheme = --[[ 'tokyonight'  ]]'tokyonight-day',
+    color_scheme = 'tokyonight'--[[ 'tokyonight-day']],
 	check_for_updates = false,
 	hide_tab_bar_if_only_one_tab = true,
 	use_fancy_tab_bar = false,

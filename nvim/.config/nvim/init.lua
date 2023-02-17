@@ -26,6 +26,7 @@ vim.o.termguicolors = true
 vim.opt.wildignore:append({'*.png', '*.jpg', '*/.git/*', '*/node_modules/*', '*/tmp/*', '*.so', '*.zip'})
 vim.o.completeopt = 'menuone,noselect'
 vim.g.foldenable = false
+vim.o.colorcolumn = '90'
 vim.cmd.colorscheme('tokyonight')
 vim.g.netrw_banner = false
 vim.g.netrw_localcopydircmd = 'cp -r'       -- Recursive copy
@@ -128,7 +129,11 @@ require('Comment').setup({
 require('nvim-treesitter.configs').setup {
     context_commentstring = { enable = true, enable_autocmd = false },
     autotag = { enable = true },
-    ensure_installed = { 'yaml', 'markdown_inline', 'markdown', 'go', 'lua', 'javascript', 'typescript', 'help', 'json', 'html', 'css' },
+    ensure_installed = { 
+        'java', 'regex', 'make', 'cmake', 'c', 'bash', 'yaml', 'markdown_inline', 
+        'markdown', 'go', 'gomod', 'gowork', 'lua', 'javascript', 'jsdoc', 'typescript', 
+        'tsx', 'help', 'json', 'html', 'css', 'scss' 
+    },
     highlight = { enable = true },
     indent = { enable = true },
     incremental_selection = {

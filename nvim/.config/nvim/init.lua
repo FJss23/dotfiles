@@ -27,13 +27,15 @@ vim.opt.wildignore:append({'*.png', '*.jpg', '*/.git/*', '*/node_modules/*', '*/
 vim.o.completeopt = 'menuone,noselect'
 vim.g.foldenable = false
 vim.o.colorcolumn = '90'
-vim.cmd.colorscheme('tokyonight')
+-- vim.cmd.colorscheme('gruvbox')
+vim.cmd.colorscheme('catppuccin')
 vim.g.netrw_banner = false
 vim.g.netrw_localcopydircmd = 'cp -r'       -- Recursive copy
 vim.g.netrw_keepdir = true
 vim.g.netrw_list_hide = [[\(^\|\s\s\)\zs\.\S\+]]
 vim.g.netrw_liststyle = 3
 vim.g.netrw_winsize = 30
+vim.o.spelllang = 'en_us'
 
 local kopts = {silent = true}
 
@@ -47,9 +49,8 @@ vim.keymap.set('i', 'ww', ']', kopts)
 vim.keymap.set('i', 'jk', '<Esc>', kopts)
 vim.keymap.set('n', '<leader>j', '<cmd>w<cr>', kopts)
 vim.keymap.set('n', '<leader>q', '<cmd>q<cr>', kopts)
-vim.keymap.set('n', '<leader>rw', ':grep<c-r><c-w><CR>', kopts)
-vim.keymap.set('n', '<leader>rg', ':grep ', kopts)
-vim.keymap.set('n', '<leader>fd', ':find ', kopts)
+vim.keymap.set('n', '<leader>rw', ':Rg<CR>', kopts)
+vim.keymap.set('n', '<leader>rg', ':Rg ', kopts)
 
 vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv", kopts)
 vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv", kopts)
@@ -79,8 +80,11 @@ vim.keymap.set('n', '<leader>sc', '<cmd>e $MYVIMRC<CR>', kopts)
 vim.keymap.set('n', '<leader>f', '<cmd>Neoformat<CR>', kopts)
 vim.keymap.set('n', '<leader>o', '<cmd>OrganizeImports<CR>', kopts)
 
-vim.keymap.set('n', '<leader>dd', ':Lexplore %:p:h<CR>', kopts)     -- open netrw in the dir of the current file
-vim.keymap.set('n', '<leader>da', ':Lexplore<CR>', kopts)           -- open netrw en the current working dir
+vim.keymap.set('n', '<leader>dd', ':Lexplore %:p:h<CR>', kopts)
+vim.keymap.set('n', '<leader>da', ':Lexplore<CR>', kopts)
+
+vim.keymap.set('n', '<leader>df', ':Telescope file_browser<CR>', kopts)
+vim.keymap.set('n', '<leader>dp', ':Telescope project<CR>', kopts)
 
 vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
 vim.keymap.set('n', '<leader>sb', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
@@ -112,7 +116,7 @@ require('telescope').setup {
   },
 }
 
-pcall(require('telescope').load_extension, 'fzy_native')
+pcall(require('telescope').load_extension, 'fzf_native')
 pcall(require('telescope').load_extension, 'project')
 pcall(require('telescope').load_extension, 'file_browser')
 
@@ -132,7 +136,7 @@ require('nvim-treesitter.configs').setup {
     ensure_installed = { 
         'java', 'regex', 'make', 'cmake', 'c', 'bash', 'yaml', 'markdown_inline', 
         'markdown', 'go', 'gomod', 'gowork', 'lua', 'javascript', 'jsdoc', 'typescript', 
-        'tsx', 'help', 'json', 'html', 'css', 'scss' 
+        'tsx', 'help', 'json', 'html', 'css', 'scss', 'sql'
     },
     highlight = { enable = true },
     indent = { enable = true },
@@ -188,6 +192,18 @@ require('nvim-treesitter.configs').setup {
             },
         },
     },
+}
+
+local parser_config = require "nvim-treesitter.parsers".get_parser_configs()
+
+parser_config.sql = {
+  install_info = {
+    url = home .. "/Documents/github/tree-sitter-sql",
+    files = {"src/parser.c", "src/scanner.cc"},
+    branch = "main",
+    generate_requires_npm = false,
+    requires_generate_from_grammar = false,
+  },
 }
 
 local cmp = require 'cmp'
@@ -258,7 +274,7 @@ local on_attach = function(client, bufnr)
     nmap('<leader>wl', function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end, '[W]orkspace [L]ist Folders')
 end
 
-local servers = { 'tsserver', 'cssls', 'cssmodules_ls' }
+local servers = { 'tsserver', 'cssls', 'cssmodules_ls', 'html', 'jsonls' }
 local lspconfig = require('lspconfig')
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
@@ -349,6 +365,14 @@ lspconfig.eslint.setup {
     }
 }
 
+local texlab_path_bin = home .. '/.config/nvim/lsp-langs/texlab'
+
+lspconfig.texlab.setup {
+    on_attach = on_attach,
+    capabilities = capabilities,
+    cmd = { texlab_path_bin },
+}
+
 local function branch_name()
 	local branch = vim.fn.system("git branch --show-current 2> /dev/null | tr -d '\n'")
 	if branch ~= "" then
@@ -415,6 +439,7 @@ vim.api.nvim_create_autocmd('TermOpen', {
 
 
 vim.cmd[[
+
 let g:user_emmet_install_global = 0
 autocmd FileType html,css,javascript,javascriptreact,typescript,typescriptreact EmmetInstall
 
@@ -445,6 +470,8 @@ if executable("rg")
   set grepformat=%f:%l:%c:%m
 endif
 
+" hi Normal guibg=#1d1f21
+
 hi DiagnosticUnderlineError cterm=undercurl gui=undercurl
 hi DiagnosticUnderlineWarn cterm=undercurl gui=undercurl
 hi DiagnosticUnderlineInfo cterm=undercurl gui=undercurl
@@ -460,7 +487,6 @@ let g:neoformat_enabled_markdown = ['prettier']
 let g:neoformat_enabled_css = ['prettier']
 let g:neoformat_enabled_html = ['prettier']
 let g:neoformat_enabled_go = ['gofmt']
-
 
 hi! link DiagnosticLineNrError DiagnosticError
 hi! link DiagnosticLineNrWarn DiagnosticWarn

@@ -1,9 +1,5 @@
 #!/bin/bash
 
-function rename_wezterm_title {
-  echo "\x1b]1337;SetUserVar=panetitle=$(echo -n $1 | base64)\x07"
-}
-
 function parse_git_branch() {
 	BRANCH=`git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
 	if [ ! "${BRANCH}" == "" ]

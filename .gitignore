@@ -1,2 +1,3 @@
 nvim/.config/nvim/plugged/*
 nvim/.config/nvim/lsp-langs
+nvim/.config/nvim/pack/development/start

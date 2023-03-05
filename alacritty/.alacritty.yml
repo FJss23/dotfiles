@@ -127,7 +127,7 @@ font:
 
   # Bold font face
   bold:
-    family: JetBrainsMono Nerd Font
+    family: CodeNewRoman Nerd Font
     #
     # If the bold family is not specified, it will fall back to the
     # value specified for the normal font.
@@ -138,7 +138,7 @@ font:
 
   # Italic font face
   italic:
-    family: JetBrainsMono Nerd Font
+    family: CodeNewRoman Nerd Font
     #
     # If the italic family is not specified, it will fall back to the
     # value specified for the normal font.
@@ -149,7 +149,7 @@ font:
     #
   # Bold italic font face
   bold_italic:
-    family: JetBrainsMono Nerd Font
+    family: CodeNewRoman Nerd Font
     #
     # If the bold italic family is not specified, it will fall back to the
     # value specified for the normal font.

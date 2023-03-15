@@ -1,25 +1,171 @@
--- fjss23 <fjriedemann@gmail.com>
---
--- Configuration for plugins that don't require vimscript (except mappings)
--- Most of the file is setup, mapping, and autocmd.
--- NOTE: The mappings in this file CAN include vimscript plugins (built-in ones too).
---
--- File strcuture exaplanation:
--- * plug.vim: List of plugins. Includes configuration for vimscript plugins.
--- * options.vim: List of options for default functionality.
--- * mappings.vim: List of mappings for built-in funcionality 
--- * highlight.vim: Modifications for the current colorscheme, too lazy to create my own.
---
--- Search pattern in this file (don't judge, I like having all of this in one file): 
---      plug:<plugin_name>
---      lsp:<language_name>
+" fjss23 <fjriedemann@gmail.com>
+" Search pattern in this file (don't judge, I like having all of this in one file): 
+"      plug:<plugin_name>
+"      lsp:<language_name>
 
-vim.cmd [[
-    source ~/.config/nvim/mappings.vim
-    source ~/.config/nvim/plug.vim
-    source ~/.config/nvim/options.vim
-    source ~/.config/nvim/highlight.vim
-]]
+" todo: put all the specific configuration for vim plugins into
+" plugin_options.
+"
+" todo: create folders for specific filetypes
+
+let mapleader=' '
+let maplocalleader=' '
+
+inoremap qw {
+inoremap wq }
+inoremap qq [
+inoremap ww ]
+inoremap jk <Esc>
+nnoremap <leader>j <cmd>w<cr>
+nnoremap <leader>q <cmd>q<cr>
+
+vnoremap J :m '>+1<CR>gv=gv
+vnoremap K :m '<-2<CR>gv=gv
+
+nnoremap <Up> <cmd>resize +2<CR>
+nnoremap <Down> <cmd>resize -2<CR>
+nnoremap <Left> <cmd>vertical resize +2<CR>
+nnoremap <Right> <cmd>vertical resize -2<CR>
+
+nnoremap <leader><leader> <c-^>
+nnoremap <leader>, :ls<CR>:b<space>
+nnoremap <leader>bk <cmd>bp\|bd! #<CR>
+
+nnoremap <leader>co <cmd>copen<CR>
+nnoremap <leader>ck <cmd>cclose<CR>
+nnoremap <leader>cn <cmd>cnext<CR>
+nnoremap <leader>cp <cmd>cprevious<CR>
+
+nnoremap <leader>lo <cmd>lopen<CR>
+nnoremap <leader>lk <cmd>lclose<CR>
+nnoremap <leader>ln <cmd>lnext<CR>
+nnoremap <leader>lp <cmd>lprevious<CR>
+
+nnoremap <leader>tk <cmd>tabclose<CR>
+nnoremap <leader>tn <cmd>tabnew<CR>
+
+nnoremap <leader>sc <cmd>e $MYVIMRC<CR>
+
+nnoremap <silent> <F2> <cmd>set spell!<CR>
+inoremap <silent> <F2> <C-O><cmd>set spell!<CR>
+
+set path+=**
+set splitright 
+set splitbelow 
+set cursorline 
+set hlsearch 
+set mouse=a
+set number 
+set relativenumber 
+set numberwidth
+set breakindent 
+set undofile 
+set ignorecase 
+set smartcase 
+set noswapfile 
+set scrolloff=7
+set spellsuggest=best,9
+set spelllang=en_us
+set nospell
+set updatetime=250
+set signcolumn=no
+set wildignore+=*.png,*.jpg,*/.git/*,*/node_modules/*,*/tmp/*,*.so,*.zip
+set completeopt=menuone,noinsert,noselect
+set nofoldenable 
+set colorcolumn=90
+set shiftwidth=4
+set tabstop=4
+set expandtab 
+set termguicolors 
+
+call plug#begin('~/.local/share/nvim/plugged')
+Plug 'https://github.com/neovim/nvim-lspconfig'
+Plug 'https://github.com/dcampos/nvim-snippy'
+Plug 'https://github.com/hrsh7th/nvim-cmp'
+Plug 'https://github.com/hrsh7th/cmp-nvim-lsp'
+Plug 'https://github.com/sbdchd/neoformat'
+Plug 'https://github.com/mfussenegger/nvim-lint'
+Plug 'https://github.com/nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'https://github.com/nvim-treesitter/nvim-treesitter-textobjects'
+Plug 'https://github.com/nvim-tree/nvim-web-devicons'
+Plug 'https://github.com/nvim-lua/plenary.nvim'
+Plug 'https://github.com/nvim-telescope/telescope.nvim', {'tag': '0.1.1'}
+Plug 'https://github.com/nvim-telescope/telescope-file-browser.nvim'
+Plug 'https://github.com/nvim-telescope/telescope-fzf-native.nvim', {'do': 'make'}
+Plug 'https://github.com/jremmen/vim-ripgrep'
+Plug 'https://github.com/windwp/nvim-ts-autotag'
+Plug 'https://github.com/NvChad/nvim-colorizer.lua'
+Plug 'https://github.com/JoosepAlviste/nvim-ts-context-commentstring'
+Plug 'https://github.com/numToStr/Comment.nvim'
+Plug 'https://github.com/mattn/emmet-vim'
+Plug 'https://github.com/dracula/vim'
+call plug#end()
+
+colorscheme dracula
+
+let g:netrw_banner=v:false
+let g:netrw_localcopydircmd='cp -r'
+let g:netrw_keepdir=v:true
+let g:netrw_list_hide='\(^\|\s\s\)\zs\.\S\+'
+let g:netrw_liststyle=3
+let g:netrw_winsize=30
+
+let g:user_emmet_install_global = 0
+
+autocmd FileType html,css,javascript,javascriptreact,typescript,typescriptreact EmmetInstall
+
+let g:user_emmet_settings = {
+\  'javascript' : {
+\      'extends' : 'jsx',
+\  },
+\  'typescript' : {
+\      'extends' : 'jsx',
+\  },
+\  'javascript.jsx' : {
+\    'extends' : 'jsx',
+\    'default_attributes': {
+\      'label': [{'htmlFor': ''}],
+\    }
+\  },
+\}
+
+let g:neoformat_enabled_javascript = ['prettier']
+let g:neoformat_enabled_typescript = ['prettier']
+let g:neoformat_enabled_json = ['prettier']
+let g:neoformat_enabled_markdown = ['prettier']
+let g:neoformat_enabled_css = ['prettier']
+let g:neoformat_enabled_html = ['prettier']
+let g:neoformat_enabled_yaml = ['prettier']
+let g:neoformat_enabled_prisma = ['prettier']
+let g:neoformat_enabled_go = ['gofmt']
+let g:neoformat_enabled_rust = ['rustfmt']
+let g:neoformat_enabled_cmake = ['cmake_format']
+let g:neoformat_enabled_python = ['black']
+let g:neoformat_enabled_c = ['clang-format']
+let g:neoformat_enabled_latex = ['latexindent']
+let g:neoformat_enabled_sql = ['pg_format']
+
+hi DiagnosticUnderlineError cterm=undercurl gui=undercurl
+hi DiagnosticUnderlineWarn cterm=undercurl gui=undercurl
+hi DiagnosticUnderlineInfo cterm=undercurl gui=undercurl
+hi DiagnosticUnderlineHint cterm=undercurl gui=undercurl
+
+hi! link netrwMarkFile Search
+hi! link Todo diffFileId
+
+hi! link DiagnosticLineNrError DiagnosticError
+hi! link DiagnosticLineNrWarn DiagnosticWarn
+hi! link DiagnosticLineNrInfo DiagnosticInfo
+hi! link DiagnosticLineNrHint DiagnosticHint
+
+sign define DiagnosticSignError text= texthl=DiagnosticSignError linehl= numhl=DiagnosticLineNrError
+sign define DiagnosticSignWarn text= texthl=DiagnosticSignWarn linehl= numhl=DiagnosticLineNrWarn
+sign define DiagnosticSignInfo text= texthl=DiagnosticSignInfo linehl= numhl=DiagnosticLineNrInfo
+sign define DiagnosticSignHint text= texthl=DiagnosticSignHint linehl= numhl=DiagnosticLineNrHint
+
+autocmd FileType markdown,txt,tex,gitcommit setlocal spell
+
+lua <<EOF
 
 local home = os.getenv('HOME')
 local api = vim.api
@@ -68,12 +214,6 @@ pcall(require('telescope').load_extension, 'fzf_native')
 -- plug:telescope-file-browser
 pcall(require('telescope').load_extension, 'file_browser')
 keymap.set('n', '<leader>df', ':Telescope file_browser<CR>', {silent = true})
-
--- plug:luasnip
-require("luasnip.loaders.from_snipmate").lazy_load()
-
--- plug:lsp_signature
-require('lsp_signature').setup({})
 
 -- plug:nvim-colorizer
 require('colorizer').setup({ filetypes = { 'css', 'scss' } })
@@ -174,8 +314,20 @@ require('nvim-treesitter.configs').setup {
     },
 }
 
+-- plug:snippy
+require('snippy').setup({
+    mappings = {
+        is = {
+            ['<c-r>'] = 'expand_or_advance',
+            ['<c-t>'] = 'previous',
+        },
+        nx = {
+            ['<leader>x'] = 'cut_text',
+        },
+    },
+})
+
 local cmp = require 'cmp'
-local luasnip = require 'luasnip'
 
 -- plug:nvim-cmp
 -- plug:cmp-nvim-lsp
@@ -185,12 +337,12 @@ cmp.setup {
     },
     snippet = {
         expand = function(args)
-            luasnip.lsp_expand(args.body)
+            require("snippy").expand_snippet(args.body)
         end,
     },
     formatting = {
         format = function (entry, vim_item)
-            vim_item.menu = ({ nvim_lsp = '[LSP]', luasnip = '[LuaSnip]' })[entry.source.name]
+            vim_item.menu = ({ nvim_lsp = '[LSP]' })[entry.source.name]
             return vim_item
         end
     },
@@ -203,16 +355,12 @@ cmp.setup {
     },
     sources = {
         { name = 'nvim_lsp' },
-        { name = 'luasnip' },
+        { name = 'snippy' },
     },
 }
 
 vim.diagnostic.config({
-    virtual_text = {
-        severity = vim.diagnostic.severity.ERROR,
-        source = 'always',
-        signs = false,
-    },
+    virtual_text = false,
     signs = false,
     underline = true,
     update_in_insert = true,
@@ -240,6 +388,7 @@ local on_attach = function(client, bufnr)
     keymap.set('n', '<leader>ds', vim.lsp.buf.document_symbol, { buffer = bufnr })
     keymap.set('n', '<leader>ws', vim.lsp.buf.workspace_symbol, { buffer = bufnr })
     keymap.set('n', 'K', vim.lsp.buf.hover, { buffer = bufnr })
+    keymap.set('i', '<c-k>', vim.lsp.buf.hover, { buffer = bufnr })
     keymap.set('n', 'gD', vim.lsp.buf.declaration, { buffer = bufnr })
     keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, { buffer = bufnr })
     keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, { buffer = bufnr })
@@ -263,7 +412,6 @@ local servers = {
 }
 
 local lspconfig = require('lspconfig')
-
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
@@ -470,13 +618,11 @@ api.nvim_create_autocmd({"FileType", "BufEnter", "FocusGained"}, {
 	end
 })
 
-local highlight_group = api.nvim_create_augroup('YankHighlight', { clear = true })
-
 api.nvim_create_autocmd('TextYankPost', {
+    group = api.nvim_create_augroup('YankHighlight', { clear = true }),
     callback = function()
         vim.highlight.on_yank()
     end,
-    group = highlight_group,
     pattern = '*',
 })
 
@@ -489,30 +635,6 @@ api.nvim_create_autocmd('TermOpen', {
     pattern = '*',
 })
 
--- api.nvim_create_autocmd('FileType', {
---     callback = function()
---         vim.o.spell = true
---     end,
---     pattern = { '*.md', '*.txt', '*.gitcommit', '*.tex' },
--- })
+EOF
 
-vim.cmd("set statusline=%!v:lua.status_line()")
-
--- todo: convert all of these into lua
-vim.cmd[[
-
-autocmd FileType markdown,txt,tex,bib,gitcommit setlocal spell
-
-" press <Tab> to expand or jump in a snippet. These can also be mapped separately
-" via <Plug>luasnip-expand-snippet and <Plug>luasnip-jump-next.
-imap <silent><expr> <Tab> luasnip#expand_or_jumpable() ? '<Plug>luasnip-expand-or-jump' : '<Tab>' 
-" -1 for jumping backwards.
-inoremap <silent> <S-Tab> <cmd>lua require'luasnip'.jump(-1)<Cr>
-
-snoremap <silent> <Tab> <cmd>lua require('luasnip').jump(1)<Cr>
-snoremap <silent> <S-Tab> <cmd>lua require('luasnip').jump(-1)<Cr>
-
-" For changing choices in choiceNodes (not strictly necessary for a basic setup).
-imap <silent><expr> <C-E> luasnip#choice_active() ? '<Plug>luasnip-next-choice' : '<C-E>'
-smap <silent><expr> <C-E> luasnip#choice_active() ? '<Plug>luasnip-next-choice' : '<C-E>'
-]]
+set statusline=%!v:lua.status_line()

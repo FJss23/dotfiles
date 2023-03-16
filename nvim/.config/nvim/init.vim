@@ -229,3 +229,12 @@ augroup quickfix
 augroup END
 
 nnoremap rw :Grep<space><c-r><c-w><CR>
+
+let s:modifiers = '%m%r%h%w%q'
+let s:file = '%f'
+let s:file_type = '%y'
+let s:line_info = '%l/%L:%c'
+let s:encoding = '%{&fenc}file'
+let s:file_format = '%{&ff}'
+
+set statusline=\ %{mode()}\ \|\ %f\ %m%r%h%w%q\ %=%{&fenc}\ %y\ %{&ff}\ \|\ %l/%L:%c\ 

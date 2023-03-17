@@ -1,13 +1,3 @@
-" fjss23 <fjriedemann@gmail.com>
-" Search pattern in this file (don't judge, I like having all of this in one file): 
-"      plug:<plugin_name>
-"      lsp:<language_name>
-
-" todo: put all the specific configuration for vim plugins into
-" plugin_options.
-"
-" todo: create folders for specific filetypes
-
 let mapleader=' '
 let maplocalleader=' '
 

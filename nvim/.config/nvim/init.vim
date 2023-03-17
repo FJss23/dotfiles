@@ -97,7 +97,7 @@ let g:loaded_netrwPlugin = 1
 let g:loaded_netrwSettings = 1
 let g:loaded_netrwFileHandlers = 1
 
-nnoremap <leader>f :VFiler -auto-resize -keep -layout=left -name=explorer -width=30 -columns=indent,name<CR>
+nnoremap <leader>da :VFiler -auto-resize -keep -layout=left -name=explorer -width=30 -columns=indent,name<CR>
 
 let g:user_emmet_install_global = 0
 

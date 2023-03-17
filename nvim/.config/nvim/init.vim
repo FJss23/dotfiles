@@ -239,7 +239,6 @@ local servers = {
     'pylsp',
     'cmake',
     'clangd',
-    'yamlls',
     'dockerls',
     'prismals'
 }
@@ -254,6 +253,21 @@ for _, lsp in ipairs(servers) do
         capabilities = capabilities,
     }
 end
+--}}}
+
+-- Yaml {{{
+lspconfig.yamlls.setup {
+    settings = {
+    yaml = {
+        schemaStore = {
+            url = "https://www.schemastore.org/api/json/catalog.json",
+            enable = true,
+        }
+      }
+    },
+    on_attach = on_attach,
+    capabilities = capabilities
+}
 --}}}
 
 -- Javascript / Typescript {{{
@@ -390,6 +404,7 @@ lspconfig.efm.setup({
         'javascriptreact',
         'typescript',
         'typescriptreact',
+        'yaml'
     },
     on_attach = on_attach,
 })

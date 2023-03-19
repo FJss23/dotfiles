@@ -108,17 +108,15 @@ let g:user_emmet_settings = {
 \  },
 \}
 
-hi DiagnosticUnderlineError cterm=undercurl gui=undercurl
-hi DiagnosticUnderlineWarn cterm=undercurl gui=undercurl
-hi DiagnosticUnderlineInfo cterm=undercurl gui=undercurl
-hi DiagnosticUnderlineHint cterm=undercurl gui=undercurl
-
-hi! link Todo diffFileId
-
 hi! link DiagnosticLineNrError DiagnosticError
 hi! link DiagnosticLineNrWarn DiagnosticWarn
 hi! link DiagnosticLineNrInfo DiagnosticInfo
 hi! link DiagnosticLineNrHint DiagnosticHint
+
+highlight! DiagnosticLineNrError guibg=#51202A guifg=#FF0000 gui=bold
+highlight! DiagnosticLineNrWarn guibg=#51412A guifg=#FFA500 gui=bold
+highlight! DiagnosticLineNrInfo guibg=#1E535D guifg=#00FFFF gui=bold
+highlight! DiagnosticLineNrHint guibg=#1E205D guifg=#0000FF gui=bold
 
 sign define DiagnosticSignError text= texthl=DiagnosticSignError linehl= numhl=DiagnosticLineNrError
 sign define DiagnosticSignWarn text= texthl=DiagnosticSignWarn linehl= numhl=DiagnosticLineNrWarn
@@ -180,6 +178,10 @@ cmp.setup {
 --}}}
 
 -- Lsp Config {{{
+local function organize_imports()
+    vim.lsp.buf.code_action({ context = { only = { "source.organizeImports" } }, apply = true })
+end
+
 vim.diagnostic.config({
     virtual_text = false,
     signs = false,
@@ -199,25 +201,40 @@ keymap.set('n', 'dn', vim.diagnostic.goto_next)
 keymap.set('n', '<leader>e', vim.diagnostic.open_float)
 keymap.set('n', '<leader>le', vim.diagnostic.setloclist)
 
-local on_attach = function(client, bufnr)
-    keymap.set('n', '<leader>rn', vim.lsp.buf.rename, { buffer = bufnr })
-    keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, { buffer = bufnr })
-    keymap.set('n', 'gd', vim.lsp.buf.definition, { buffer = bufnr })
-    keymap.set('n', 'gr', vim.lsp.buf.references, { buffer = bufnr })
-    keymap.set('n', 'gI', vim.lsp.buf.implementation, { buffer = bufnr })
-    keymap.set('n', '<leader>D', vim.lsp.buf.type_definition, { buffer = bufnr })
-    keymap.set('n', '<leader>ds', vim.lsp.buf.document_symbol, { buffer = bufnr })
-    keymap.set('n', '<leader>ws', vim.lsp.buf.workspace_symbol, { buffer = bufnr })
-    keymap.set('n', 'K', vim.lsp.buf.hover, { buffer = bufnr })
-    keymap.set('i', '<c-k>', vim.lsp.buf.hover, { buffer = bufnr })
-    keymap.set('n', 'gD', vim.lsp.buf.declaration, { buffer = bufnr })
-    keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, { buffer = bufnr })
-    keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, { buffer = bufnr })
-    keymap.set('n', '<leader>wl', function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end, { buffer = bufnr })
+vim.api.nvim_create_autocmd('LspAttach', {
+  group = vim.api.nvim_create_augroup('UserLspConfig', {}),
+  callback = function(ev)
+    -- Enable completion triggered by <c-x><c-o>
+    vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
 
-    if client.name ~= "tsserver" then
-        keymap.set('n', '<space>f', function() vim.lsp.buf.format { async = true } end, bufopts)
-    end
+    -- Buffer local mappings.
+    -- See `:help vim.lsp.*` for documentation on any of the below functions
+    local opts = { buffer = ev.buf }
+    vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
+    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
+    vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
+    vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
+    vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
+    vim.keymap.set('i', '<C-k>', vim.lsp.buf.signature_help, opts)
+    vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, opts)
+    vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, opts)
+    vim.keymap.set('n', '<space>wl', function()
+      print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+    end, opts)
+    vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, opts)
+    vim.keymap.set('n', '<leader>ds', vim.lsp.buf.document_symbol, opts)
+    vim.keymap.set('n', '<leader>ws', vim.lsp.buf.workspace_symbol, opts)
+    vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, opts)
+    vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, opts)
+    vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
+  end,
+})
+
+local formatting_callback = function(client, bufnr)
+  vim.keymap.set('n', '<leader>f', function()
+    local params = vim.lsp.util.make_formatting_params({})
+    client.request('textDocument/formatting', params, nil, bufnr) 
+  end, {buffer = bufnr})
 end
 
 local servers = { 
@@ -239,7 +256,6 @@ capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
 for _, lsp in ipairs(servers) do
     lspconfig[lsp].setup {
-        on_attach = on_attach,
         capabilities = capabilities,
     }
 end
@@ -255,34 +271,22 @@ lspconfig.yamlls.setup {
         }
       }
     },
-    on_attach = on_attach,
     capabilities = capabilities
 }
 --}}}
 
 -- Javascript / Typescript {{{
-local function js_org_imports()
-    local params = {
-        command = '_typescript.organizeImports',
-        arguments = { api.nvim_buf_get_name(0) },
-        title = ''
-    }
-    vim.lsp.buf.execute_command(params)
-end
-
 lspconfig.tsserver.setup({
-    on_attach = on_attach,
     capabilities = capabilities,
     commands = {
         OrganizeImports = {
-            js_org_imports,
+            organize_imports,
             description = 'Orginze js and ts imports'
         }
     }
 })
 
 lspconfig.eslint.setup({
-    on_attach = on_attach,
     capabilities = capabilities,
     settings = {
         codeActionOnSave = {
@@ -296,23 +300,11 @@ lspconfig.eslint.setup({
 -- Go {{{
 local go_path_bin = home .. '/.asdf/installs/golang/1.19.5/packages/bin/'
 
-local function go_org_imports()
-    local params = vim.lsp.util.make_range_params()
-    params.context = { only = { 'source.organizeImports' }}
-    local result = vim.lsp.buf_request_sync(0, 'textDocument/codeAction', params, wait_ms)
-    for cid, res in pairs(result or {}) do
-        for _, r in pairs(res.result or {}) do
-            if r.edit then
-                local enc = (vim.lsp.get_client_by_id(cid) or {}).offset_encoding or 'utf-16'
-                vim.lsp.util.apply_workspace_edit(r.edit, enc)
-            end
-        end
-    end
-end
-
 lspconfig.gopls.setup({
-    on_attach = on_attach,
     capabilities = capabilities,
+    on_attach = function(client, bufnr)
+        formatting_callback(client, bufnr)
+    end,
     cmd = { go_path_bin .. 'gopls', 'serve' },
     settings = {
         gopls = {
@@ -325,14 +317,13 @@ lspconfig.gopls.setup({
     },
     commands = {
         OrganizeImports = {
-            go_org_imports,
+            organize_imports,
             description = 'Orginze go imports'
         }
     }
 })
 
 lspconfig.golangci_lint_ls.setup({
-    on_attach = on_attach,
     capabilities = capabilities,
     cmd = { go_path_bin .. 'golangci-lint-langserver' },
     init_options = {
@@ -348,7 +339,6 @@ keymap.set('n', '<leader>o', '<cmd>OrganizeImports<CR>', {silent = true})
 local texlab_path_bin = home .. '/.config/nvim/lsp-langs/texlab'
 
 lspconfig.texlab.setup({
-    on_attach = on_attach,
     capabilities = capabilities,
     cmd = { texlab_path_bin },
 })
@@ -356,8 +346,10 @@ lspconfig.texlab.setup({
 
 -- Rust {{{
 lspconfig.rust_analyzer.setup({
-    on_attach = on_attach,
     capabilities = capabilities,
+    on_attach = function(client, bufnr)
+        formatting_callback(client, bufnr)
+    end,
     settings = {
         ["rust-analyzer"] = {
             imports = {
@@ -396,7 +388,9 @@ lspconfig.efm.setup({
         'typescriptreact',
         'yaml'
     },
-    on_attach = on_attach,
+    on_attach = function(client, bufnr)
+        formatting_callback(client, bufnr)
+    end,
 })
 --}}}
 
@@ -428,12 +422,12 @@ end
 function diagnostic_status()
   local num_errors = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR })
   if num_errors > 0 then
-    return ' 💀 ' .. num_errors .. ' '
+    return ' E:' .. num_errors .. ' '
   end
 
   local num_warnings = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.WARN })
   if num_warnings > 0 then
-    return ' 💩' .. num_warnings .. ' '
+    return ' W:' .. num_warnings .. ' '
   end
   return ''
 end
@@ -445,6 +439,18 @@ api.nvim_create_autocmd({"FileType", "BufEnter", "FocusGained"}, {
 })
 --}}}
 
+local function preview_location_callback(_, result)
+  if result == nil or vim.tbl_isempty(result) then
+    return nil
+  end
+  vim.lsp.util.preview_location(result[1])
+end
+
+function PeekDefinition()
+  local params = vim.lsp.util.make_position_params()
+  return vim.lsp.buf_request(0, 'textDocument/definition', params, preview_location_callback)
+end
+
 api.nvim_create_autocmd('TextYankPost', {
     group = api.nvim_create_augroup('YankHighlight', { clear = true }),
     callback = function()
@@ -452,7 +458,10 @@ api.nvim_create_autocmd('TextYankPost', {
     end,
     pattern = '*',
 })
+
 EOF
+
+nnoremap <leader>p <cmd>lua PeekDefinition()<CR>
 
 set statusline=%!v:lua.status_line()
 

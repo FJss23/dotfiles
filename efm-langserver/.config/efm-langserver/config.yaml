@@ -56,7 +56,7 @@ tools:
       - '%f:%l %m'
 
   golangci-lint: &golangci-lint
-    lint-command: 'golangci-lint run --color never --out-format tab ${INPUT}'
+    lint-command: '~/.asdf/installs/golang/1.19.5/packages/bin/golangci-lint run --color never --out-format tab ${INPUT}'
     lint-stdin: false
     lint-formats:
       - '%f:%l:%c %m'
@@ -105,3 +105,9 @@ languages:
 
   dockerfile:
     - <<: *dockerfile-hadolint
+
+  go:
+    - <<: *golangci-lint
+
+  golang:
+    - <<: *golangci-lint

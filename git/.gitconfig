@@ -8,6 +8,8 @@
 
 [delta]
     features = decorations
+    side-by-side = true
+    line-numbers = true
 
 [delta "interactive"]
     keep-plus-minus-markers = false

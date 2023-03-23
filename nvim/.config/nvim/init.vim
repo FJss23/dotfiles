@@ -133,6 +133,7 @@ require('nvim-treesitter.configs').setup {
         'jsdoc', 
         'typescript', 
         'tsx', 
+        'astro',
         'help', 
         'css', 
         'scss'
@@ -286,15 +287,15 @@ lspconfig.tsserver.setup({
     }
 })
 
-lspconfig.eslint.setup({
-    capabilities = capabilities,
-    settings = {
-        codeActionOnSave = {
-            enable = true,
-            mode = "all"
-        },
-    }
-})
+--lspconfig.eslint.setup({
+ --   capabilities = capabilities,
+  --  settings = {
+   --     codeActionOnSave = {
+    --        enable = true,
+     --       mode = "all"
+    --    },
+   -- }
+--})
 --}}}
 
 -- Go {{{
@@ -323,14 +324,14 @@ lspconfig.gopls.setup({
     }
 })
 
-lspconfig.golangci_lint_ls.setup({
-    capabilities = capabilities,
-    cmd = { go_path_bin .. 'golangci-lint-langserver' },
-    init_options = {
-        command = { go_path_bin .. 'golangci-lint', 'run', '--out-format', 'json' }
-    }
+--lspconfig.golangci_lint_ls.setup({
+    --capabilities = capabilities,
+    --cmd = { go_path_bin .. 'golangci-lint-langserver' },
+    --init_options = {
+        --command = { go_path_bin .. 'golangci-lint', 'run', '--out-format', 'json' }
+    --}
     
-})
+--})
 --}}}
 
 keymap.set('n', '<leader>o', '<cmd>OrganizeImports<CR>', {silent = true})
@@ -386,7 +387,14 @@ lspconfig.efm.setup({
         'javascriptreact',
         'typescript',
         'typescriptreact',
-        'yaml'
+        'html',
+        'css',
+        'scss',
+        'yaml',
+        'sh',
+        'markdown',
+        'dockerfile',
+        'go'
     },
     on_attach = function(client, bufnr)
         formatting_callback(client, bufnr)

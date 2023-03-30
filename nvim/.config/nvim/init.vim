@@ -287,15 +287,15 @@ lspconfig.tsserver.setup({
     }
 })
 
---lspconfig.eslint.setup({
- --   capabilities = capabilities,
-  --  settings = {
-   --     codeActionOnSave = {
-    --        enable = true,
-     --       mode = "all"
-    --    },
-   -- }
---})
+lspconfig.eslint.setup({
+    capabilities = capabilities,
+    settings = {
+        codeActionOnSave = {
+            enable = true,
+            mode = "all"
+        },
+    }
+})
 --}}}
 
 -- Go {{{
@@ -324,14 +324,14 @@ lspconfig.gopls.setup({
     }
 })
 
---lspconfig.golangci_lint_ls.setup({
-    --capabilities = capabilities,
-    --cmd = { go_path_bin .. 'golangci-lint-langserver' },
-    --init_options = {
-        --command = { go_path_bin .. 'golangci-lint', 'run', '--out-format', 'json' }
-    --}
+lspconfig.golangci_lint_ls.setup({
+    capabilities = capabilities,
+    cmd = { go_path_bin .. 'golangci-lint-langserver' },
+    init_options = {
+        command = { go_path_bin .. 'golangci-lint', 'run', '--out-format', 'json' }
+    }
     
---})
+})
 --}}}
 
 keymap.set('n', '<leader>o', '<cmd>OrganizeImports<CR>', {silent = true})

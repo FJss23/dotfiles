@@ -13,21 +13,21 @@ tools:
       - '.prettierrc'
       - '.prettierrc.json'
 
-  eslint: &eslint
-    lint-command: './node_modules/.bin/eslint -f visualstudio --stdin --stdin-filename ${INPUT}'
-    lint-ignore-exit-code: true
-    lint-stdin: true
-    lint-formats:
-      - "%f(%l,%c): %tarning %m"
-      - "%f(%l,%c): %rror %m"
-    require-marker: true
-    root-markers:
-      - .eslintrc.cjs
-      - package.json
-      - .eslintrc.js
-      - .eslintrc.yaml
-      - .eslintrc.yml
-      - .eslintrc.json
+  # eslint: &eslint
+  #   lint-command: './node_modules/.bin/eslint -f visualstudio --stdin --stdin-filename ${INPUT}'
+  #   lint-ignore-exit-code: true
+  #   lint-stdin: true
+  #   lint-formats:
+  #     - "%f(%l,%c): %tarning %m"
+  #     - "%f(%l,%c): %rror %m"
+  #   require-marker: true
+  #   root-markers:
+  #     - .eslintrc.cjs
+  #     - package.json
+  #     - .eslintrc.js
+  #     - .eslintrc.yaml
+  #     - .eslintrc.yml
+  #     - .eslintrc.json
   
   yaml-yamllint: &yaml-yamllint
     lint-command: 'yamllint -f parsable -'
@@ -55,33 +55,33 @@ tools:
     lint-formats:
       - '%f:%l %m'
 
-  golangci-lint: &golangci-lint
-    lint-command: '~/.asdf/installs/golang/1.19.5/packages/bin/golangci-lint run --color never --out-format tab ${INPUT}'
-    lint-stdin: false
-    lint-formats:
-      - '%f:%l:%c %m'
-    root-makers:
-      - .golangci.yml
-      - .golangci.yaml
-      - .golangci.toml
-      - .golangci.json
+  # golangci-lint: &golangci-lint
+  #   lint-command: '~/.asdf/installs/golang/1.19.5/packages/bin/golangci-lint run --color never --out-format tab ${INPUT}'
+  #   lint-stdin: false
+  #   lint-formats:
+  #     - '%f:%l:%c %m'
+  #   root-makers:
+  #     - .golangci.yml
+  #     - .golangci.yaml
+  #     - .golangci.toml
+  #     - .golangci.json
 
 languages:
   javascript:
     - <<: *prettier
-    - <<: *eslint
+    # - <<: *eslint
 
   javascriptreact:
     - <<: *prettier
-    - <<: *eslint
+    # - <<: *eslint
 
   typescript:
     - <<: *prettier
-    - <<: *eslint
+    # - <<: *eslint
 
   typescriptreact:
     - <<: *prettier
-    - <<: *eslint
+    # - <<: *eslint
   
   html:
     - <<: *prettier
@@ -106,8 +106,8 @@ languages:
   dockerfile:
     - <<: *dockerfile-hadolint
 
-  go:
-    - <<: *golangci-lint
+  # go:
+    # - <<: *golangci-lint
 
-  golang:
-    - <<: *golangci-lint
+  # golang:
+    # - <<: *golangci-lint

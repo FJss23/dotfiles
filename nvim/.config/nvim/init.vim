@@ -45,8 +45,6 @@ set splitbelow
 set cursorline 
 set hlsearch 
 set mouse=a
-set number 
-set numberwidth
 set breakindent 
 set undofile 
 set ignorecase 
@@ -77,7 +75,10 @@ Plug 'https://github.com/tpope/vim-commentary'
 Plug 'https://github.com/mattn/emmet-vim'
 Plug 'https://github.com/obaland/vfiler.vim'
 Plug 'https://github.com/mattn/emmet-vim'
+
 Plug 'https://github.com/dracula/vim'
+Plug 'https://github.com/tomasiser/vim-code-dark'
+Plug 'https://github.com/gruvbox-community/gruvbox'
 call plug#end()
 
 colorscheme dracula
@@ -151,7 +152,7 @@ local keymap = vim.keymap
 -- Cmp {{{
 cmp.setup {
     completion = {
-        autocomplete = false
+        autocomplete = true
     },
     snippet = {
         expand = function(args)

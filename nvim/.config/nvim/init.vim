@@ -73,7 +73,7 @@ Plug 'https://github.com/junegunn/fzf.vim' | Plug '~/.fzf'
 Plug 'https://github.com/ap/vim-css-color'
 Plug 'https://github.com/tpope/vim-commentary'
 Plug 'https://github.com/mattn/emmet-vim'
-Plug 'https://github.com/obaland/vfiler.vim'
+Plug 'https://github.com/preservim/nerdtree'
 Plug 'https://github.com/mattn/emmet-vim'
 
 Plug 'https://github.com/dracula/vim'
@@ -88,7 +88,8 @@ let g:loaded_netrwPlugin = 1
 let g:loaded_netrwSettings = 1
 let g:loaded_netrwFileHandlers = 1
 
-nnoremap <leader>da :VFiler -auto-resize -keep -layout=left -name=explorer -width=30 -columns=indent,name<CR>
+nnoremap <leader>da :NERDTreeToggle<CR>
+nnoremap <leader>ds :NERDTreeFind<CR>
 
 let g:user_emmet_install_global = 0
 

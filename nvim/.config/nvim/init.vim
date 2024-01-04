@@ -62,53 +62,30 @@ set colorcolumn=90
 set shiftwidth=4
 set tabstop=4
 set expandtab 
+set clipboard=unnamedplus
 set termguicolors 
+set number
 
 call plug#begin('~/.local/share/nvim/plugged')
 Plug 'https://github.com/neovim/nvim-lspconfig'
-Plug 'https://github.com/hrsh7th/nvim-cmp' | Plug 'hrsh7th/cmp-nvim-lsp'
-Plug 'https://github.com/nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'https://github.com/hrsh7th/vim-vsnip'
+Plug 'https://github.com/nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'} | Plug 'nvim-treesitter/nvim-treesitter-context'
 Plug 'https://github.com/junegunn/fzf.vim' | Plug '~/.fzf'
 Plug 'https://github.com/ap/vim-css-color'
 Plug 'https://github.com/tpope/vim-commentary'
-Plug 'https://github.com/mattn/emmet-vim'
-Plug 'https://github.com/preservim/nerdtree'
-Plug 'https://github.com/mattn/emmet-vim'
-
-Plug 'https://github.com/dracula/vim'
-Plug 'https://github.com/tomasiser/vim-code-dark'
-Plug 'https://github.com/gruvbox-community/gruvbox'
+Plug 'https://github.com/JoosepAlviste/nvim-ts-context-commentstring'
+Plug 'https://github.com/williamboman/mason.nvim' | Plug 'williamboman/mason-lspconfig.nvim' | Plug 'https://github.com/nvim-tree/nvim-web-devicons'
+Plug 'https://github.com/mfussenegger/nvim-lint'
+Plug 'https://github.com/stevearc/conform.nvim'
+Plug 'https://github.com/echasnovski/mini.files' | Plug 'https://github.com/echasnovski/mini.pick'
+Plug 'https://github.com/echasnovski/mini.completion' 
+Plug 'https://github.com/windwp/nvim-ts-autotag'
+Plug 'https://github.com/folke/tokyonight.nvim' | Plug 'https://github.com/catppuccin/nvim', { 'as': 'catppuccin' }
 call plug#end()
 
-colorscheme dracula
+" colorscheme tokyonight-storm
+colorscheme catppuccin
 
-let g:loaded_netrw = 1
-let g:loaded_netrwPlugin = 1
-let g:loaded_netrwSettings = 1
-let g:loaded_netrwFileHandlers = 1
-
-nnoremap <leader>da :NERDTreeToggle<CR>
-nnoremap <leader>ds :NERDTreeFind<CR>
-
-let g:user_emmet_install_global = 0
-
-autocmd FileType html,css,javascript,javascriptreact,typescript,typescriptreact EmmetInstall
-
-let g:user_emmet_settings = {
-\  'javascript' : {
-\      'extends' : 'jsx',
-\  },
-\  'typescript' : {
-\      'extends' : 'jsx',
-\  },
-\  'javascript.jsx' : {
-\    'extends' : 'jsx',
-\    'default_attributes': {
-\      'label': [{'htmlFor': ''}],
-\    }
-\  },
-\}
 
 hi! link DiagnosticLineNrError DiagnosticError
 hi! link DiagnosticLineNrWarn DiagnosticWarn
@@ -128,57 +105,17 @@ sign define DiagnosticSignHint text= texthl=DiagnosticSignHint linehl= numhl=Dia
 autocmd FileType markdown,txt,tex,gitcommit setlocal spell
 
 lua <<EOF
+
 -- Treesitter {{{
-require('nvim-treesitter.configs').setup {
-    ensure_installed = { 
-        'javascript', 
-        'jsdoc', 
-        'typescript', 
-        'tsx', 
-        'astro',
-        'help', 
-        'css', 
-        'scss'
-    },
+require('nvim-treesitter.configs').setup({
     highlight = { enable = true },
     indent = { enable = true },
-}
+})
 --}}}
 
-local cmp = require 'cmp'
 local home = os.getenv('HOME')
 local api = vim.api
 local keymap = vim.keymap
-
--- Cmp {{{
-cmp.setup {
-    completion = {
-        autocomplete = true
-    },
-    snippet = {
-        expand = function(args)
-            vim.fn["vsnip#anonymous"](args.body)
-        end,
-    },
-    formatting = {
-        format = function (entry, vim_item)
-            vim_item.menu = ({ nvim_lsp = '[LSP]' })[entry.source.name]
-            return vim_item
-        end
-    },
-    mapping = cmp.mapping.preset.insert {
-        ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-        ['<C-f>'] = cmp.mapping.scroll_docs(4),
-        ['<C-Space>'] = cmp.mapping.complete(),
-        ['<C-e>'] = cmp.mapping.abort(),
-        ['<CR>'] = cmp.mapping.confirm { behavior = cmp.ConfirmBehavior.Replace, select = true, },
-    },
-    sources = {
-        { name = 'nvim_lsp' },
-        { name = 'vsnip' },
-    },
-}
---}}}
 
 -- Lsp Config {{{
 local function organize_imports()
@@ -233,176 +170,59 @@ vim.api.nvim_create_autocmd('LspAttach', {
   end,
 })
 
-local formatting_callback = function(client, bufnr)
-  vim.keymap.set('n', '<leader>f', function()
-    local params = vim.lsp.util.make_formatting_params({})
-    client.request('textDocument/formatting', params, nil, bufnr) 
-  end, {buffer = bufnr})
-end
-
-local servers = { 
-    'tsserver', 
-    'cssls', 
-    'cssmodules_ls', 
-    'astro',
-    'bashls',
-    'pylsp',
-    'cmake',
-    'clangd',
-    'dockerls',
-    'prismals'
-}
+require('mini.completion').setup()
+require('nvim-ts-autotag').setup()
 
 local lspconfig = require('lspconfig')
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
-for _, lsp in ipairs(servers) do
-    lspconfig[lsp].setup {
-        capabilities = capabilities,
-    }
-end
---}}}
-
--- Yaml {{{
-lspconfig.yamlls.setup {
-    settings = {
-    yaml = {
-        schemaStore = {
-            url = "https://www.schemastore.org/api/json/catalog.json",
-            enable = true,
-        }
-      }
-    },
-    capabilities = capabilities
-}
---}}}
-
--- Javascript / Typescript {{{
-lspconfig.tsserver.setup({
-    capabilities = capabilities,
-    commands = {
-        OrganizeImports = {
-            organize_imports,
-            description = 'Orginze js and ts imports'
-        }
-    }
-})
-
-lspconfig.eslint.setup({
-    capabilities = capabilities,
-    settings = {
-        codeActionOnSave = {
-            enable = true,
-            mode = "all"
-        },
-    }
-})
---}}}
-
--- Go {{{
-local go_path_bin = home .. '/.asdf/installs/golang/1.19.5/packages/bin/'
-
-lspconfig.gopls.setup({
-    capabilities = capabilities,
-    on_attach = function(client, bufnr)
-        formatting_callback(client, bufnr)
+require('mason').setup()
+require("mason-lspconfig").setup_handlers({
+    -- default
+    function (server_name)
+        lspconfig[server_name].setup {}
     end,
-    cmd = { go_path_bin .. 'gopls', 'serve' },
-    settings = {
-        gopls = {
-            analyses = {
-                unusedparams = true,
-                shadow = true,
-            },
-            staticcheck = true,
-        }
-    },
-    commands = {
-        OrganizeImports = {
-            organize_imports,
-            description = 'Orginze go imports'
-        }
-    }
-})
-
-lspconfig.golangci_lint_ls.setup({
-    capabilities = capabilities,
-    cmd = { go_path_bin .. 'golangci-lint-langserver' },
-    init_options = {
-        command = { go_path_bin .. 'golangci-lint', 'run', '--out-format', 'json' }
-    }
-    
-})
---}}}
-
-keymap.set('n', '<leader>o', '<cmd>OrganizeImports<CR>', {silent = true})
-
--- LaTeX {{{
-local texlab_path_bin = home .. '/.config/nvim/lsp-langs/texlab'
-
-lspconfig.texlab.setup({
-    capabilities = capabilities,
-    cmd = { texlab_path_bin },
-})
---}}}
-
--- Rust {{{
-lspconfig.rust_analyzer.setup({
-    capabilities = capabilities,
-    on_attach = function(client, bufnr)
-        formatting_callback(client, bufnr)
-    end,
-    settings = {
-        ["rust-analyzer"] = {
-            imports = {
-                granularity = {
-                    group = "module",
+    ['tsserver'] = function()
+        lspconfig.tsserver.setup {
+            commands = {
+                OrganizeImports = {
+                    organize_imports,
+                    description = 'Orginze js and ts imports',
                 },
-                prefix = "self",
             },
-            cargo = {
-                buildScripts = {
+        }
+    end,
+    ['yamlls'] = function()
+        lspconfig.yamlls.setup {
+            yaml = {
+                schemaStore = {
+                    url = 'https://www.schemastore.org/api/json/catalog.json',
                     enable = true,
                 },
             },
-            procMacro = {
-                enable = true
-            },
-            checkOnSave = {
-                command = 'clippy'
-            }
         }
-    }
-})
---}}}
-
--- Efm {{{
-lspconfig.efm.setup({
-    init_options = {
-        documentFormatting = true,
-        codeActions = false,
-    },
-    cmd = { 'efm-langserver', '-c', home .. '/.config/efm-langserver/config.yaml' },
-    filetypes = { 
-        'javascript', 
-        'javascriptreact',
-        'typescript',
-        'typescriptreact',
-        'html',
-        'css',
-        'scss',
-        'yaml',
-        'sh',
-        'markdown',
-        'dockerfile',
-        'go'
-    },
-    on_attach = function(client, bufnr)
-        formatting_callback(client, bufnr)
+    end,
+    ['gopls'] = function()
+        lspconfig.gopls.setup {
+            settings = {
+                gopls = {
+                    analyses = {
+                        unusedparams = true,
+                        shadow = true,
+                    },
+                    staticcheck = true,
+                }
+            },
+        }
+    end,
+    ['html'] = function()
+        lspconfig.html.setup {
+            filetypes = { 'html', 'javascriptreact', 'typescriptreact' }
+        }
     end,
 })
---}}}
+
+
+keymap.set('n', '<leader>o', '<cmd>OrganizeImports<CR>', {silent = true})
 
 -- Status Line {{{
 local function branch_name()
@@ -469,6 +289,59 @@ api.nvim_create_autocmd('TextYankPost', {
     pattern = '*',
 })
 
+require('conform').setup({
+    formatters_by_ft = {
+        javascript = { 'prettier' },
+        javascriptreact = { 'prettier' },
+        typescript = { 'prettier' },
+        typescriptreact  = { 'prettier' },
+        html  = { 'prettier' },
+        json  = { 'prettier' },
+        yaml  = { 'prettier' },
+        yaml  = { 'css' },
+        markdown  = { 'prettier' },
+        go  = { 'gofmt', 'goimports' },
+    }
+})
+
+api.nvim_create_autocmd('BufWritePre', {
+  pattern = "*",
+  callback = function(args)
+    require('conform').format({ bufnr = args.buf })
+  end,
+})
+
+require('lint').linters_by_ft = {
+    javascript = { 'eslint' },
+    javascriptreact = { 'eslint' },
+    typescript = { 'eslint' },
+    typescriptreact  = { 'eslint' },
+    go = { 'golangcilint' },
+    yaml = { 'yamllint' },
+    dockerfile = { 'hadolint' },
+}
+
+local lint_augroup = api.nvim_create_augroup('lint', { clear = true })
+
+api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost', 'InsertLeave' }, {
+    group = lint_augroup,
+    callback = function()
+        require('lint').try_lint()
+    end
+})
+
+require('mini.files').setup()
+vim.keymap.set("n", "-", ":lua MiniFiles.open()<CR>", { desc = "Open parent directory" })
+
+require('treesitter-context').setup({
+    enable = false,
+})
+
+require('mini.pick').setup()
+vim.keymap.set("n", "<leader>sf", ":Pick files tool='git'<CR>", { desc = "Open parent directory" })
+
+require('nvim-web-devicons').setup()
+
 EOF
 
 nnoremap <leader>p <cmd>lua PeekDefinition()<CR>
@@ -478,18 +351,18 @@ set statusline=%!v:lua.status_line()
 imap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
 smap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
 
-let g:fzf_preview_window = []
-let g:fzf_layout = { 'window': { 'width': 0.6, 'height': 0.6 } }
+" let g:fzf_preview_window = []
+" let g:fzf_layout = { 'window': { 'width': 0.6, 'height': 0.6 } }
 
-nnoremap <leader>sf :Files<CR>
-nnoremap <leader>? :History<CR>
-nnoremap <leader>sb :Buffers<CR>
-nnoremap <leader>/ :Lines<CR>
-nnoremap <leader>sh :Helptags<CR>
-nnoremap <leader>sg :Rg<CR>
+" nnoremap <leader>sf :Files<CR>
+" nnoremap <leader>? :History<CR>
+" nnoremap <leader>sb :Buffers<CR>
+" nnoremap <leader>/ :Lines<CR>
+" nnoremap <leader>sh :Helptags<CR>
+" nnoremap <leader>sg :Rg<CR>
 
-imap <c-x><c-k> <plug>(fzf-complete-word)
-imap <c-x><c-f> <plug>(fzf-complete-path)
+" imap <c-x><c-k> <plug>(fzf-complete-word)
+" imap <c-x><c-f> <plug>(fzf-complete-path)
 
 " https://gist.github.com/romainl/56f0c28ef953ffc157f36cc495947ab3
 if executable('rg')
@@ -514,3 +387,4 @@ augroup quickfix
 augroup END
 
 nnoremap rw :Grep<space><c-r><c-w><CR>
+

@@ -64,20 +64,20 @@ set tabstop=4
 set expandtab 
 set clipboard=unnamedplus
 set termguicolors 
-set number
+set nonumber
 
 call plug#begin('~/.local/share/nvim/plugged')
 Plug 'https://github.com/neovim/nvim-lspconfig'
 Plug 'https://github.com/hrsh7th/vim-vsnip'
 Plug 'https://github.com/nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'} | Plug 'nvim-treesitter/nvim-treesitter-context'
-Plug 'https://github.com/junegunn/fzf.vim' | Plug '~/.fzf'
+" Plug 'https://github.com/junegunn/fzf.vim' | Plug '~/.fzf'
 Plug 'https://github.com/ap/vim-css-color'
 Plug 'https://github.com/tpope/vim-commentary'
 Plug 'https://github.com/JoosepAlviste/nvim-ts-context-commentstring'
-Plug 'https://github.com/williamboman/mason.nvim' | Plug 'williamboman/mason-lspconfig.nvim' | Plug 'https://github.com/nvim-tree/nvim-web-devicons'
+Plug 'https://github.com/williamboman/mason.nvim' | Plug 'williamboman/mason-lspconfig.nvim' 
 Plug 'https://github.com/mfussenegger/nvim-lint'
 Plug 'https://github.com/stevearc/conform.nvim'
-Plug 'https://github.com/echasnovski/mini.files' | Plug 'https://github.com/echasnovski/mini.pick'
+Plug 'https://github.com/echasnovski/mini.files' | Plug 'https://github.com/echasnovski/mini.pick' | Plug 'https://github.com/nvim-tree/nvim-web-devicons'
 Plug 'https://github.com/echasnovski/mini.completion' 
 Plug 'https://github.com/windwp/nvim-ts-autotag'
 Plug 'https://github.com/folke/tokyonight.nvim' | Plug 'https://github.com/catppuccin/nvim', { 'as': 'catppuccin' }
@@ -123,10 +123,10 @@ local function organize_imports()
 end
 
 vim.diagnostic.config({
-    virtual_text = false,
+    virtual_text = true,
     signs = false,
     underline = true,
-    update_in_insert = true,
+    update_in_insert = false,
     severity_sort = true,
     float = {
         severity_sort = true,
@@ -170,7 +170,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
   end,
 })
 
-require('mini.completion').setup()
 require('nvim-ts-autotag').setup()
 
 local lspconfig = require('lspconfig')
@@ -238,13 +237,33 @@ function status_line()
     local file = '%f'
     local modifiers = '%m%r%h%w%q'
     local lsp_info = [[%{luaeval("diagnostic_status()")}]]
-    local file_type = '%y'
+    -- local file_type = '%y'
     local line_info = '%l/%L:%c'
     local encoding = '%{&fenc}'
+    -- TODO: fix
+    enconding = ''
     local file_format = '%{&ff}'
+    -- TODO: fix
+    file_format  = ''
 
     return table.concat({
-        ' %{mode()}', ' | ' ,vim.b.branch_name, ' ', file,' ', modifiers,' ', lsp_info, '%=', encoding, ' ', file_type, ' ', file_format, ' | ', line_info, ' '
+        --[[' %{mode()}', ' | ',--]] 
+        vim.b.branch_name, 
+        ' ', 
+        file,
+        ' ', 
+        modifiers,
+        ' ', 
+        lsp_info, 
+        '%=', 
+        -- encoding, 
+        -- ' ', 
+        -- file_type, 
+        -- ' ', 
+        -- file_format, 
+        -- ' | ', 
+        line_info, 
+        ' '
     })
 end
 
@@ -341,6 +360,7 @@ require('mini.pick').setup()
 vim.keymap.set("n", "<leader>sf", ":Pick files tool='git'<CR>", { desc = "Open parent directory" })
 
 require('nvim-web-devicons').setup()
+require('mini.completion').setup()
 
 EOF
 

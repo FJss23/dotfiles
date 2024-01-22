@@ -69,53 +69,44 @@ set nonumber
 call plug#begin('~/.local/share/nvim/plugged')
 Plug 'https://github.com/neovim/nvim-lspconfig'
 Plug 'https://github.com/hrsh7th/vim-vsnip'
-Plug 'https://github.com/nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'} | Plug 'nvim-treesitter/nvim-treesitter-context'
-" Plug 'https://github.com/junegunn/fzf.vim' | Plug '~/.fzf'
+Plug 'https://github.com/nvim-treesitter/nvim-treesitter' | Plug 'nvim-treesitter/nvim-treesitter-context' | Plug 'JoosepAlviste/nvim-ts-context-commentstring'
 Plug 'https://github.com/ap/vim-css-color'
 Plug 'https://github.com/tpope/vim-commentary'
-Plug 'https://github.com/JoosepAlviste/nvim-ts-context-commentstring'
 Plug 'https://github.com/williamboman/mason.nvim' | Plug 'williamboman/mason-lspconfig.nvim' 
 Plug 'https://github.com/mfussenegger/nvim-lint'
 Plug 'https://github.com/stevearc/conform.nvim'
-Plug 'https://github.com/echasnovski/mini.files' | Plug 'https://github.com/echasnovski/mini.pick' | Plug 'https://github.com/nvim-tree/nvim-web-devicons'
-Plug 'https://github.com/echasnovski/mini.completion' 
+Plug 'https://github.com/nvim-tree/nvim-tree.lua' | Plug 'nvim-tree/nvim-web-devicons'
+Plug 'https://github.com/echasnovski/mini.completion'
 Plug 'https://github.com/windwp/nvim-ts-autotag'
-Plug 'https://github.com/folke/tokyonight.nvim' | Plug 'https://github.com/catppuccin/nvim', { 'as': 'catppuccin' }
+Plug 'https://github.com/catppuccin/nvim', { 'as': 'catppuccin' } | Plug 'folke/tokyonight.nvim'
+Plug 'https://github.com/nvim-lua/plenary.nvim'
+Plug 'https://github.com/nvim-telescope/telescope.nvim' | Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
 call plug#end()
 
-" colorscheme tokyonight-storm
 colorscheme catppuccin
-
-
-hi! link DiagnosticLineNrError DiagnosticError
-hi! link DiagnosticLineNrWarn DiagnosticWarn
-hi! link DiagnosticLineNrInfo DiagnosticInfo
-hi! link DiagnosticLineNrHint DiagnosticHint
-
-highlight! DiagnosticLineNrError guibg=#51202A guifg=#FF0000 gui=bold
-highlight! DiagnosticLineNrWarn guibg=#51412A guifg=#FFA500 gui=bold
-highlight! DiagnosticLineNrInfo guibg=#1E535D guifg=#00FFFF gui=bold
-highlight! DiagnosticLineNrHint guibg=#1E205D guifg=#0000FF gui=bold
-
-sign define DiagnosticSignError text= texthl=DiagnosticSignError linehl= numhl=DiagnosticLineNrError
-sign define DiagnosticSignWarn text= texthl=DiagnosticSignWarn linehl= numhl=DiagnosticLineNrWarn
-sign define DiagnosticSignInfo text= texthl=DiagnosticSignInfo linehl= numhl=DiagnosticLineNrInfo
-sign define DiagnosticSignHint text= texthl=DiagnosticSignHint linehl= numhl=DiagnosticLineNrHint
 
 autocmd FileType markdown,txt,tex,gitcommit setlocal spell
 
 lua <<EOF
 
 -- Treesitter {{{
-require('nvim-treesitter.configs').setup({
-    highlight = { enable = true },
-    indent = { enable = true },
-})
+-- require('nvim-treesitter.configs').setup({
+--     highlight = { enable = true },
+--     indent = { enable = true },
+-- })
 --}}}
 
 local home = os.getenv('HOME')
 local api = vim.api
 local keymap = vim.keymap
+
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
+require("nvim-tree").setup()
+
+keymap.set('n', '-', ':NvimTreeToggle<CR>')
+keymap.set('n', '<leader>-', ':NvimTreeFindFile<CR>')
 
 -- Lsp Config {{{
 local function organize_imports()
@@ -223,71 +214,6 @@ require("mason-lspconfig").setup_handlers({
 
 keymap.set('n', '<leader>o', '<cmd>OrganizeImports<CR>', {silent = true})
 
--- Status Line {{{
-local function branch_name()
-	local branch = vim.fn.system("git branch --show-current 2> /dev/null | tr -d '\n'")
-	if branch ~= "" then
-		return ' ' .. branch .. " |"
-	else
-		return ""
-	end
-end
-
-function status_line() 
-    local file = '%f'
-    local modifiers = '%m%r%h%w%q'
-    local lsp_info = [[%{luaeval("diagnostic_status()")}]]
-    -- local file_type = '%y'
-    local line_info = '%l/%L:%c'
-    local encoding = '%{&fenc}'
-    -- TODO: fix
-    enconding = ''
-    local file_format = '%{&ff}'
-    -- TODO: fix
-    file_format  = ''
-
-    return table.concat({
-        --[[' %{mode()}', ' | ',--]] 
-        vim.b.branch_name, 
-        ' ', 
-        file,
-        ' ', 
-        modifiers,
-        ' ', 
-        lsp_info, 
-        '%=', 
-        -- encoding, 
-        -- ' ', 
-        -- file_type, 
-        -- ' ', 
-        -- file_format, 
-        -- ' | ', 
-        line_info, 
-        ' '
-    })
-end
-
--- Thanks! https://zignar.net/2022/01/21/a-boring-statusline-for-neovim/
-function diagnostic_status()
-  local num_errors = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR })
-  if num_errors > 0 then
-    return ' E:' .. num_errors .. ' '
-  end
-
-  local num_warnings = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.WARN })
-  if num_warnings > 0 then
-    return ' W:' .. num_warnings .. ' '
-  end
-  return ''
-end
-
-api.nvim_create_autocmd({"FileType", "BufEnter", "FocusGained"}, {
-	callback = function()
-		vim.b.branch_name = branch_name()
-	end
-})
---}}}
-
 local function preview_location_callback(_, result)
   if result == nil or vim.tbl_isempty(result) then
     return nil
@@ -331,11 +257,6 @@ api.nvim_create_autocmd('BufWritePre', {
 })
 
 require('lint').linters_by_ft = {
-    javascript = { 'eslint' },
-    javascriptreact = { 'eslint' },
-    typescript = { 'eslint' },
-    typescriptreact  = { 'eslint' },
-    go = { 'golangcilint' },
     yaml = { 'yamllint' },
     dockerfile = { 'hadolint' },
 }
@@ -349,62 +270,22 @@ api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost', 'InsertLeave' }, {
     end
 })
 
-require('mini.files').setup()
-vim.keymap.set("n", "-", ":lua MiniFiles.open()<CR>", { desc = "Open parent directory" })
-
-require('treesitter-context').setup({
-    enable = false,
-})
-
-require('mini.pick').setup()
-vim.keymap.set("n", "<leader>sf", ":Pick files tool='git'<CR>", { desc = "Open parent directory" })
+-- require('treesitter-context').setup({
+--     enable = false,
+-- })
 
 require('nvim-web-devicons').setup()
 require('mini.completion').setup()
+
+local builtin = require('telescope.builtin')
+keymap.set('n', '<leader>sf', builtin.find_files, {})
+keymap.set('n', '<leader>sg', builtin.live_grep, {})
+
+require('telescope').load_extension('fzf')
 
 EOF
 
 nnoremap <leader>p <cmd>lua PeekDefinition()<CR>
 
-set statusline=%!v:lua.status_line()
-
 imap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
 smap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
-
-" let g:fzf_preview_window = []
-" let g:fzf_layout = { 'window': { 'width': 0.6, 'height': 0.6 } }
-
-" nnoremap <leader>sf :Files<CR>
-" nnoremap <leader>? :History<CR>
-" nnoremap <leader>sb :Buffers<CR>
-" nnoremap <leader>/ :Lines<CR>
-" nnoremap <leader>sh :Helptags<CR>
-" nnoremap <leader>sg :Rg<CR>
-
-" imap <c-x><c-k> <plug>(fzf-complete-word)
-" imap <c-x><c-f> <plug>(fzf-complete-path)
-
-" https://gist.github.com/romainl/56f0c28ef953ffc157f36cc495947ab3
-if executable('rg')
-  set grepprg=rg\ -H\ --no-heading\ --vimgrep
-  set grepformat=%f:%l:%c:%m
-endif
-
-function! Grep(...)
-	return system(join([&grepprg] + [expandcmd(join(a:000, ' '))], ' '))
-endfunction
-
-command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<f-args>)
-command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<f-args>)
-
-cnoreabbrev <expr> grep  (getcmdtype() ==# ':' && getcmdline() ==# 'grep')  ? 'Grep'  : 'grep'
-cnoreabbrev <expr> lgrep (getcmdtype() ==# ':' && getcmdline() ==# 'lgrep') ? 'LGrep' : 'lgrep'
-
-augroup quickfix
-	autocmd!
-	autocmd QuickFixCmdPost cgetexpr cwindow
-	autocmd QuickFixCmdPost lgetexpr lwindow
-augroup END
-
-nnoremap rw :Grep<space><c-r><c-w><CR>
-

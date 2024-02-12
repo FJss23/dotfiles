@@ -64,7 +64,7 @@ set tabstop=4
 set expandtab 
 set clipboard=unnamedplus
 set termguicolors 
-set nonumber
+set number 
 
 call plug#begin('~/.local/share/nvim/plugged')
 Plug 'https://github.com/neovim/nvim-lspconfig'
@@ -75,38 +75,50 @@ Plug 'https://github.com/tpope/vim-commentary'
 Plug 'https://github.com/williamboman/mason.nvim' | Plug 'williamboman/mason-lspconfig.nvim' 
 Plug 'https://github.com/mfussenegger/nvim-lint'
 Plug 'https://github.com/stevearc/conform.nvim'
-Plug 'https://github.com/nvim-tree/nvim-tree.lua' | Plug 'nvim-tree/nvim-web-devicons'
-Plug 'https://github.com/echasnovski/mini.completion'
+Plug 'https://github.com/hrsh7th/cmp-nvim-lsp' | Plug 'hrsh7th/nvim-cmp'
 Plug 'https://github.com/windwp/nvim-ts-autotag'
-Plug 'https://github.com/catppuccin/nvim', { 'as': 'catppuccin' } | Plug 'folke/tokyonight.nvim'
-Plug 'https://github.com/nvim-lua/plenary.nvim'
-Plug 'https://github.com/nvim-telescope/telescope.nvim' | Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
+Plug 'https://github.com/mfussenegger/nvim-jdtls'
+Plug 'https://github.com/catppuccin/nvim', { 'as': 'catppuccin' } | Plug 'https://github.com/gruvbox-community/gruvbox'
+Plug 'https://github.com/junegunn/fzf.vim' | Plug '~/.fzf'
+Plug 'https://github.com/itchyny/lightline.vim' | Plug 'itchyny/vim-gitbranch'
+Plug 'https://github.com/airblade/vim-rooter'
 call plug#end()
 
-colorscheme catppuccin
+colorscheme gruvbox
 
 autocmd FileType markdown,txt,tex,gitcommit setlocal spell
 
 lua <<EOF
 
 -- Treesitter {{{
--- require('nvim-treesitter.configs').setup({
---     highlight = { enable = true },
---     indent = { enable = true },
--- })
---}}}
+-- require('catppuccin').setup({
+ --    show_end_of_buffer = true,
+  --   no_italic = true,
+   --  no_bold = true,
+    -- custom_highlights = function(colors)
+         --return {
+         --    WinSeparator = { fg = colors.overlay2 },
+          --   TreesitterContext = { bg = colors.none },
+           --  TreesitterContextBottom = { fg = colors.overlay2 },
+         --}
+     --end
+ --})
+
+ --vim.cmd.colorscheme "catppuccin"
+
+require('nvim-treesitter.configs').setup({
+    highlight = { enable = false },
+    indent = { enable = true },
+})
+-- }}}
+
+vim.g.skip_ts_context_commentstring_module = true
+
+require('treesitter-context').setup({})
 
 local home = os.getenv('HOME')
 local api = vim.api
 local keymap = vim.keymap
-
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
-
-require("nvim-tree").setup()
-
-keymap.set('n', '-', ':NvimTreeToggle<CR>')
-keymap.set('n', '<leader>-', ':NvimTreeFindFile<CR>')
 
 -- Lsp Config {{{
 local function organize_imports()
@@ -161,6 +173,40 @@ vim.api.nvim_create_autocmd('LspAttach', {
   end,
 })
 
+  local cmp = require'cmp'
+
+  cmp.setup({
+    snippet = {
+      -- REQUIRED - you must specify a snippet engine
+      expand = function(args)
+        vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
+      end,
+    },
+    window = {
+      -- completion = cmp.config.window.bordered(),
+      -- documentation = cmp.config.window.bordered(),
+    },
+    mapping = cmp.mapping.preset.insert({
+      ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+      ['<C-f>'] = cmp.mapping.scroll_docs(4),
+      ['<C-Space>'] = cmp.mapping.complete(),
+      ['<C-e>'] = cmp.mapping.abort(),
+      ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+    }),
+    sources = cmp.config.sources({
+      { name = 'nvim_lsp', keyword_length = 5, group_index = 1, max_item_count = 20 },
+      { name = 'vsnip' }, -- For vsnip users.
+    }, {
+      { name = 'buffer' },
+    }),
+    performance = {
+       trigger_debounce_time = 500,
+       throttle = 550,
+       fetching_timeout = 80,
+    }
+  })
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
+
 require('nvim-ts-autotag').setup()
 
 local lspconfig = require('lspconfig')
@@ -169,10 +215,13 @@ require('mason').setup()
 require("mason-lspconfig").setup_handlers({
     -- default
     function (server_name)
-        lspconfig[server_name].setup {}
+        lspconfig[server_name].setup {
+            capabilities = capabilities
+        }
     end,
     ['tsserver'] = function()
         lspconfig.tsserver.setup {
+            capabilities = capabilities,
             commands = {
                 OrganizeImports = {
                     organize_imports,
@@ -183,6 +232,7 @@ require("mason-lspconfig").setup_handlers({
     end,
     ['yamlls'] = function()
         lspconfig.yamlls.setup {
+            capabilities = capabilities,
             yaml = {
                 schemaStore = {
                     url = 'https://www.schemastore.org/api/json/catalog.json',
@@ -193,6 +243,7 @@ require("mason-lspconfig").setup_handlers({
     end,
     ['gopls'] = function()
         lspconfig.gopls.setup {
+            capabilities = capabilities,
             settings = {
                 gopls = {
                     analyses = {
@@ -206,6 +257,7 @@ require("mason-lspconfig").setup_handlers({
     end,
     ['html'] = function()
         lspconfig.html.setup {
+            capabilities = capabilities,
             filetypes = { 'html', 'javascriptreact', 'typescriptreact' }
         }
     end,
@@ -243,7 +295,8 @@ require('conform').setup({
         html  = { 'prettier' },
         json  = { 'prettier' },
         yaml  = { 'prettier' },
-        yaml  = { 'css' },
+        css  = { 'prettier' },
+        scss  = { 'prettier' },
         markdown  = { 'prettier' },
         go  = { 'gofmt', 'goimports' },
     }
@@ -270,22 +323,44 @@ api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost', 'InsertLeave' }, {
     end
 })
 
--- require('treesitter-context').setup({
---     enable = false,
--- })
-
-require('nvim-web-devicons').setup()
-require('mini.completion').setup()
-
-local builtin = require('telescope.builtin')
-keymap.set('n', '<leader>sf', builtin.find_files, {})
-keymap.set('n', '<leader>sg', builtin.live_grep, {})
-
-require('telescope').load_extension('fzf')
-
 EOF
+
+" let g:fzf_preview_window = []
+" let g:fzf_layout = { 'window': { 'width': 0.6, 'height': 0.6 } }
+
+nnoremap <leader>sf :Files<CR>
+nnoremap <leader>sg :Rg<CR>
+nnoremap <leader>sb :Buffers<CR>
+nnoremap <leader>? :History<CR>
+nnoremap <leader>/ :Lines<CR>
+
+imap <c-x><c-k> <plug>(fzf-complete-word)
+imap <c-x><c-f> <plug>(fzf-complete-path)
 
 nnoremap <leader>p <cmd>lua PeekDefinition()<CR>
 
 imap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
 smap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
+
+if executable('rg')
+  set grepprg=rg\ -H\ --no-heading\ --vimgrep
+  set grepformat=%f:%l:%c:%m
+endif
+
+let g:fzf_vim = {}
+let g:fzf_vim.buffers_jump = 1
+let g:fzf_vim.commits_log_options = '--graph --color=always --format="%C(auto)%h%d %s %C(black)%C(bold)%cr"'
+let g:fzf_vim.commands_expect = 'alt-enter,ctrl-x'
+let g:fzf_vim.listproc = { list -> fzf#vim#listproc#location(list) }
+
+let g:lightline = {
+    \ 'colorscheme': 'gruvbox',
+      \ 'active': {
+      \   'left': [ [ 'mode', 'paste' ],
+      \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+      \ },
+      \ 'component_function': {
+      \   'gitbranch': 'gitbranch#name'
+      \ },
+      \ }
+

@@ -40,7 +40,8 @@ alias c='bat' # weird but why not
 
 alias eza='eza --almost-all --oneline --icons=always'
 alias l='eza'
-alias ll='eza --long'
+alias ll='eza --long --header --group'
+alias la='eza -T'
 
 alias dcu='docker-compose up -d'
 alias dcd='docker-compose down'

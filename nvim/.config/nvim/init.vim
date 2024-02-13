@@ -55,7 +55,7 @@ set spellsuggest=best,9
 set spelllang=en_us
 set nospell
 set updatetime=250
-set signcolumn=no
+set signcolumn=auto
 set wildignore+=*.png,*.jpg,*/.git/*,*/node_modules/*,*/tmp/*,*.so,*.zip
 set completeopt=menuone,noinsert,noselect
 set colorcolumn=90
@@ -75,11 +75,12 @@ Plug 'https://github.com/tpope/vim-commentary'
 Plug 'https://github.com/williamboman/mason.nvim' | Plug 'williamboman/mason-lspconfig.nvim' 
 Plug 'https://github.com/mfussenegger/nvim-lint'
 Plug 'https://github.com/stevearc/conform.nvim'
-Plug 'https://github.com/hrsh7th/cmp-nvim-lsp' | Plug 'hrsh7th/nvim-cmp'
+Plug 'https://github.com/hrsh7th/cmp-nvim-lsp' | Plug 'hrsh7th/nvim-cmp' | Plug 'hrsh7th/cmp-path'
+Plug 'https://github.com/nvim-tree/nvim-tree.lua'
 Plug 'https://github.com/windwp/nvim-ts-autotag'
 Plug 'https://github.com/mfussenegger/nvim-jdtls'
 Plug 'https://github.com/catppuccin/nvim', { 'as': 'catppuccin' } | Plug 'https://github.com/gruvbox-community/gruvbox'
-Plug 'https://github.com/junegunn/fzf.vim' | Plug '~/.fzf'
+Plug 'https://github.com/nvim-telescope/telescope.nvim' | Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' } | Plug 'nvim-lua/plenary.nvim'
 Plug 'https://github.com/itchyny/lightline.vim' | Plug 'itchyny/vim-gitbranch'
 Plug 'https://github.com/airblade/vim-rooter'
 call plug#end()
@@ -127,7 +128,7 @@ end
 
 vim.diagnostic.config({
     virtual_text = true,
-    signs = false,
+    signs = true,
     underline = true,
     update_in_insert = false,
     severity_sort = true,
@@ -139,6 +140,12 @@ vim.diagnostic.config({
     }
 })
 
+local signs = { Error = "󰅚 ", Warn = "󰀪 ", Hint = "󰌶 ", Info = " " }
+for type, icon in pairs(signs) do
+  local hl = "DiagnosticSign" .. type
+  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
+end
+
 keymap.set('n', 'dp', vim.diagnostic.goto_prev)
 keymap.set('n', 'dn', vim.diagnostic.goto_next)
 keymap.set('n', '<leader>e', vim.diagnostic.open_float)
@@ -149,6 +156,9 @@ vim.api.nvim_create_autocmd('LspAttach', {
   callback = function(ev)
     -- Enable completion triggered by <c-x><c-o>
     vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
+
+    local client = vim.lsp.get_client_by_id(ev.data.client_id)
+    client.server_capabilities.semanticTokensProvider = nil
 
     -- Buffer local mappings.
     -- See `:help vim.lsp.*` for documentation on any of the below functions
@@ -196,6 +206,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
     sources = cmp.config.sources({
       { name = 'nvim_lsp', keyword_length = 5, group_index = 1, max_item_count = 20 },
       { name = 'vsnip' }, -- For vsnip users.
+      { name = 'path' }, -- For vsnip users.
     }, {
       { name = 'buffer' },
     }),
@@ -323,19 +334,29 @@ api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost', 'InsertLeave' }, {
     end
 })
 
+local builtin = require('telescope.builtin')
+keymap.set('n', '<leader>sf', builtin.find_files, {})
+keymap.set('n', '<leader>sg', builtin.live_grep, {})
+keymap.set('n', '<leader>sd', builtin.diagnostics, {})
+require('telescope').load_extension('fzf')
+
+require("nvim-tree").setup({
+    view = {
+        side = "right",
+    },
+    renderer = {
+        icons = { 
+            show = {
+                file = false,
+                folder = false,
+            }
+        }
+    }
+})
+keymap.set('n', '<leader>tt', ':NvimTreeToggle<CR>')
+keymap.set('n', '<leader>tf', ':NvimTreeFindFile<CR>')
+
 EOF
-
-" let g:fzf_preview_window = []
-" let g:fzf_layout = { 'window': { 'width': 0.6, 'height': 0.6 } }
-
-nnoremap <leader>sf :Files<CR>
-nnoremap <leader>sg :Rg<CR>
-nnoremap <leader>sb :Buffers<CR>
-nnoremap <leader>? :History<CR>
-nnoremap <leader>/ :Lines<CR>
-
-imap <c-x><c-k> <plug>(fzf-complete-word)
-imap <c-x><c-f> <plug>(fzf-complete-path)
 
 nnoremap <leader>p <cmd>lua PeekDefinition()<CR>
 
@@ -346,12 +367,6 @@ if executable('rg')
   set grepprg=rg\ -H\ --no-heading\ --vimgrep
   set grepformat=%f:%l:%c:%m
 endif
-
-let g:fzf_vim = {}
-let g:fzf_vim.buffers_jump = 1
-let g:fzf_vim.commits_log_options = '--graph --color=always --format="%C(auto)%h%d %s %C(black)%C(bold)%cr"'
-let g:fzf_vim.commands_expect = 'alt-enter,ctrl-x'
-let g:fzf_vim.listproc = { list -> fzf#vim#listproc#location(list) }
 
 let g:lightline = {
     \ 'colorscheme': 'gruvbox',

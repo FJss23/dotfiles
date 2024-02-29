@@ -65,57 +65,66 @@ set expandtab
 set clipboard=unnamedplus
 set termguicolors 
 set number 
+set nowrap
 
 call plug#begin('~/.local/share/nvim/plugged')
+" lsp
 Plug 'https://github.com/neovim/nvim-lspconfig'
-Plug 'https://github.com/hrsh7th/vim-vsnip'
-Plug 'https://github.com/nvim-treesitter/nvim-treesitter' | Plug 'nvim-treesitter/nvim-treesitter-context' | Plug 'JoosepAlviste/nvim-ts-context-commentstring'
-Plug 'https://github.com/ap/vim-css-color'
-Plug 'https://github.com/tpope/vim-commentary'
 Plug 'https://github.com/williamboman/mason.nvim' | Plug 'williamboman/mason-lspconfig.nvim' 
+Plug 'https://github.com/hrsh7th/cmp-nvim-lsp' | Plug 'hrsh7th/nvim-cmp' | Plug 'hrsh7th/cmp-path'
+" utily
+Plug 'https://github.com/hrsh7th/vim-vsnip'
+Plug 'https://github.com/numToStr/Comment.nvim'
+Plug 'https://github.com/nvim-treesitter/nvim-treesitter' "| Plug 'nvim-treesitter/nvim-treesitter-context'
+Plug 'https://github.com/ap/vim-css-color'
 Plug 'https://github.com/mfussenegger/nvim-lint'
 Plug 'https://github.com/stevearc/conform.nvim'
-Plug 'https://github.com/hrsh7th/cmp-nvim-lsp' | Plug 'hrsh7th/nvim-cmp' | Plug 'hrsh7th/cmp-path'
+Plug 'https://github.com/echasnovski/mini.statusline'
+Plug 'https://github.com/nvim-lualine/lualine.nvim'
+Plug 'https://github.com/davidosomething/format-ts-errors.nvim'
+" Plug 'https://github.com/nvim-tree/nvim-web-devicons'
+" vcs
+Plug 'https://github.com/tpope/vim-fugitive'
+" colors
+Plug 'https://github.com/folke/tokyonight.nvim'
+" Plug 'https://github.com/gruvbox-community/gruvbox'
+" Plug 'https://github.com/dracula/vim'
+" Plug 'https://github.com/MaxMEllon/vim-jsx-pretty'
+" search
 Plug 'https://github.com/nvim-tree/nvim-tree.lua'
-Plug 'https://github.com/windwp/nvim-ts-autotag'
-Plug 'https://github.com/mfussenegger/nvim-jdtls'
-Plug 'https://github.com/catppuccin/nvim', { 'as': 'catppuccin' } | Plug 'https://github.com/gruvbox-community/gruvbox'
-Plug 'https://github.com/nvim-telescope/telescope.nvim' | Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' } | Plug 'nvim-lua/plenary.nvim'
-Plug 'https://github.com/itchyny/lightline.vim' | Plug 'itchyny/vim-gitbranch'
-Plug 'https://github.com/airblade/vim-rooter'
+" Plug 'https://github.com/stevearc/oil.nvim'
+Plug 'https://github.com/nvim-telescope/telescope.nvim' | Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' } | Plug 'nvim-lua/plenary.nvim' | Plug 'nvim-telescope/telescope-ui-select.nvim'
 call plug#end()
 
-colorscheme gruvbox
+colorscheme tokyonight-moon
 
 autocmd FileType markdown,txt,tex,gitcommit setlocal spell
 
 lua <<EOF
-
--- Treesitter {{{
--- require('catppuccin').setup({
- --    show_end_of_buffer = true,
-  --   no_italic = true,
-   --  no_bold = true,
-    -- custom_highlights = function(colors)
-         --return {
-         --    WinSeparator = { fg = colors.overlay2 },
-          --   TreesitterContext = { bg = colors.none },
-           --  TreesitterContextBottom = { fg = colors.overlay2 },
-         --}
-     --end
- --})
-
- --vim.cmd.colorscheme "catppuccin"
-
 require('nvim-treesitter.configs').setup({
-    highlight = { enable = false },
+    highlight = { enable = true },
     indent = { enable = true },
 })
 -- }}}
 
-vim.g.skip_ts_context_commentstring_module = true
+require('Comment').setup({})
+require('lualine').setup({
+    options = {
+        component_separators = { left = '', right = '' },
+        section_separators = { left = '', right = '' }
+    },
+    sections = {
+        lualine_a = {'branch'},
+        lualine_b = {'diff', 'diagnostics'},
+        lualine_c = {{'filename',  path = 1}},
+        lualine_x = {'encoding', 'searchcount', 'filetype'},
+    }
+})
+--require('treesitter-context').setup({})
+--require("oil").setup()
+--require('nvim-web-devicons').setup()
 
-require('treesitter-context').setup({})
+vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
 
 local home = os.getenv('HOME')
 local api = vim.api
@@ -127,7 +136,7 @@ local function organize_imports()
 end
 
 vim.diagnostic.config({
-    virtual_text = true,
+    virtual_text = false,
     signs = true,
     underline = true,
     update_in_insert = false,
@@ -164,9 +173,11 @@ vim.api.nvim_create_autocmd('LspAttach', {
     -- See `:help vim.lsp.*` for documentation on any of the below functions
     local opts = { buffer = ev.buf }
     vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
-    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
+    vim.keymap.set('n', 'gd', require('telescope.builtin').lsp_definitions, opts)
+    --vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
     vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-    vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
+    --vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
+    vim.keymap.set('n', 'gI', require('telescope.builtin').lsp_implementations, opts)
     vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
     vim.keymap.set('i', '<C-k>', vim.lsp.buf.signature_help, opts)
     vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, opts)
@@ -179,7 +190,11 @@ vim.api.nvim_create_autocmd('LspAttach', {
     vim.keymap.set('n', '<leader>ws', vim.lsp.buf.workspace_symbol, opts)
     vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, opts)
     vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, opts)
-    vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
+    --vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
+    vim.keymap.set('n', 'gr', require('telescope.builtin').lsp_references, opts)
+    vim.keymap.set('n', '<leader>D', require('telescope.builtin').lsp_type_definitions, opts)
+    vim.keymap.set('n', '<leader>ds', require('telescope.builtin').lsp_document_symbols, opts)
+    vim.keymap.set('n', '<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, opts)
   end,
 })
 
@@ -218,8 +233,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
   })
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
-require('nvim-ts-autotag').setup()
-
 local lspconfig = require('lspconfig')
 
 require('mason').setup()
@@ -239,6 +252,42 @@ require("mason-lspconfig").setup_handlers({
                     description = 'Orginze js and ts imports',
                 },
             },
+            handlers = {
+                 ["textDocument/publishDiagnostics"] = function(
+                      _,
+                      result,
+                      ctx,
+                      config
+                    )
+                        if result.diagnostics == nil then
+                            return
+                          end
+
+                          -- ignore some tsserver diagnostics
+                          local idx = 1
+                          while idx <= #result.diagnostics do
+                            local entry = result.diagnostics[idx]
+
+                            local formatter = require('format-ts-errors')[entry.code]
+                            entry.message = formatter and formatter(entry.message) or entry.message
+
+                            -- codes: https://github.com/microsoft/TypeScript/blob/main/src/compiler/diagnosticMessages.json
+                            if entry.code == 80001 then
+                              -- { message = "File is a CommonJS module; it may be converted to an ES module.", }
+                              table.remove(result.diagnostics, idx)
+                            else
+                              idx = idx + 1
+                            end
+                          end
+
+                          vim.lsp.diagnostic.on_publish_diagnostics(
+                            _,
+                            result,
+                            ctx,
+                            config
+                          )
+                    end
+            }
         }
     end,
     ['yamlls'] = function()
@@ -266,12 +315,12 @@ require("mason-lspconfig").setup_handlers({
             },
         }
     end,
-    ['html'] = function()
+    --[[['html'] = function()
         lspconfig.html.setup {
             capabilities = capabilities,
             filetypes = { 'html', 'javascriptreact', 'typescriptreact' }
         }
-    end,
+    end,--]]
 })
 
 
@@ -338,7 +387,13 @@ local builtin = require('telescope.builtin')
 keymap.set('n', '<leader>sf', builtin.find_files, {})
 keymap.set('n', '<leader>sg', builtin.live_grep, {})
 keymap.set('n', '<leader>sd', builtin.diagnostics, {})
+keymap.set('n', '<leader>si', builtin.git_status, {})
+keymap.set('n', '<leader>sb', builtin.buffers, {})
+keymap.set('n', '<leader>sc', builtin.git_commits, {})
+keymap.set('n', '<leader>ss', builtin.git_status, {})
+
 require('telescope').load_extension('fzf')
+require("telescope").load_extension("ui-select")
 
 require("nvim-tree").setup({
     view = {
@@ -356,26 +411,28 @@ require("nvim-tree").setup({
 keymap.set('n', '<leader>tt', ':NvimTreeToggle<CR>')
 keymap.set('n', '<leader>tf', ':NvimTreeFindFile<CR>')
 
+--vim.g.skip_ts_context_commentstring_module = true
+
 EOF
 
 nnoremap <leader>p <cmd>lua PeekDefinition()<CR>
 
-imap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
-smap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
+" imap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
+" smap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
 
 if executable('rg')
   set grepprg=rg\ -H\ --no-heading\ --vimgrep
   set grepformat=%f:%l:%c:%m
 endif
 
-let g:lightline = {
-    \ 'colorscheme': 'gruvbox',
-      \ 'active': {
-      \   'left': [ [ 'mode', 'paste' ],
-      \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
-      \ },
-      \ 'component_function': {
-      \   'gitbranch': 'gitbranch#name'
-      \ },
-      \ }
+" let g:lightline = {
+"     \ 'colorscheme': 'gruvbox',
+"       \ 'active': {
+"       \   'left': [ [ 'mode', 'paste' ],
+"       \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+"       \ },
+"       \ 'component_function': {
+"       \   'gitbranch': 'gitbranch#name'
+"       \ },
+"       \ }
 

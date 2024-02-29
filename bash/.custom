@@ -35,11 +35,6 @@ alias gd='git diff'
 alias gpl='git pull'
 alias gps='git push'
 
-alias eza='eza --almost-all --oneline --icons=always'
-alias l='eza'
-alias ll='eza --long --header --group'
-alias la='eza -T'
-
 alias dcu='docker-compose up -d'
 alias dcd='docker-compose down'
 
@@ -55,6 +50,8 @@ export FZF_ALT_C_COMMAND="fdfind -t d . $HOME"
 export VISUAL=nvim
 export EDITOR="$VISUAL"
 
+export BAT_THEME="gruvbox-dark"
+
 . "$HOME/.cargo/env"
 . "$HOME/Apps/z/z.sh"
 
@@ -63,3 +60,5 @@ export PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH
 
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+
+[[ -s /home/frandev/.autojump/etc/profile.d/autojump.sh ]] && source /home/frandev/.autojump/etc/profile.d/autojump.sh

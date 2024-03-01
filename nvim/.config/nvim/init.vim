@@ -82,6 +82,7 @@ Plug 'https://github.com/stevearc/conform.nvim'
 Plug 'https://github.com/echasnovski/mini.statusline'
 Plug 'https://github.com/nvim-lualine/lualine.nvim'
 Plug 'https://github.com/davidosomething/format-ts-errors.nvim'
+Plug 'https://github.com/mattn/emmet-vim'
 " Plug 'https://github.com/nvim-tree/nvim-web-devicons'
 " vcs
 Plug 'https://github.com/tpope/vim-fugitive'
@@ -290,7 +291,7 @@ require("mason-lspconfig").setup_handlers({
             }
         }
     end,
-    ['yamlls'] = function()
+    --[[['yamlls'] = function()
         lspconfig.yamlls.setup {
             capabilities = capabilities,
             yaml = {
@@ -300,7 +301,7 @@ require("mason-lspconfig").setup_handlers({
                 },
             },
         }
-    end,
+    end,--]]
     ['gopls'] = function()
         lspconfig.gopls.setup {
             capabilities = capabilities,
@@ -370,8 +371,13 @@ api.nvim_create_autocmd('BufWritePre', {
 })
 
 require('lint').linters_by_ft = {
-    yaml = { 'yamllint' },
-    dockerfile = { 'hadolint' },
+    typescript = { 'eslint_d' },
+    javacript = { 'eslint_d' },
+    typescriptreact = { 'eslint_d' },
+    javascriptreact = { 'eslint_d' },
+    go = { 'golangcilint' }
+    --[[yaml = { 'yamllint' },
+    dockerfile = { 'hadolint' },--]]
 }
 
 local lint_augroup = api.nvim_create_augroup('lint', { clear = true })
@@ -413,6 +419,16 @@ keymap.set('n', '<leader>tf', ':NvimTreeFindFile<CR>')
 
 --vim.g.skip_ts_context_commentstring_module = true
 
+vim.g.user_emmet_leader_key = '<C-E>'
+vim.g.user_emmet_settings = { 
+  javascript = {
+    extends = 'jsx',
+  },
+  typescript = {
+    extends = 'jsx',
+  },
+}
+
 EOF
 
 nnoremap <leader>p <cmd>lua PeekDefinition()<CR>
@@ -424,15 +440,4 @@ if executable('rg')
   set grepprg=rg\ -H\ --no-heading\ --vimgrep
   set grepformat=%f:%l:%c:%m
 endif
-
-" let g:lightline = {
-"     \ 'colorscheme': 'gruvbox',
-"       \ 'active': {
-"       \   'left': [ [ 'mode', 'paste' ],
-"       \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
-"       \ },
-"       \ 'component_function': {
-"       \   'gitbranch': 'gitbranch#name'
-"       \ },
-"       \ }
 

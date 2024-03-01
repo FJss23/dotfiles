@@ -100,7 +100,7 @@ config.keys = {
 
 -- Prompt for a name to use for a new workspace and switch to it.
   {
-    key = 'W',
+    key = 'w',
     mods = 'LEADER',
     action = act.PromptInputLine {
       description = wezterm.format {
@@ -123,7 +123,19 @@ config.keys = {
       end),
     },
   },
-  { key = 'F9', mods = 'LEADER', action = wezterm.action.ShowTabNavigator },
+  { key = 'o', mods = 'LEADER', action = wezterm.action.ShowTabNavigator },
+    {
+        key = 'e',
+        mods = 'LEADER',
+        action = act.PromptInputLine {
+            description = 'Enter new name for tab',
+            action = wezterm.action_callback(function(window, pane, line)
+                if line then
+                    window:active_tab():set_title(line)
+                end
+            end)
+        }
+    }
 }
 
 return config

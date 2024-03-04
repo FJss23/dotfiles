@@ -76,7 +76,8 @@ Plug 'https://github.com/hrsh7th/cmp-nvim-lsp' | Plug 'hrsh7th/nvim-cmp' | Plug 
 Plug 'https://github.com/hrsh7th/vim-vsnip'
 Plug 'https://github.com/numToStr/Comment.nvim'
 Plug 'https://github.com/nvim-treesitter/nvim-treesitter' "| Plug 'nvim-treesitter/nvim-treesitter-context'
-Plug 'https://github.com/ap/vim-css-color'
+Plug 'https://github.com/brenoprata10/nvim-highlight-colors'
+" Plug 'https://github.com/ap/vim-css-color'
 Plug 'https://github.com/mfussenegger/nvim-lint'
 Plug 'https://github.com/stevearc/conform.nvim'
 Plug 'https://github.com/echasnovski/mini.statusline'
@@ -88,16 +89,19 @@ Plug 'https://github.com/mattn/emmet-vim'
 Plug 'https://github.com/tpope/vim-fugitive'
 " colors
 Plug 'https://github.com/folke/tokyonight.nvim'
+Plug 'https://github.com/rose-pine/neovim', { 'as': 'rose-pine' }
 " Plug 'https://github.com/gruvbox-community/gruvbox'
 " Plug 'https://github.com/dracula/vim'
 " Plug 'https://github.com/MaxMEllon/vim-jsx-pretty'
 " search
 Plug 'https://github.com/nvim-tree/nvim-tree.lua'
+Plug 'https://github.com/ibhagwan/fzf-lua'
 " Plug 'https://github.com/stevearc/oil.nvim'
-Plug 'https://github.com/nvim-telescope/telescope.nvim' | Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' } | Plug 'nvim-lua/plenary.nvim' | Plug 'nvim-telescope/telescope-ui-select.nvim'
+" Plug 'https://github.com/nvim-telescope/telescope.nvim' | Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' } | Plug 'nvim-lua/plenary.nvim' | Plug 'nvim-telescope/telescope-ui-select.nvim'
 call plug#end()
 
-colorscheme tokyonight-moon
+" colorscheme tokyonight-moon
+colorscheme rose-pine
 
 autocmd FileType markdown,txt,tex,gitcommit setlocal spell
 
@@ -108,6 +112,7 @@ require('nvim-treesitter.configs').setup({
 })
 -- }}}
 
+require('nvim-highlight-colors').setup {}
 require('Comment').setup({})
 require('lualine').setup({
     options = {
@@ -174,28 +179,35 @@ vim.api.nvim_create_autocmd('LspAttach', {
     -- See `:help vim.lsp.*` for documentation on any of the below functions
     local opts = { buffer = ev.buf }
     vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
-    vim.keymap.set('n', 'gd', require('telescope.builtin').lsp_definitions, opts)
+    vim.keymap.set('n', 'gd', require('fzf-lua').lsp_definitions, opts)
     --vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
     vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
     --vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
-    vim.keymap.set('n', 'gI', require('telescope.builtin').lsp_implementations, opts)
+    vim.keymap.set('n', 'gI', require('fzf-lua').lsp_implementations, opts)
     vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
     vim.keymap.set('i', '<C-k>', vim.lsp.buf.signature_help, opts)
+
     vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, opts)
     vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, opts)
     vim.keymap.set('n', '<space>wl', function()
       print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
     end, opts)
-    vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, opts)
-    vim.keymap.set('n', '<leader>ds', vim.lsp.buf.document_symbol, opts)
-    vim.keymap.set('n', '<leader>ws', vim.lsp.buf.workspace_symbol, opts)
+
+    -- vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, opts)
+    vim.keymap.set('n', '<leader>D', require('fzf-lua').lsp_typedefs, opts)
+    -- vim.keymap.set('n', '<leader>ds', vim.lsp.buf.document_symbol, opts)
+    vim.keymap.set('n', '<leader>ds', require('fzf-lua').lsp_document_symbols, opts)
+
+    vim.keymap.set('n', '<leader>ws', require('fzf-lua').lsp_live_workspace_symbols, opts)
+    vim.keymap.set('n', '<leader>dw', require('fzf-lua').diagnostics_workspace, opts)
     vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, opts)
-    vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, opts)
+    -- vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, opts)
+    vim.keymap.set('n', '<space>ca', require('fzf-lua').lsp_code_actions, opts)
     --vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
-    vim.keymap.set('n', 'gr', require('telescope.builtin').lsp_references, opts)
-    vim.keymap.set('n', '<leader>D', require('telescope.builtin').lsp_type_definitions, opts)
-    vim.keymap.set('n', '<leader>ds', require('telescope.builtin').lsp_document_symbols, opts)
-    vim.keymap.set('n', '<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, opts)
+    vim.keymap.set('n', 'gr', require('fzf-lua').lsp_references, opts)
+
+    vim.keymap.set('n', '<leader>li', require('fzf-lua').lsp_incoming_calls, opts)
+    vim.keymap.set('n', '<leader>lo', require('fzf-lua').lsp_outgoing_calls, opts)
   end,
 })
 
@@ -389,21 +401,25 @@ api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost', 'InsertLeave' }, {
     end
 })
 
-local builtin = require('telescope.builtin')
-keymap.set('n', '<leader>sf', builtin.find_files, {})
-keymap.set('n', '<leader>sg', builtin.live_grep, {})
-keymap.set('n', '<leader>sd', builtin.diagnostics, {})
-keymap.set('n', '<leader>si', builtin.git_status, {})
-keymap.set('n', '<leader>sb', builtin.buffers, {})
-keymap.set('n', '<leader>sc', builtin.git_commits, {})
-keymap.set('n', '<leader>ss', builtin.git_status, {})
+local fzflua = require('fzf-lua')
+keymap.set('n', '<leader>sf', fzflua.files, {})
+keymap.set('n', '<leader>sg', fzflua.live_grep, {})
+keymap.set('n', '<leader>sd', fzflua.diagnostics_document, {})
+keymap.set('n', '<leader>si', fzflua.git_status, {})
+keymap.set('n', '<leader>sc', fzflua.git_commits, {})
+keymap.set('n', '<leader>sr', fzflua.git_branches, {})
+keymap.set('n', '<leader>sb', fzflua.buffers, {})
 
-require('telescope').load_extension('fzf')
-require("telescope").load_extension("ui-select")
+-- require('telescope').load_extension('fzf')
+-- require("telescope").load_extension("ui-select")
+
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
 
 require("nvim-tree").setup({
     view = {
         side = "right",
+        width = '30%',
     },
     renderer = {
         icons = { 
@@ -428,6 +444,8 @@ vim.g.user_emmet_settings = {
     extends = 'jsx',
   },
 }
+
+require('fzf-lua').register_ui_select()
 
 EOF
 

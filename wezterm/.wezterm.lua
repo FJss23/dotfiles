@@ -32,10 +32,10 @@ end)
 
 config.font_size = 12
 config.font = wezterm.font 'CodeNewRoman Nerd Font'
-config.color_scheme = 'Retro'
+-- config.color_scheme = 'Retro'
 -- config.color_scheme = 'tlh (terminal.sexy)'
--- config.color_scheme = 'Tokyo Night Moon'
-config.color_scheme = 'Dracula'
+config.color_scheme = 'Tokyo Night Moon'
+-- config.color_scheme = 'Dracula'
 -- config.color_scheme = 'Gruvbox dark, hard (base16)'
 config.check_for_updates = false
 config.hide_tab_bar_if_only_one_tab = false

@@ -73,14 +73,15 @@ Plug 'https://github.com/neovim/nvim-lspconfig'
 Plug 'https://github.com/williamboman/mason.nvim' | Plug 'williamboman/mason-lspconfig.nvim' 
 Plug 'https://github.com/hrsh7th/cmp-nvim-lsp' | Plug 'hrsh7th/nvim-cmp' | Plug 'hrsh7th/cmp-path'
 " utily
-Plug 'https://github.com/hrsh7th/vim-vsnip'
+Plug 'https://github.com/L3MON4D3/LuaSnip', {'tag': 'v2.*', 'do': 'make install_jsregexp'}
+" Plug 'https://github.com/hrsh7th/vim-vsnip'
 Plug 'https://github.com/numToStr/Comment.nvim'
 Plug 'https://github.com/nvim-treesitter/nvim-treesitter' "| Plug 'nvim-treesitter/nvim-treesitter-context'
 Plug 'https://github.com/brenoprata10/nvim-highlight-colors'
 " Plug 'https://github.com/ap/vim-css-color'
 Plug 'https://github.com/mfussenegger/nvim-lint'
 Plug 'https://github.com/stevearc/conform.nvim'
-Plug 'https://github.com/echasnovski/mini.statusline'
+" Plug 'https://github.com/echasnovski/mini.statusline'
 Plug 'https://github.com/nvim-lualine/lualine.nvim'
 Plug 'https://github.com/davidosomething/format-ts-errors.nvim'
 Plug 'https://github.com/mattn/emmet-vim'
@@ -89,7 +90,7 @@ Plug 'https://github.com/mattn/emmet-vim'
 Plug 'https://github.com/tpope/vim-fugitive'
 " colors
 Plug 'https://github.com/folke/tokyonight.nvim'
-Plug 'https://github.com/rose-pine/neovim', { 'as': 'rose-pine' }
+" Plug 'https://github.com/rose-pine/neovim', { 'as': 'rose-pine' }
 " Plug 'https://github.com/gruvbox-community/gruvbox'
 " Plug 'https://github.com/dracula/vim'
 " Plug 'https://github.com/MaxMEllon/vim-jsx-pretty'
@@ -100,8 +101,8 @@ Plug 'https://github.com/ibhagwan/fzf-lua'
 " Plug 'https://github.com/nvim-telescope/telescope.nvim' | Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' } | Plug 'nvim-lua/plenary.nvim' | Plug 'nvim-telescope/telescope-ui-select.nvim'
 call plug#end()
 
-" colorscheme tokyonight-moon
-colorscheme rose-pine
+colorscheme tokyonight-moon
+" colorscheme rose-pine
 
 autocmd FileType markdown,txt,tex,gitcommit setlocal spell
 
@@ -217,7 +218,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
     snippet = {
       -- REQUIRED - you must specify a snippet engine
       expand = function(args)
-        vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
+      require('luasnip').lsp_expand(args.body)
       end,
     },
     window = {
@@ -233,7 +234,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
     }),
     sources = cmp.config.sources({
       { name = 'nvim_lsp', keyword_length = 5, group_index = 1, max_item_count = 20 },
-      { name = 'vsnip' }, -- For vsnip users.
+      { name = 'luasnip' }, -- For vsnip users.
       { name = 'path' }, -- For vsnip users.
     }, {
       { name = 'buffer' },
@@ -446,6 +447,16 @@ vim.g.user_emmet_settings = {
 }
 
 require('fzf-lua').register_ui_select()
+
+vim.keymap.set({"i"}, "<C-K>", function() ls.expand() end, {silent = true})
+vim.keymap.set({"i", "s"}, "<C-L>", function() ls.jump( 1) end, {silent = true})
+vim.keymap.set({"i", "s"}, "<C-J>", function() ls.jump(-1) end, {silent = true})
+
+vim.keymap.set({"i", "s"}, "<C-E>", function()
+	if ls.choice_active() then
+		ls.change_choice(1)
+	end
+end, {silent = true})
 
 EOF
 

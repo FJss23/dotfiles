@@ -71,17 +71,12 @@ call plug#begin('~/.local/share/nvim/plugged')
 " lsp
 Plug 'https://github.com/neovim/nvim-lspconfig'
 Plug 'https://github.com/williamboman/mason.nvim' | Plug 'williamboman/mason-lspconfig.nvim' 
-Plug 'https://github.com/hrsh7th/cmp-nvim-lsp' | Plug 'hrsh7th/nvim-cmp' | Plug 'hrsh7th/cmp-path'
+Plug 'https://github.com/hrsh7th/cmp-nvim-lsp' | Plug 'hrsh7th/nvim-cmp'
 " utily
 Plug 'https://github.com/L3MON4D3/LuaSnip', {'tag': 'v2.*', 'do': 'make install_jsregexp'}
-" Plug 'https://github.com/hrsh7th/vim-vsnip'
-Plug 'https://github.com/numToStr/Comment.nvim'
-Plug 'https://github.com/nvim-treesitter/nvim-treesitter' "| Plug 'nvim-treesitter/nvim-treesitter-context'
+Plug 'https://github.com/tpope/vim-commentary'
+Plug 'https://github.com/nvim-treesitter/nvim-treesitter'
 Plug 'https://github.com/brenoprata10/nvim-highlight-colors'
-" Plug 'https://github.com/ap/vim-css-color'
-Plug 'https://github.com/mfussenegger/nvim-lint'
-Plug 'https://github.com/stevearc/conform.nvim'
-" Plug 'https://github.com/echasnovski/mini.statusline'
 Plug 'https://github.com/nvim-lualine/lualine.nvim'
 Plug 'https://github.com/davidosomething/format-ts-errors.nvim'
 Plug 'https://github.com/mattn/emmet-vim'
@@ -89,22 +84,17 @@ Plug 'https://github.com/mattn/emmet-vim'
 " vcs
 Plug 'https://github.com/tpope/vim-fugitive'
 " colors
-Plug 'https://github.com/folke/tokyonight.nvim'
-" Plug 'https://github.com/rose-pine/neovim', { 'as': 'rose-pine' }
-" Plug 'https://github.com/gruvbox-community/gruvbox'
-" Plug 'https://github.com/dracula/vim'
-" Plug 'https://github.com/MaxMEllon/vim-jsx-pretty'
+Plug 'https://github.com/rebelot/kanagawa.nvim'
 " search
 Plug 'https://github.com/nvim-tree/nvim-tree.lua'
 Plug 'https://github.com/ibhagwan/fzf-lua'
-" Plug 'https://github.com/stevearc/oil.nvim'
-" Plug 'https://github.com/nvim-telescope/telescope.nvim' | Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' } | Plug 'nvim-lua/plenary.nvim' | Plug 'nvim-telescope/telescope-ui-select.nvim'
 call plug#end()
 
-colorscheme tokyonight-moon
-" colorscheme rose-pine
+colorscheme kanagawa-dragon
 
 autocmd FileType markdown,txt,tex,gitcommit setlocal spell
+
+filetype plugin indent on
 
 lua <<EOF
 require('nvim-treesitter.configs').setup({
@@ -114,7 +104,6 @@ require('nvim-treesitter.configs').setup({
 -- }}}
 
 require('nvim-highlight-colors').setup {}
-require('Comment').setup({})
 require('lualine').setup({
     options = {
         component_separators = { left = '', right = '' },
@@ -235,7 +224,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
     sources = cmp.config.sources({
       { name = 'nvim_lsp', keyword_length = 5, group_index = 1, max_item_count = 20 },
       { name = 'luasnip' }, -- For vsnip users.
-      { name = 'path' }, -- For vsnip users.
+      -- { name = 'path' },
     }, {
       { name = 'buffer' },
     }),
@@ -248,6 +237,8 @@ vim.api.nvim_create_autocmd('LspAttach', {
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
 local lspconfig = require('lspconfig')
+
+local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
 
 require('mason').setup()
 require("mason-lspconfig").setup_handlers({
@@ -329,6 +320,37 @@ require("mason-lspconfig").setup_handlers({
             },
         }
     end,
+    ['efm'] = function() 
+        lspconfig.efm.setup {
+            capabilities = capabilities,
+            on_attach = function(client, bufnr)
+                vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
+                vim.api.nvim_create_autocmd("BufWritePre", {
+                  group = augroup,
+                  buffer = bufnr,
+                  callback = function()
+                    vim.lsp.buf.format()
+                  end,
+                })
+            end,
+            init_options = {
+                documentFormatting = true,
+                codeActions = true,
+            },
+            cmd = { 'efm-langserver', '-c', home .. '/.config/efm-langserver/config.yaml' },
+            filetypes = {
+                'javascriptreact',
+                'javacript',
+                'typescript',
+                'typescriptreact',
+                'markdown',
+                'css',
+                'scss',
+                'go',
+                'html',
+            },
+        }
+    end,
     --[[['html'] = function()
         lspconfig.html.setup {
             capabilities = capabilities,
@@ -360,47 +382,47 @@ api.nvim_create_autocmd('TextYankPost', {
     pattern = '*',
 })
 
-require('conform').setup({
-    formatters_by_ft = {
-        javascript = { 'prettier' },
-        javascriptreact = { 'prettier' },
-        typescript = { 'prettier' },
-        typescriptreact  = { 'prettier' },
-        html  = { 'prettier' },
-        json  = { 'prettier' },
-        yaml  = { 'prettier' },
-        css  = { 'prettier' },
-        scss  = { 'prettier' },
-        markdown  = { 'prettier' },
-        go  = { 'gofmt', 'goimports' },
-    }
-})
+-- require('conform').setup({
+--     formatters_by_ft = {
+--         javascript = { 'prettier' },
+--         javascriptreact = { 'prettier' },
+--         typescript = { 'prettier' },
+--         typescriptreact  = { 'prettier' },
+--         html  = { 'prettier' },
+--         json  = { 'prettier' },
+--         yaml  = { 'prettier' },
+--         css  = { 'prettier' },
+--         scss  = { 'prettier' },
+--         markdown  = { 'prettier' },
+--         go  = { 'gofmt', 'goimports' },
+--     }
+-- })
+--
+-- api.nvim_create_autocmd('BufWritePre', {
+--   pattern = "*",
+--   callback = function(args)
+--     require('conform').format({ bufnr = args.buf })
+--   end,
+-- })
 
-api.nvim_create_autocmd('BufWritePre', {
-  pattern = "*",
-  callback = function(args)
-    require('conform').format({ bufnr = args.buf })
-  end,
-})
-
-require('lint').linters_by_ft = {
-    typescript = { 'eslint_d' },
-    javacript = { 'eslint_d' },
-    typescriptreact = { 'eslint_d' },
-    javascriptreact = { 'eslint_d' },
-    go = { 'golangcilint' }
+-- require('lint').linters_by_ft = {
+--     typescript = { 'eslint_d' },
+--     javacript = { 'eslint_d' },
+--     typescriptreact = { 'eslint_d' },
+--     javascriptreact = { 'eslint_d' },
+--     go = { 'golangcilint' }
     --[[yaml = { 'yamllint' },
     dockerfile = { 'hadolint' },--]]
-}
+-- }
 
-local lint_augroup = api.nvim_create_augroup('lint', { clear = true })
+-- local lint_augroup = api.nvim_create_augroup('lint', { clear = true })
 
-api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost', 'InsertLeave' }, {
-    group = lint_augroup,
-    callback = function()
-        require('lint').try_lint()
-    end
-})
+-- api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost', 'InsertLeave' }, {
+--     group = lint_augroup,
+--     callback = function()
+--         require('lint').try_lint()
+--     end
+-- })
 
 local fzflua = require('fzf-lua')
 keymap.set('n', '<leader>sf', fzflua.files, {})

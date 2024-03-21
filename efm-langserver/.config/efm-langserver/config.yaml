@@ -5,7 +5,7 @@ root-markers:
   - .git/
 
 tools:
-  prettier: &prettier
+  js-prettier: &js-prettier
     format-command: './node_modules/.bin/prettier --stdin-filepath ${INPUT}'
     format-stdin: true
     root-markers:
@@ -54,50 +54,54 @@ tools:
   #   lint-formats:
   #     - '%f:%l %m'
 
-  golangci-lint: &golangci-lint
-    lint-command: 'golangci-lint run --color never --out-format tab'
-    lint-stdin: false
-    lint-formats:
-      - '%f:%l:%c %m'
-    root-makers:
-      - .golangci.yml
-      - .golangci.yaml
-      - .golangci.toml
-      - .golangci.json
+  # golangci-lint: &golangci-lint
+  #   lint-command: 'golangci-lint run --color never --out-format tab'
+  #   lint-stdin: false
+  #   lint-ignore-exit-code: true
+  #   lint-formats:
+  #     - '%f:%l:%c %m'
+  #   root-makers:
+  #     - .golangci.yml
+  #     - .golangci.yaml
+  #     - .golangci.toml
+  #     - .golangci.json
 
   goimports: &goimports
     format-command: 'goimports -srcdir ${INPUT}'
     format-stdin: true
 
-  gofmt: &gofmt
-    format-command: 'gofmt ${INPUT}'
-    format-stdin: true
+  # gofmt: &gofmt
+  #   format-command: 'gofmt ${INPUT}'
+  #   format-stdin: true
 
 languages:
   javascript:
-    - <<: *prettier
+    - <<: *js-prettier
     - <<: *eslint
 
   javascriptreact:
-    - <<: *prettier
+    - <<: *js-prettier
     - <<: *eslint
 
   typescript:
-    - <<: *prettier
+    - <<: *js-prettier
     - <<: *eslint
 
   typescriptreact:
-    - <<: *prettier
+    - <<: *js-prettier
     - <<: *eslint
   
   html:
-    - <<: *prettier
+    - <<: *js-prettier
   
   css:
-    - <<: *prettier
+    - <<: *js-prettier
 
   scss:
-    - <<: *prettier
+    - <<: *js-prettier
+
+  json:
+    - <<: *js-prettier
 
   # yaml:
   #   - <<: *yaml-yamllint
@@ -108,12 +112,12 @@ languages:
 
   markdown:
     # - <<: *vale
-    - <<: *prettier
+    - <<: *js-prettier
 
   # dockerfile:
   #   - <<: *dockerfile-hadolint
 
   go:
-    - <<: *golangci-lint
+    # - <<: *golangci-lint
     - <<: *goimports
-    - <<: *gofmt
+    # - <<: *gofmt

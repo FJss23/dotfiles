@@ -54,17 +54,17 @@ set scrolloff=7
 set spellsuggest=best,9
 set spelllang=en_us
 set nospell
-set updatetime=250
+set updatetime=100
 set signcolumn=auto
 set wildignore+=*.png,*.jpg,*/.git/*,*/node_modules/*,*/tmp/*,*.so,*.zip
 set completeopt=menuone,noinsert,noselect
 set colorcolumn=90
-set shiftwidth=4
-set tabstop=4
+set shiftwidth=2
+set tabstop=2
 set expandtab 
 set clipboard=unnamedplus
 set termguicolors 
-set number 
+" set number 
 set nowrap
 
 call plug#begin('~/.local/share/nvim/plugged')
@@ -72,21 +72,27 @@ call plug#begin('~/.local/share/nvim/plugged')
 Plug 'https://github.com/neovim/nvim-lspconfig'
 Plug 'https://github.com/williamboman/mason.nvim' | Plug 'williamboman/mason-lspconfig.nvim' 
 Plug 'https://github.com/hrsh7th/cmp-nvim-lsp' | Plug 'hrsh7th/nvim-cmp'
-" utily
+" utility
 Plug 'https://github.com/L3MON4D3/LuaSnip', {'tag': 'v2.*', 'do': 'make install_jsregexp'}
 Plug 'https://github.com/tpope/vim-commentary'
-Plug 'https://github.com/nvim-treesitter/nvim-treesitter'
+Plug 'https://github.com/nvim-treesitter/nvim-treesitter' | Plug 'nvim-treesitter/nvim-treesitter-context'
 Plug 'https://github.com/brenoprata10/nvim-highlight-colors'
 Plug 'https://github.com/nvim-lualine/lualine.nvim'
 Plug 'https://github.com/davidosomething/format-ts-errors.nvim'
 Plug 'https://github.com/mattn/emmet-vim'
-" Plug 'https://github.com/nvim-tree/nvim-web-devicons'
+Plug 'https://github.com/JoosepAlviste/nvim-ts-context-commentstring'
+Plug 'https://github.com/lukas-reineke/indent-blankline.nvim'
+" format
+Plug 'https://github.com/mfussenegger/nvim-lint'
+" linting
+Plug 'https://github.com/stevearc/conform.nvim'
 " vcs
 Plug 'https://github.com/tpope/vim-fugitive'
 " colors
 Plug 'https://github.com/rebelot/kanagawa.nvim'
 " search
-Plug 'https://github.com/nvim-tree/nvim-tree.lua'
+Plug 'https://github.com/echasnovski/mini.files', { 'branch': 'stable' }
+" Plug 'https://github.com/nvim-tree/nvim-tree.lua'
 Plug 'https://github.com/ibhagwan/fzf-lua'
 call plug#end()
 
@@ -97,11 +103,24 @@ autocmd FileType markdown,txt,tex,gitcommit setlocal spell
 filetype plugin indent on
 
 lua <<EOF
+
+vim.opt.list = true
+vim.opt.listchars = { --[[tab = '» ',--]] trail = '·', nbsp = '␣' }
+vim.opt.inccommand = 'split'
+
+vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
+
 require('nvim-treesitter.configs').setup({
     highlight = { enable = true },
     indent = { enable = true },
 })
 -- }}}
+
+vim.g.skip_ts_context_commentstring_module = true 
+
+require('ibl').setup({
+    indent = { char = "|"  }
+})
 
 require('nvim-highlight-colors').setup {}
 require('lualine').setup({
@@ -116,11 +135,13 @@ require('lualine').setup({
         lualine_x = {'encoding', 'searchcount', 'filetype'},
     }
 })
---require('treesitter-context').setup({})
---require("oil").setup()
---require('nvim-web-devicons').setup()
 
-vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
+require('treesitter-context').setup({
+    enable = false,
+    separator = "-"
+})
+
+vim.keymap.set('n', '<leader>tc', ':TSContextToggle<CR>', { desc = 'Toggle TS Context' })
 
 local home = os.getenv('HOME')
 local api = vim.api
@@ -202,12 +223,13 @@ vim.api.nvim_create_autocmd('LspAttach', {
 })
 
   local cmp = require'cmp'
+  local luasnip = require'luasnip'
 
   cmp.setup({
     snippet = {
       -- REQUIRED - you must specify a snippet engine
       expand = function(args)
-      require('luasnip').lsp_expand(args.body)
+      luasnip.lsp_expand(args.body)
       end,
     },
     window = {
@@ -215,11 +237,23 @@ vim.api.nvim_create_autocmd('LspAttach', {
       -- documentation = cmp.config.window.bordered(),
     },
     mapping = cmp.mapping.preset.insert({
+      ['<C-n>'] = cmp.mapping.select_next_item(),
+      ['<C-p>'] = cmp.mapping.select_prev_item(),
       ['<C-b>'] = cmp.mapping.scroll_docs(-4),
       ['<C-f>'] = cmp.mapping.scroll_docs(4),
       ['<C-Space>'] = cmp.mapping.complete(),
       ['<C-e>'] = cmp.mapping.abort(),
-      ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+      ['<C-y>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+      ['<C-l>'] = cmp.mapping(function()
+        if luasnip.expand_or_locally_jumpable() then
+            luasnip.expand_or_jump()
+        end
+      end, { 'i', 's' }),
+      ['<C-h>'] = cmp.mapping(function()
+        if luasnip.locally_jumpable(-1) then
+            luasnip.jump(-1)
+        end
+      end, { 'i', 's' }),
     }),
     sources = cmp.config.sources({
       { name = 'nvim_lsp', keyword_length = 5, group_index = 1, max_item_count = 20 },
@@ -340,7 +374,7 @@ require("mason-lspconfig").setup_handlers({
             cmd = { 'efm-langserver', '-c', home .. '/.config/efm-langserver/config.yaml' },
             filetypes = {
                 'javascriptreact',
-                'javacript',
+                'javascript',
                 'typescript',
                 'typescriptreact',
                 'markdown',
@@ -351,12 +385,6 @@ require("mason-lspconfig").setup_handlers({
             },
         }
     end,
-    --[[['html'] = function()
-        lspconfig.html.setup {
-            capabilities = capabilities,
-            filetypes = { 'html', 'javascriptreact', 'typescriptreact' }
-        }
-    end,--]]
 })
 
 
@@ -439,22 +467,29 @@ keymap.set('n', '<leader>sb', fzflua.buffers, {})
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
-require("nvim-tree").setup({
-    view = {
-        side = "right",
-        width = '30%',
-    },
-    renderer = {
-        icons = { 
-            show = {
-                file = false,
-                folder = false,
-            }
-        }
-    }
-})
-keymap.set('n', '<leader>tt', ':NvimTreeToggle<CR>')
-keymap.set('n', '<leader>tf', ':NvimTreeFindFile<CR>')
+-- require("nvim-tree").setup({
+--     view = {
+--         side = "right",
+--         width = '20%',
+--     },
+--     renderer = {
+--         icons = { 
+--             show = {
+--                 file = false,
+--                 folder = false,
+--             }
+--         }
+--     }
+-- })
+
+-- keymap.set('n', '<leader>-', ':NvimTreeFindFile<CR>')
+require('mini.files').setup()
+
+local minifiles_toggle = function()
+  if not MiniFiles.close() then MiniFiles.open() end
+end
+
+keymap.set('n', '-', ':lua MiniFiles.open()<CR>')
 
 --vim.g.skip_ts_context_commentstring_module = true
 
@@ -470,18 +505,46 @@ vim.g.user_emmet_settings = {
 
 require('fzf-lua').register_ui_select()
 
-vim.keymap.set({"i"}, "<C-K>", function() ls.expand() end, {silent = true})
-vim.keymap.set({"i", "s"}, "<C-L>", function() ls.jump( 1) end, {silent = true})
-vim.keymap.set({"i", "s"}, "<C-J>", function() ls.jump(-1) end, {silent = true})
+require('conform').setup({
+    formatters_by_ft = {
+        javascript = { 'prettier' },
+        javascriptreact = { 'prettier' },
+        typescript = { 'prettier' },
+        typescriptreact  = { 'prettier' },
+        html  = { 'prettier' },
+        json  = { 'prettier' },
+        yaml  = { 'prettier' },
+        css  = { 'prettier' },
+        scss  = { 'prettier' },
+        markdown  = { 'prettier' },
+        go  = { 'gofmt', 'goimports' },
+    }
+})
 
-vim.keymap.set({"i", "s"}, "<C-E>", function()
-	if ls.choice_active() then
-		ls.change_choice(1)
-	end
-end, {silent = true})
+api.nvim_create_autocmd('BufWritePre', {
+  pattern = "*",
+  callback = function(args)
+    require('conform').format({ bufnr = args.buf })
+  end,
+})
 
+require('lint').linters_by_ft = {
+    typescript = { 'eslint' },
+    javacript = { 'eslint' },
+    typescriptreact = { 'eslint' },
+    javascriptreact = { 'eslint' },
+    go = { 'golangcilint' },
+}
+
+local lint_augroup = api.nvim_create_augroup('lint', { clear = true })
+
+api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost', 'InsertLeave' }, {
+    group = lint_augroup,
+    callback = function()
+        require('lint').try_lint()
+    end
+})
 EOF
-
 nnoremap <leader>p <cmd>lua PeekDefinition()<CR>
 
 " imap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
@@ -492,3 +555,4 @@ if executable('rg')
   set grepformat=%f:%l:%c:%m
 endif
 
+" vim: ts=2 sts=2 sw=2 et

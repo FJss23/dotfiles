@@ -31,7 +31,9 @@ wezterm.on('update-right-status', function(window, pane)
 end)
 
 config.font_size = 12
-config.font = wezterm.font 'CodeNewRoman Nerd Font'
+config.font = wezterm.font 'JetBrainsMono Nerd Font'
+config.line_height = 1.1
+-- config.font = wezterm.font 'CodeNewRoman Nerd Font'
 -- config.color_scheme = 'Retro'
 -- config.color_scheme = 'tlh (terminal.sexy)'
 -- config.color_scheme = 'Tokyo Night Moon'

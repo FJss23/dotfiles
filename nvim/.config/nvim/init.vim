@@ -102,6 +102,9 @@ autocmd FileType markdown,txt,tex,gitcommit setlocal spell
 
 filetype plugin indent on
 
+highlight! link IblIndent NonText
+highlight! link EndOfBuffer Comment
+
 lua <<EOF
 
 vim.opt.list = true

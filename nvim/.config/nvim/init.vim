@@ -77,7 +77,7 @@ Plug 'https://github.com/L3MON4D3/LuaSnip', {'tag': 'v2.*', 'do': 'make install_
 Plug 'https://github.com/tpope/vim-commentary'
 Plug 'https://github.com/nvim-treesitter/nvim-treesitter' | Plug 'nvim-treesitter/nvim-treesitter-context'
 Plug 'https://github.com/brenoprata10/nvim-highlight-colors'
-Plug 'https://github.com/nvim-lualine/lualine.nvim'
+" Plug 'https://github.com/nvim-lualine/lualine.nvim'
 Plug 'https://github.com/davidosomething/format-ts-errors.nvim'
 Plug 'https://github.com/mattn/emmet-vim'
 Plug 'https://github.com/JoosepAlviste/nvim-ts-context-commentstring'
@@ -92,8 +92,8 @@ Plug 'https://github.com/tpope/vim-fugitive'
 Plug 'https://github.com/rebelot/kanagawa.nvim'
 " search
 Plug 'https://github.com/echasnovski/mini.files', { 'branch': 'stable' }
-" Plug 'https://github.com/nvim-tree/nvim-tree.lua'
 Plug 'https://github.com/ibhagwan/fzf-lua'
+" Plug 'https://github.com/nvim-tree/nvim-tree.lua'
 call plug#end()
 
 colorscheme kanagawa-dragon
@@ -126,18 +126,18 @@ require('ibl').setup({
 })
 
 require('nvim-highlight-colors').setup {}
-require('lualine').setup({
-    options = {
-        component_separators = { left = '', right = '' },
-        section_separators = { left = '', right = '' }
-    },
-    sections = {
-        lualine_a = {'branch'},
-        lualine_b = {'diff', 'diagnostics'},
-        lualine_c = {{'filename',  path = 1}},
-        lualine_x = {'encoding', 'searchcount', 'filetype'},
-    }
-})
+-- require('lualine').setup({
+--     options = {
+--         component_separators = { left = '', right = '' },
+--         section_separators = { left = '', right = '' }
+--     },
+--     sections = {
+--         lualine_a = {'branch'},
+--         lualine_b = {'diff', 'diagnostics'},
+--         lualine_c = {{'filename',  path = 1}},
+--         lualine_x = {'encoding', 'searchcount', 'filetype'},
+--     }
+-- })
 
 require('treesitter-context').setup({
     enable = false,
@@ -357,37 +357,37 @@ require("mason-lspconfig").setup_handlers({
             },
         }
     end,
-    ['efm'] = function() 
-        lspconfig.efm.setup {
-            capabilities = capabilities,
-            on_attach = function(client, bufnr)
-                vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
-                vim.api.nvim_create_autocmd("BufWritePre", {
-                  group = augroup,
-                  buffer = bufnr,
-                  callback = function()
-                    vim.lsp.buf.format()
-                  end,
-                })
-            end,
-            init_options = {
-                documentFormatting = true,
-                codeActions = true,
-            },
-            cmd = { 'efm-langserver', '-c', home .. '/.config/efm-langserver/config.yaml' },
-            filetypes = {
-                'javascriptreact',
-                'javascript',
-                'typescript',
-                'typescriptreact',
-                'markdown',
-                'css',
-                'scss',
-                'go',
-                'html',
-            },
-        }
-    end,
+    -- ['efm'] = function() 
+    --     lspconfig.efm.setup {
+    --         capabilities = capabilities,
+    --         on_attach = function(client, bufnr)
+    --             vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
+    --             vim.api.nvim_create_autocmd("BufWritePre", {
+    --               group = augroup,
+    --               buffer = bufnr,
+    --               callback = function()
+    --                 vim.lsp.buf.format()
+    --               end,
+    --             })
+    --         end,
+    --         init_options = {
+    --             documentFormatting = true,
+    --             codeActions = true,
+    --         },
+    --         cmd = { 'efm-langserver', '-c', home .. '/.config/efm-langserver/config.yaml' },
+    --         filetypes = {
+    --             'javascriptreact',
+    --             'javascript',
+    --             'typescript',
+    --             'typescriptreact',
+    --             'markdown',
+    --             'css',
+    --             'scss',
+    --             'go',
+    --             'html',
+    --         },
+    --     }
+    -- end,
 })
 
 
@@ -486,7 +486,7 @@ vim.g.loaded_netrwPlugin = 1
 -- })
 
 -- keymap.set('n', '<leader>-', ':NvimTreeFindFile<CR>')
-require('mini.files').setup()
+require('mini.files').setup({ content = { prefix = function() end } })
 
 local minifiles_toggle = function()
   if not MiniFiles.close() then MiniFiles.open() end
@@ -547,11 +547,104 @@ api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost', 'InsertLeave' }, {
         require('lint').try_lint()
     end
 })
+
+vim.api.nvim_create_autocmd('TermOpen', {
+    callback = function()
+        vim.o.number = false
+        vim.o.relativenumber = false
+    end,
+    pattern = '*',
+})
+
+local function filepath()
+    local fpath = vim.fn.fnamemodify(vim.fn.expand "%", ":~:.:h")
+    if fpath == "" or fpath == "." then return " " end
+
+    return string.format(" %%<%s/", fpath)
+end
+
+local function filename()
+    local fname = vim.fn.expand "%:t"
+    if fname == "" then return "" end
+    return fname .. " "
+end
+
+local function lsp()
+    local count = {}
+    local levels = {errors = "Error", warnings = "Warn", info = "Info", hints = "Hint"}
+
+    for k, level in pairs(levels) do 
+      count[k] = vim.tbl_count(vim.diagnostic.get(0, {severity = level})) 
+    end
+
+    local lsp_info = "["
+    if count["errors"] > 0 then
+      lsp_info = lsp_info .. "%#DiagnosticError#E" .. count["errors"] .. "%#StatusLine# "
+    end
+    if count["warnings"] > 0 then
+      lsp_info = lsp_info .. "%#DiagnosticWarn#W" .. count["warnings"] .. "%#StatusLine# "
+    end
+    if count["hints"] > 0 then
+      lsp_info = lsp_info .. "%#DiagnosticHint#H" .. count["hints"] .. "%#StatusLine# "
+    end
+    if count["info"] > 0 then
+      lsp_info = lsp_info .. "%#DiagnosticInfo#I" .. count["info"] .. "%#StatusLine#"
+    end
+    lsp_info = lsp_info .. "]"
+
+    if lsp_info:len() == 2 then
+      lsp_info = ""
+    end
+
+    return lsp_info
+    -- return "[E" .. count["errors"] .. " W" .. count["warnings"] .. " H" .. count["hints"] .. " I" .. count["info"] .. "]"
+end
+
+local function filetype() return "[" .. string.format("%s", vim.bo.filetype) .. "]" end
+
+local function lineinfo()
+    if vim.bo.filetype == "alpha" then return "" end
+    return " %l:%c %L "
+end
+
+local vcs = function()
+    local git_info = vim.fn["fugitive#statusline"]()
+    if git_info then
+        local branch_name = git_info:sub(6, git_info:len() - 2)
+        return table.concat {" [git:", branch_name, "] "}
+    end
+    return ""
+end
+
+statusline = {}
+
+statusline.active = function()
+    return table.concat {
+        "[%n]",
+        filepath(), 
+        filename(), 
+        "%m%r", 
+        "%=", 
+        lsp(), 
+        vcs(),
+        "%{ &ff != 'unix' ? '['.&ff.'] ' : '' }", 
+        filetype(), 
+        lineinfo()
+    }
+end
+
+function statusline.inactive() return " %F" end
+
+vim.api.nvim_exec([[
+  augroup Statusline
+  au!
+  au WinEnter,BufEnter * setlocal statusline=%!v:lua.statusline.active()
+  au WinLeave,BufLeave * setlocal statusline=%!v:lua.statusline.inactive()
+  augroup END
+]], false)
+
 EOF
 nnoremap <leader>p <cmd>lua PeekDefinition()<CR>
-
-" imap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
-" smap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
 
 if executable('rg')
   set grepprg=rg\ -H\ --no-heading\ --vimgrep

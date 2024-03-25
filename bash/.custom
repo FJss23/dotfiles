@@ -61,6 +61,4 @@ export PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 
-# [[ -s /home/frandev/.autojump/etc/profile.d/autojump.sh ]] && source /home/frandev/.autojump/etc/profile.d/autojump.sh
-
 eval "$(starship init bash)"

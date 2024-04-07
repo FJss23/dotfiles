@@ -1,35 +1,76 @@
-require('catppuccin').setup({
-  flavour = "mocha",
-  show_end_of_buffer = true,
-  color_overrides = {
-    all = {
-      base = "#111111",
+-- require('catppuccin').setup({
+--   flavour = "mocha",
+--   show_end_of_buffer = true,
+--   color_overrides = {
+--     all = {
+--       base = "#111111",
+--     }
+--   },
+--   custom_highlights = function(_colors)
+--     return {
+--       StatusLine = { bg = "#252525", fg = "#ffffff" },
+--       StatusLineNC = { bg = "#111111", fg = "#ffffff" },
+--       WinSeparator = { fg = "#877c7c" }
+--     }
+--   end
+-- })
+
+-- vim.cmd.colorscheme "catppuccin"
+local std_bg = "#1b1b1b"
+require('tokyonight').setup({
+  on_colors = function(colors)
+    colors.bg = std_bg
+  end,
+  on_highlights = function(hl, c)
+    hl.Comment = {
+      fg = "#9bbebd"
     }
-  }
+    hl.TelescopeNormal = {
+      bg = c.bg,
+    }
+    hl.TelescopeBorder = {
+      bg = c.bg,
+    }
+    hl.TelescopePromptBorder = {
+      bg = c.bg,
+    }
+    hl.WinSeparator = {
+      fg = "#877c7c"
+    }
+    hl.StatusLine = {
+      bg = "#414141"
+    }
+    hl.StatusLineNC = {
+      bg = "#282828"
+    }
+  end
 })
 
-vim.cmd.colorscheme "catppuccin"
+vim.cmd.colorscheme "tokyonight"
 
 vim.opt.list = true
-vim.opt.listchars = { --[[tab = '» ',--]] trail = '·', nbsp = '␣' }
+vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 vim.opt.inccommand = 'split'
 
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
 require('nvim-treesitter.configs').setup({
-  highlight = { enable = true, --[[disable = { "go", "c" }--]] },
-  indent = { enable = true },
+  highlight = {
+    enable = true,
+    -- disable = { "go", "c", "lua", "javascript", "typescript", "tsx" }
+  },
+  indent = { enable = false },
   endwise = { enable = true },
 })
 -- }}}
 
 vim.g.skip_ts_context_commentstring_module = true
 
-require('ibl').setup({
-  indent = { char = "┊" }
-})
+require("autoclose").setup()
 
-require('nvim-highlight-colors').setup {}
+-- require('ibl').setup({
+--   indent = { char = "┊" }
+-- })
 
 require('treesitter-context').setup({
   enable = false,
@@ -46,6 +87,22 @@ local keymap = vim.keymap
 local function organize_imports()
   vim.lsp.buf.code_action({ context = { only = { "source.organizeImports" } }, apply = true })
 end
+
+local telescope = require('telescope')
+telescope.setup({})
+telescope.load_extension('fzf')
+telescope.load_extension('ui-select')
+
+local builtin = require 'telescope.builtin'
+
+-- local fzf_lua = require('fzf-lua')
+-- fzf_lua.setup({
+--   winopts = {
+--     preview = {
+--       hidden = "hidden"
+--     }
+--   }
+-- })
 
 vim.diagnostic.config({
   virtual_text = false,
@@ -85,11 +142,13 @@ vim.api.nvim_create_autocmd('LspAttach', {
     -- See `:help vim.lsp.*` for documentation on any of the below functions
     local opts = { buffer = ev.buf }
     vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
-    vim.keymap.set('n', 'gd', require('fzf-lua').lsp_definitions, opts)
+    vim.keymap.set('n', 'gd', builtin.lsp_definitions, opts)
+    -- vim.keymap.set('n', 'gd', fzf_lua.lsp_definitions, opts)
     --vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
     vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
     --vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
-    vim.keymap.set('n', 'gI', require('fzf-lua').lsp_implementations, opts)
+    vim.keymap.set('n', 'gI', builtin.lsp_implementations, opts)
+    -- vim.keymap.set('n', 'gI', fzf_lua.lsp_implementations, opts)
     vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
     vim.keymap.set('i', '<C-k>', vim.lsp.buf.signature_help, opts)
 
@@ -100,20 +159,26 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end, opts)
 
     -- vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, opts)
-    vim.keymap.set('n', '<leader>D', require('fzf-lua').lsp_typedefs, opts)
+    vim.keymap.set('n', '<leader>D', builtin.lsp_type_definitions, opts)
+    -- vim.keymap.set('n', '<leader>D', fzf_lua.lsp_typedefs, opts)
     -- vim.keymap.set('n', '<leader>ds', vim.lsp.buf.document_symbol, opts)
-    vim.keymap.set('n', '<leader>ds', require('fzf-lua').lsp_document_symbols, opts)
+    -- vim.keymap.set('n', '<leader>ds', fzf_lua.lsp_document_symbols, opts)
+    vim.keymap.set('n', '<leader>ds', builtin.lsp_document_symbols, opts)
 
-    vim.keymap.set('n', '<leader>ws', require('fzf-lua').lsp_live_workspace_symbols, opts)
-    vim.keymap.set('n', '<leader>dw', require('fzf-lua').diagnostics_workspace, opts)
+    vim.keymap.set('n', '<leader>ws', builtin.lsp_dynamic_workspace_symbols, opts)
+    -- vim.keymap.set('n', '<leader>ws', fzf_lua.lsp_live_workspace_symbols, opts)
+    -- vim.keymap.set('n', '<leader>dw', fzf_lua.diagnostics_workspace, opts)
     vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, opts)
-    -- vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, opts)
-    vim.keymap.set('n', '<space>ca', require('fzf-lua').lsp_code_actions, opts)
+    vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, opts)
+    -- vim.keymap.set('n', '<space>ca', fzf_lua.lsp_code_actions, opts)
     --vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
-    vim.keymap.set('n', 'gr', require('fzf-lua').lsp_references, opts)
+    vim.keymap.set('n', 'gr', builtin.lsp_references, opts)
+    -- vim.keymap.set('n', 'gr', fzf_lua.lsp_references, opts)
 
-    vim.keymap.set('n', '<leader>li', require('fzf-lua').lsp_incoming_calls, opts)
-    vim.keymap.set('n', '<leader>lo', require('fzf-lua').lsp_outgoing_calls, opts)
+    vim.keymap.set('n', '<leader>li', builtin.lsp_incoming_calls, opts)
+    vim.keymap.set('n', '<leader>lo', builtin.lsp_outgoing_calls, opts)
+    -- vim.keymap.set('n', '<leader>li', fzf_lua.lsp_incoming_calls, opts)
+    -- vim.keymap.set('n', '<leader>lo', fzf_lua.lsp_outgoing_calls, opts)
   end,
 })
 
@@ -130,6 +195,11 @@ cmp.setup({
   window = {
     -- completion = cmp.config.window.bordered(),
     -- documentation = cmp.config.window.bordered(),
+  },
+  view = {
+    entries = {
+      follow_cursor = true,
+    }
   },
   mapping = cmp.mapping.preset.insert({
     ['<C-n>'] = cmp.mapping.select_next_item(),
@@ -163,11 +233,13 @@ cmp.setup({
     fetching_timeout = 80,
   }
 })
-local capabilities = require('cmp_nvim_lsp').default_capabilities()
+
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
 local lspconfig = require('lspconfig')
 
-local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
+-- local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
 
 require('mason').setup()
 require("mason-lspconfig").setup_handlers({
@@ -306,7 +378,6 @@ require("mason-lspconfig").setup_handlers({
   -- end,
 })
 
-
 keymap.set('n', '<leader>o', '<cmd>OrganizeImports<CR>', { silent = true })
 
 local function preview_location_callback(_, result)
@@ -362,56 +433,60 @@ api.nvim_create_autocmd('TextYankPost', {
     dockerfile = { 'hadolint' },--]]
 -- }
 
--- local lint_augroup = api.nvim_create_augroup('lint', { clear = true })
+-- local fzflua = fzf_lua
+keymap.set('n', '<leader>sf', builtin.find_files, {})
+keymap.set('n', '<leader>sh', builtin.help_tags, {})
+keymap.set('n', '<leader>sk', builtin.keymaps, {})
+keymap.set('n', '<leader>ss', builtin.builtin, {})
+keymap.set('n', '<leader>sw', builtin.grep_string, {})
+keymap.set('n', '<leader>sg', builtin.live_grep, {})
+keymap.set('n', '<leader>sd', builtin.diagnostics, {})
+keymap.set('n', '<leader>si', builtin.git_status, {})
+keymap.set('n', '<leader>sc', builtin.git_commits, {})
+keymap.set('n', '<leader>sr', builtin.git_branches, {})
+keymap.set('n', '<leader>sb', builtin.buffers, {})
+keymap.set('n', '<leader>s.', builtin.oldfiles, {})
 
--- api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost', 'InsertLeave' }, {
---     group = lint_augroup,
---     callback = function()
---         require('lint').try_lint()
---     end
--- })
+-- Slightly advanced example of overriding default behavior and theme
+vim.keymap.set('n', '<leader>/', function()
+  -- You can pass additional configuration to Telescope to change the theme, layout, etc.
+  builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
+    winblend = 10,
+    previewer = false,
+  })
+end, { desc = '[/] Fuzzily search in current buffer' })
 
-local fzflua = require('fzf-lua')
-keymap.set('n', '<leader>sf', fzflua.files, {})
-keymap.set('n', '<leader>sg', fzflua.live_grep, {})
-keymap.set('n', '<leader>sd', fzflua.diagnostics_document, {})
-keymap.set('n', '<leader>si', fzflua.git_status, {})
-keymap.set('n', '<leader>sc', fzflua.git_commits, {})
-keymap.set('n', '<leader>sr', fzflua.git_branches, {})
-keymap.set('n', '<leader>sb', fzflua.buffers, {})
+-- It's also possible to pass additional configuration options.
+--  See `:help telescope.builtin.live_grep()` for information about particular keys
+vim.keymap.set('n', '<leader>s/', function()
+  builtin.live_grep {
+    grep_open_files = true,
+    prompt_title = 'Live Grep in Open Files',
+  }
+end, { desc = '[S]earch [/] in Open Files' })
 
--- require('telescope').load_extension('fzf')
--- require("telescope").load_extension("ui-select")
+-- Shortcut for searching your Neovim configuration files
+vim.keymap.set('n', '<leader>sn', function()
+  builtin.find_files { cwd = vim.fn.stdpath 'config' }
+end, { desc = '[S]earch [N]eovim files' })
 
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
+-- keymap.set('n', '<leader>sf', fzflua.files, {})
+-- keymap.set('n', '<leader>sg', fzflua.live_grep, {})
+-- keymap.set('n', '<leader>sd', fzflua.diagnostics_document, {})
+-- keymap.set('n', '<leader>si', fzflua.git_status, {})
+-- keymap.set('n', '<leader>sc', fzflua.git_commits, {})
+-- keymap.set('n', '<leader>sr', fzflua.git_branches, {})
+-- keymap.set('n', '<leader>sb', fzflua.buffers, {})
 
--- require("nvim-tree").setup({
---     view = {
---         side = "right",
---         width = '20%',
---     },
---     renderer = {
---         icons = {
---             show = {
---                 file = false,
---                 folder = false,
---             }
---         }
---     }
--- })
-
--- keymap.set('n', '<leader>-', ':NvimTreeFindFile<CR>')
 require('mini.files').setup({ content = { prefix = function() end } })
 
-local minifiles_toggle = function()
+minifiles_toggle = function()
   if not MiniFiles.close() then MiniFiles.open() end
 end
 
-keymap.set('n', '-', ':lua MiniFiles.open()<CR>')
+keymap.set('n', '-', minifiles_toggle, {})
 
---vim.g.skip_ts_context_commentstring_module = true
-vim.g.user_emmet_leader_key = 'E'
+vim.g.user_emmet_leader_key = 'ç'
 vim.g.user_emmet_settings = {
   javascript = {
     extends = 'jsx',
@@ -421,7 +496,7 @@ vim.g.user_emmet_settings = {
   },
 }
 
-require('fzf-lua').register_ui_select()
+-- fzf_lua.register_ui_select()
 
 require('conform').setup({
   format_on_save = function(bufnr)
@@ -489,7 +564,7 @@ end
 local function filename()
   local fname = vim.fn.expand "%:t"
   if fname == "" then return "" end
-  return fname .. " "
+  return fname
 end
 
 local function lsp()
@@ -500,23 +575,22 @@ local function lsp()
     count[k] = vim.tbl_count(vim.diagnostic.get(0, { severity = level }))
   end
 
-  local lsp_info = "["
+  local lsp_info = ""
   if count["errors"] > 0 then
-    lsp_info = lsp_info .. "%#DiagnosticError#E" .. count["errors"] .. "%#StatusLine# "
+    lsp_info = lsp_info .. "E" .. count["errors"] .. " "
+    -- lsp_info = lsp_info .. "%#DiagnosticError#E" .. count["errors"] .. "%#StatusLine# "
   end
   if count["warnings"] > 0 then
-    lsp_info = lsp_info .. "%#DiagnosticWarn#W" .. count["warnings"] .. "%#StatusLine# "
+    lsp_info = lsp_info .. "W" .. count["warnings"] .. " "
+    -- lsp_info = lsp_info .. "%#DiagnosticWarn#W" .. count["warnings"] .. "%#StatusLine# "
   end
   if count["hints"] > 0 then
-    lsp_info = lsp_info .. "%#DiagnosticHint#H" .. count["hints"] .. "%#StatusLine# "
+    lsp_info = lsp_info .. "H" .. count["hints"] .. " "
+    -- lsp_info = lsp_info .. "%#DiagnosticHint#H" .. count["hints"] .. "%#StatusLine# "
   end
   if count["info"] > 0 then
-    lsp_info = lsp_info .. "%#DiagnosticInfo#I" .. count["info"] .. "%#StatusLine#"
-  end
-  lsp_info = lsp_info .. "]"
-
-  if lsp_info:len() == 2 then
-    lsp_info = ""
+    lsp_info = lsp_info .. "I" .. count["info"] .. " "
+    -- lsp_info = lsp_info .. "%#DiagnosticInfo#I" .. count["info"] .. "%#StatusLine# "
   end
 
   return lsp_info
@@ -531,19 +605,19 @@ local function lineinfo()
 end
 
 local vcs = function()
-  local git_info = vim.fn["fugitive#statusline"]()
-  if git_info then
-    local branch_name = git_info:sub(6, git_info:len() - 2)
-    return table.concat { " [git:", branch_name, "] " }
+  local branch = vim.fn.system("git branch --show-current 2> /dev/null | tr -d '\n'")
+  if branch ~= "" then
+    return branch .. " "
+  else
+    return ""
   end
-  return ""
 end
 
 statusline = {}
 
 statusline.active = function()
   return table.concat {
-    "[%n]",
+    -- "%#Todo# » %#StatusLine#",
     filepath(),
     filename(),
     "%m%r",
@@ -556,7 +630,9 @@ statusline.active = function()
   }
 end
 
-function statusline.inactive() return " %F" end
+function statusline.inactive()
+  return " %F"
+end
 
 vim.api.nvim_exec([[
   augroup Statusline
@@ -565,5 +641,16 @@ vim.api.nvim_exec([[
   au WinLeave,BufLeave * setlocal statusline=%!v:lua.statusline.inactive()
   augroup END
 ]], false)
+
+vim.keymap.set('n', '<leader>p', PeekDefinition)
+
+-- local navigator = require('Navigator')
+-- navigator.setup()
+
+-- vim.keymap.set({ 'n', 't' }, '<A-h>', navigator.left)
+-- vim.keymap.set({ 'n', 't' }, '<A-l>', navigator.right)
+-- vim.keymap.set({ 'n', 't' }, '<A-k>', navigator.up)
+-- vim.keymap.set({ 'n', 't' }, '<A-j>', navigator.down)
+-- vim.keymap.set({ 'n', 't' }, '<A-p>', navigator.previous)
 
 -- vim: ts=2 sts=2 sw=2 et

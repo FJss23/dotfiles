@@ -30,14 +30,57 @@ wezterm.on('update-right-status', function(window, pane)
   })
 end)
 
+wezterm.on("toggle-tabbar", function(window, _)
+  local overrides = window:get_config_overrides() or {}
+  if overrides.enable_tab_bar == false then
+    wezterm.log_info("tab bar shown")
+    overrides.enable_tab_bar = true
+  else
+    wezterm.log_info("tab bar hidden")
+    overrides.enable_tab_bar = false
+  end
+  window:set_config_overrides(overrides)
+end)
+
+local function is_inside_vim(pane)
+  local tty = pane:get_tty_name()
+  if tty == nil then return false end
+
+  local success, stdout, stderr = wezterm.run_child_process
+      { 'sh', '-c',
+        'ps -o state= -o comm= -t' .. wezterm.shell_quote_arg(tty) .. ' | ' ..
+        'grep -iqE \'^[^TXZ ]+ +(\\S+\\/)?g?(view|l?n?vim?x?)(diff)?$\'' }
+
+  return success
+end
+
+local function is_outside_vim(pane)
+  return not is_inside_vim(pane)
+end
+
+local function bind_if(cond, key, mods, action)
+  local function callback(win, pane)
+    if cond(pane) then
+      win:perform_action(action, pane)
+    else
+      win:perform_action(act.SendKey({ key = key, mods = mods }), pane)
+    end
+  end
+
+  return {
+    key = key, mods = mods, action = wezterm.action_callback(callback)
+  }
+end
+
 config.font_size = 12
 config.font = wezterm.font 'JetBrainsMono Nerd Font'
 -- config.font = wezterm.font 'CodeNewRoman Nerd Font'
 config.line_height = 1.1
-config.color_scheme = 'Dracula'
+config.color_scheme = 'GruvboxDarkHard'
+-- config.color_scheme = 'Dracula'
 -- https://wezfurlong.org/wezterm/config/appearance.html#defining-your-own-colors
 config.colors = {
-  background = '#111111',
+  background = '#1b1b1b',
   cursor_bg = '#ffffff',
   cursor_fg = 'black'
 }
@@ -57,14 +100,14 @@ config.keys = {
   {
     key = "-",
     mods = "LEADER",
-    action = wezterm.action {
+    action = act {
       SplitVertical = { domain = "CurrentPaneDomain" }
     }
   },
   {
     key = "ñ",
     mods = "LEADER",
-    action = wezterm.action {
+    action = act {
       SplitHorizontal = { domain = "CurrentPaneDomain" }
     }
   },
@@ -74,97 +117,97 @@ config.keys = {
   {
     key = "t",
     mods = "LEADER",
-    action = wezterm.action { SpawnTab = "CurrentPaneDomain" }
+    action = act { SpawnTab = "CurrentPaneDomain" }
   },
   {
     key = "h",
     mods = "LEADER",
-    action = wezterm.action { ActivatePaneDirection = "Left" }
+    action = act { ActivatePaneDirection = "Left" }
   },
   {
     key = "j",
     mods = "LEADER",
-    action = wezterm.action { ActivatePaneDirection = "Down" }
+    action = act { ActivatePaneDirection = "Down" }
   },
   {
     key = "k",
     mods = "LEADER",
-    action = wezterm.action { ActivatePaneDirection = "Up" }
+    action = act { ActivatePaneDirection = "Up" }
   },
   {
     key = "l",
     mods = "LEADER",
-    action = wezterm.action { ActivatePaneDirection = "Right" }
+    action = act { ActivatePaneDirection = "Right" }
   },
   {
     key = "H",
     mods = "LEADER|SHIFT",
-    action = wezterm.action { AdjustPaneSize = { "Left", 5 } }
+    action = act { AdjustPaneSize = { "Left", 5 } }
   },
   {
     key = "J",
     mods = "LEADER|SHIFT",
-    action = wezterm.action { AdjustPaneSize = { "Down", 5 } }
+    action = act { AdjustPaneSize = { "Down", 5 } }
   },
   {
     key = "K",
     mods = "LEADER|SHIFT",
-    action = wezterm.action { AdjustPaneSize = { "Up", 5 } }
+    action = act { AdjustPaneSize = { "Up", 5 } }
   },
   {
     key = "L",
     mods = "LEADER|SHIFT",
-    action = wezterm.action { AdjustPaneSize = { "Right", 5 } }
+    action = act { AdjustPaneSize = { "Right", 5 } }
   },
   {
     key = "1",
     mods = "LEADER",
-    action = wezterm.action { ActivateTab = 0 }
+    action = act { ActivateTab = 0 }
   },
   {
     key = "2",
     mods = "LEADER",
-    action = wezterm.action { ActivateTab = 1 }
+    action = act { ActivateTab = 1 }
   },
   {
     key = "3",
     mods = "LEADER",
-    action = wezterm.action { ActivateTab = 2 }
+    action = act { ActivateTab = 2 }
   },
   {
     key = "4",
     mods = "LEADER",
-    action = wezterm.action { ActivateTab = 3 }
+    action = act { ActivateTab = 3 }
   },
   {
     key = "5",
     mods = "LEADER",
-    action = wezterm.action { ActivateTab = 4 }
+    action = act { ActivateTab = 4 }
   },
   {
     key = "6",
     mods = "LEADER",
-    action = wezterm.action { ActivateTab = 5 }
+    action = act { ActivateTab = 5 }
   },
   {
     key = "7",
     mods = "LEADER",
-    action = wezterm.action { ActivateTab = 6 }
+    action = act { ActivateTab = 6 }
   },
   {
     key = "8",
     mods = "LEADER",
-    action = wezterm.action { ActivateTab = 7 }
+    action = act { ActivateTab = 7 }
   },
   {
     key = "c",
     mods = "LEADER",
-    action = wezterm.action { CloseCurrentTab = { confirm = true } }
+    action = act { CloseCurrentTab = { confirm = true } }
   },
   {
     key = "x",
     mods = "LEADER",
-    action = wezterm.action { CloseCurrentPane = { confirm = true } }
+    action = act { CloseCurrentPane = { confirm = true } }
   },
   -- Switch to the default workspace
   {
@@ -178,7 +221,7 @@ config.keys = {
     mods = 'LEADER',
     action = act.SwitchToWorkspace {
       name = 'monitoring',
-      spawn = { args = { 'htop' }, },
+      spawn = { args = { 'btop' }, },
     },
   },
   -- Create a new workspace with a random name and switch to it
@@ -221,7 +264,7 @@ config.keys = {
     },
   },
   {
-    key = 'o', mods = 'LEADER', action = wezterm.action.ShowTabNavigator
+    key = 'o', mods = 'LEADER', action = act.ShowTabNavigator
   },
   {
     key = 'e',
@@ -234,7 +277,29 @@ config.keys = {
         end
       end)
     }
-  }
+  },
+  {
+    key = 'H', mods = 'LEADER', action = act.EmitEvent("toggle-tabbar")
+  },
+  -- rotate panes
+  {
+    mods = "LEADER",
+    key = "Space",
+    action = act.RotatePanes "Clockwise"
+  },
+  -- show the pane selection mode, but have it swap the active and selected panes
+  {
+    mods = 'LEADER',
+    key = '0',
+    action = act.PaneSelect {
+      mode = 'SwapWithActive',
+    },
+  },
+  bind_if(is_outside_vim, 'h', 'ALT', act.ActivatePaneDirection('Left')),
+  bind_if(is_outside_vim, 'l', 'ALT', act.ActivatePaneDirection('Right')),
+  bind_if(is_outside_vim, 'k', 'ALT', act.ActivatePaneDirection('Up')),
+  bind_if(is_outside_vim, 'j', 'ALT', act.ActivatePaneDirection('Down')),
+  bind_if(is_outside_vim, 'p', 'ALT', act.ActivatePaneDirection('Prev')),
 }
 
 return config

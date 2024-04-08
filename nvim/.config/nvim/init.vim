@@ -79,6 +79,7 @@ Plug 'https://github.com/davidosomething/format-ts-errors.nvim'
 Plug 'https://github.com/mattn/emmet-vim'
 Plug 'https://github.com/JoosepAlviste/nvim-ts-context-commentstring'
 Plug 'https://github.com/m4xshen/autoclose.nvim'
+Plug 'https://github.com/nvim-tree/nvim-web-devicons'
 " Plug 'https://github.com/lukas-reineke/indent-blankline.nvim'
 " Plug 'https://github.com/numToStr/Navigator.nvim'
 " format
@@ -95,9 +96,10 @@ Plug 'https://github.com/stevearc/conform.nvim'
 Plug 'https://github.com/gruvbox-community/gruvbox'
 Plug 'https://github.com/folke/tokyonight.nvim'
 " search
-Plug 'https://github.com/nvim-telescope/telescope.nvim' | Plug 'nvim-lua/plenary.nvim' | Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build' } | Plug 'nvim-telescope/telescope-ui-select.nvim'
-Plug 'https://github.com/echasnovski/mini.files', { 'branch': 'stable' }
+Plug 'https://github.com/nvim-telescope/telescope.nvim' | Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' } | Plug 'nvim-telescope/telescope-ui-select.nvim'
 " Plug 'https://github.com/ibhagwan/fzf-lua'
+Plug 'https://github.com/echasnovski/mini.files', { 'branch': 'stable' }
 call plug#end()
 
 autocmd FileType markdown,txt,tex,gitcommit setlocal spell

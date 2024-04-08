@@ -35,8 +35,16 @@ alias gd='git diff'
 alias gpl='git pull'
 alias gps='git push'
 
+alias eza='eza --almost-all --oneline --icons=always'
+alias l='eza --grid'
+alias ll='eza --long --header --group'
+alias la='eza -T'
+
 alias dcu='docker-compose up -d'
 alias dcd='docker-compose down'
+
+alias decompress='tar -xvzf'
+alias lg='lazygit'
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 export FZF_DEFAULT_OPS="--extended"

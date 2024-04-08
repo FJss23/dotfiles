@@ -48,6 +48,8 @@ require('tokyonight').setup({
 
 vim.cmd.colorscheme "tokyonight"
 
+require('nvim-web-devicons').setup({})
+
 vim.opt.list = true
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 vim.opt.inccommand = 'split'
@@ -478,7 +480,8 @@ end, { desc = '[S]earch [N]eovim files' })
 -- keymap.set('n', '<leader>sr', fzflua.git_branches, {})
 -- keymap.set('n', '<leader>sb', fzflua.buffers, {})
 
-require('mini.files').setup({ content = { prefix = function() end } })
+-- require('mini.files').setup({ content = { prefix = function() end } })
+require('mini.files').setup()
 
 minifiles_toggle = function()
   if not MiniFiles.close() then MiniFiles.open() end

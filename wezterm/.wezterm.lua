@@ -11,13 +11,13 @@ wezterm.on('update-right-status', function(window, pane)
   local date = wezterm.strftime '%a %b %-d %H:%M '
 
   local bat = ''
-  local icon = '⚡'
+  local icon = 'NC'
   for _, b in ipairs(wezterm.battery_info()) do
     if b.state == 'Charging' then
-      icon = '🔌'
+      icon = 'Charging'
     end
     if b.state == 'Empty' then
-      icon = '⚠️'
+      icon = 'Empty'
     end
 
     bat = icon .. ' ' .. string.format('%.0f%%', b.state_of_charge * 100)

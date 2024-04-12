@@ -16,42 +16,50 @@
 -- })
 
 -- vim.cmd.colorscheme "catppuccin"
-local std_bg = "#1b1b1b"
-require('tokyonight').setup({
-  on_colors = function(colors)
-    colors.bg = std_bg
-  end,
-  on_highlights = function(hl, c)
-    hl.Comment = {
-      fg = "#9bbebd"
-    }
-    hl.TelescopeNormal = {
-      bg = c.bg,
-    }
-    hl.TelescopeBorder = {
-      bg = c.bg,
-    }
-    hl.TelescopePromptBorder = {
-      bg = c.bg,
-    }
-    hl.WinSeparator = {
-      fg = "#877c7c"
-    }
-    hl.StatusLine = {
-      bg = "#414141"
-    }
-    hl.StatusLineNC = {
-      bg = "#282828"
-    }
-  end
+-- local std_bg = "#1b1b1b"
+-- require('tokyonight').setup({
+--   -- on_colors = function(colors)
+--   --   colors.bg = std_bg
+--   -- end,
+--   on_highlights = function(hl, c)
+--     hl.Comment = {
+--       fg = "#9bbebd"
+--     }
+--     -- hl.TelescopeNormal = {
+--     --   bg = c.bg,
+--     -- }
+--     -- hl.TelescopeBorder = {
+--     --   bg = c.bg,
+--     -- }
+--     -- hl.TelescopePromptBorder = {
+--     --   bg = c.bg,
+--     -- }
+--     hl.WinSeparator = {
+--       fg = "#877c7c"
+--     }
+--     -- hl.StatusLine = {
+--     --   -- bg = "#414141"
+--     --   bg = "#282828"
+--     -- }
+--     -- hl.StatusLineNC = {
+--     --   bg = "#282828"
+--     --   -- bg = c.bg
+--     -- }
+--   end
+-- })
+
+require('rose-pine').setup({
+  styles = {
+    italic = false,
+    bold = false,
+    transparency = true
+  }
 })
 
-vim.cmd.colorscheme "tokyonight"
+vim.cmd.colorscheme "rose-pine"
 
-require('nvim-web-devicons').setup({})
-
-vim.opt.list = true
-vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+-- vim.opt.list = true
+-- vim.opt.listchars = { --[[tab = '» ',--]] trail = '·', nbsp = '␣' }
 vim.opt.inccommand = 'split'
 
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
@@ -67,12 +75,6 @@ require('nvim-treesitter.configs').setup({
 -- }}}
 
 vim.g.skip_ts_context_commentstring_module = true
-
-require("autoclose").setup()
-
--- require('ibl').setup({
---   indent = { char = "┊" }
--- })
 
 require('treesitter-context').setup({
   enable = false,
@@ -107,7 +109,7 @@ local builtin = require 'telescope.builtin'
 -- })
 
 vim.diagnostic.config({
-  virtual_text = false,
+  virtual_text = { source = "always" },
   signs = true,
   underline = true,
   update_in_insert = false,
@@ -448,6 +450,7 @@ keymap.set('n', '<leader>sc', builtin.git_commits, {})
 keymap.set('n', '<leader>sr', builtin.git_branches, {})
 keymap.set('n', '<leader>sb', builtin.buffers, {})
 keymap.set('n', '<leader>s.', builtin.oldfiles, {})
+keymap.set('n', '<leader>sn', builtin.resume, {})
 
 -- Slightly advanced example of overriding default behavior and theme
 vim.keymap.set('n', '<leader>/', function()
@@ -472,16 +475,16 @@ vim.keymap.set('n', '<leader>sn', function()
   builtin.find_files { cwd = vim.fn.stdpath 'config' }
 end, { desc = '[S]earch [N]eovim files' })
 
--- keymap.set('n', '<leader>sf', fzflua.files, {})
--- keymap.set('n', '<leader>sg', fzflua.live_grep, {})
--- keymap.set('n', '<leader>sd', fzflua.diagnostics_document, {})
--- keymap.set('n', '<leader>si', fzflua.git_status, {})
--- keymap.set('n', '<leader>sc', fzflua.git_commits, {})
--- keymap.set('n', '<leader>sr', fzflua.git_branches, {})
--- keymap.set('n', '<leader>sb', fzflua.buffers, {})
+-- keymap.set('n', '<leader>sf', fzf_lua.files, {})
+-- keymap.set('n', '<leader>sg', fzf_lua.live_grep, {})
+-- keymap.set('n', '<leader>sd', fzf_lua.diagnostics_document, {})
+-- keymap.set('n', '<leader>si', fzf_lua.git_status, {})
+-- keymap.set('n', '<leader>sc', fzf_lua.git_commits, {})
+-- keymap.set('n', '<leader>sr', fzf_lua.git_branches, {})
+-- keymap.set('n', '<leader>sb', fzf_lua.buffers, {})
 
--- require('mini.files').setup({ content = { prefix = function() end } })
-require('mini.files').setup()
+require('mini.files').setup({ content = { prefix = function() end } })
+-- require('mini.files').setup()
 
 minifiles_toggle = function()
   if not MiniFiles.close() then MiniFiles.open() end
@@ -557,103 +560,6 @@ vim.api.nvim_create_autocmd('TermOpen', {
   pattern = '*',
 })
 
-local function filepath()
-  local fpath = vim.fn.fnamemodify(vim.fn.expand "%", ":~:.:h")
-  if fpath == "" or fpath == "." then return " " end
-
-  return string.format(" %%<%s/", fpath)
-end
-
-local function filename()
-  local fname = vim.fn.expand "%:t"
-  if fname == "" then return "" end
-  return fname
-end
-
-local function lsp()
-  local count = {}
-  local levels = { errors = "Error", warnings = "Warn", info = "Info", hints = "Hint" }
-
-  for k, level in pairs(levels) do
-    count[k] = vim.tbl_count(vim.diagnostic.get(0, { severity = level }))
-  end
-
-  local lsp_info = ""
-  if count["errors"] > 0 then
-    lsp_info = lsp_info .. "E" .. count["errors"] .. " "
-    -- lsp_info = lsp_info .. "%#DiagnosticError#E" .. count["errors"] .. "%#StatusLine# "
-  end
-  if count["warnings"] > 0 then
-    lsp_info = lsp_info .. "W" .. count["warnings"] .. " "
-    -- lsp_info = lsp_info .. "%#DiagnosticWarn#W" .. count["warnings"] .. "%#StatusLine# "
-  end
-  if count["hints"] > 0 then
-    lsp_info = lsp_info .. "H" .. count["hints"] .. " "
-    -- lsp_info = lsp_info .. "%#DiagnosticHint#H" .. count["hints"] .. "%#StatusLine# "
-  end
-  if count["info"] > 0 then
-    lsp_info = lsp_info .. "I" .. count["info"] .. " "
-    -- lsp_info = lsp_info .. "%#DiagnosticInfo#I" .. count["info"] .. "%#StatusLine# "
-  end
-
-  return lsp_info
-  -- return "[E" .. count["errors"] .. " W" .. count["warnings"] .. " H" .. count["hints"] .. " I" .. count["info"] .. "]"
-end
-
-local function filetype() return "[" .. string.format("%s", vim.bo.filetype) .. "]" end
-
-local function lineinfo()
-  if vim.bo.filetype == "alpha" then return "" end
-  return " %l:%c %L "
-end
-
-local vcs = function()
-  local branch = vim.fn.system("git branch --show-current 2> /dev/null | tr -d '\n'")
-  if branch ~= "" then
-    return branch .. " "
-  else
-    return ""
-  end
-end
-
-statusline = {}
-
-statusline.active = function()
-  return table.concat {
-    -- "%#Todo# » %#StatusLine#",
-    filepath(),
-    filename(),
-    "%m%r",
-    "%=",
-    lsp(),
-    vcs(),
-    "%{ &ff != 'unix' ? '['.&ff.'] ' : '' }",
-    filetype(),
-    lineinfo()
-  }
-end
-
-function statusline.inactive()
-  return " %F"
-end
-
-vim.api.nvim_exec([[
-  augroup Statusline
-  au!
-  au WinEnter,BufEnter * setlocal statusline=%!v:lua.statusline.active()
-  au WinLeave,BufLeave * setlocal statusline=%!v:lua.statusline.inactive()
-  augroup END
-]], false)
-
 vim.keymap.set('n', '<leader>p', PeekDefinition)
-
--- local navigator = require('Navigator')
--- navigator.setup()
-
--- vim.keymap.set({ 'n', 't' }, '<A-h>', navigator.left)
--- vim.keymap.set({ 'n', 't' }, '<A-l>', navigator.right)
--- vim.keymap.set({ 'n', 't' }, '<A-k>', navigator.up)
--- vim.keymap.set({ 'n', 't' }, '<A-j>', navigator.down)
--- vim.keymap.set({ 'n', 't' }, '<A-p>', navigator.previous)
 
 -- vim: ts=2 sts=2 sw=2 et

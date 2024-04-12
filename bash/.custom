@@ -1,26 +1,26 @@
 #!/bin/bash
 
 # function parse_git_branch() {
-# 	BRANCH=`git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
-# 	if [ ! "${BRANCH}" == "" ]
-# 	then
-# 		echo " (${BRANCH})"
-# 	else
-# 		echo ""
-# 	fi
+#  	BRANCH=`git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
+#  	if [ ! "${BRANCH}" == "" ]
+#  	then
+#  		echo " (${BRANCH})"
+#  	else
+#  		echo ""
+#  	fi
 # }
-#
-#
+
+
 # function get_hostname() {
-#   hostname=`hostname`
-#   if [[ "$hostname" == "frandev-kubuntu" || "$hostname" == "frandevme-desktop" ]]; then
-#     echo "kubuntu"
-#   else
-#     echo $hostname
-#   fi
+#    hostname=`hostname`
+#    if [[ "$hostname" == "frandev-kubuntu" || "$hostname" == "frandevme-desktop" ]]; then
+#      echo "kubuntu"
+#    else
+#      echo $hostname
+#    fi
 # }
-#
-# export PS1="\[\e[36m\]\u@\`get_hostname\`\[\e[m\]:\w\[\e[33m\]\`parse_git_branch\`\[\e[m\]\n$ "
+
+#  export PS1="\[\e[36m\]\u@\`get_hostname\`\[\e[m\]:\w\[\e[33m\]\`parse_git_branch\`\[\e[m\]\n$ "
 
 export LC_ALL=en_IN.UTF-8
 export LANG=en_IN.UTF-8
@@ -69,4 +69,4 @@ export PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 
-eval "$(starship init bash)"
+# eval "$(starship init bash)"

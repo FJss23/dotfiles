@@ -58,13 +58,15 @@ export FZF_ALT_C_COMMAND="fdfind -t d . $HOME"
 export VISUAL=nvim
 export EDITOR="$VISUAL"
 
-export BAT_THEME="gruvbox-dark"
-
 . "$HOME/.cargo/env"
 . "$HOME/Apps/z/z.sh"
 
 export ANDROID_HOME=/home/$USER/Android/Sdk
 export PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH
+
+export GOPATH=$(asdf where golang)/packages
+export GOROOT=$(asdf where golang)/go
+export PATH="${PATH}:$(go env GOPATH)/bin"
 
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"

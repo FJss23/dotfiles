@@ -85,7 +85,7 @@ Plug 'https://github.com/stevearc/conform.nvim'
 " vcs
 Plug 'https://github.com/tpope/vim-fugitive'
 " colors
-Plug 'https://github.com/rose-pine/neovim'
+Plug 'https://github.com/EdenEast/nightfox.nvim'
 " search
 Plug 'https://github.com/nvim-telescope/telescope.nvim' | Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' } | Plug 'nvim-telescope/telescope-ui-select.nvim'

@@ -11,22 +11,22 @@ wezterm.on('update-right-status', function(window, pane)
   local date = wezterm.strftime '%a %b %-d %H:%M '
 
   local bat = ''
-  local icon = 'NC'
+  local icon = '󱧥'
   for _, b in ipairs(wezterm.battery_info()) do
     if b.state == 'Charging' then
-      icon = 'Charging'
+      icon = '󰂄'
     end
     if b.state == 'Empty' then
-      icon = 'Empty'
+      icon = '󰂎'
     end
 
-    bat = icon .. ' ' .. string.format('%.0f%%', b.state_of_charge * 100)
+    bat = icon .. '  ' .. string.format('%.0f%%', b.state_of_charge * 100)
   end
 
   local ws = window:active_workspace()
 
   window:set_right_status(wezterm.format {
-    { Text = --[[ wezterm.hostname() ]] ws .. '  ' .. bat .. ' ' .. date },
+    { Text = --[[ wezterm.hostname() ]] '󰇄  ' .. ws .. '  ' .. bat .. '    ' .. date },
   })
 end)
 
@@ -76,13 +76,20 @@ config.font_size = 12
 config.font = wezterm.font 'JetBrainsMono Nerd Font'
 -- config.font = wezterm.font 'CodeNewRoman Nerd Font'
 config.line_height = 1.1
-config.color_scheme = 'GruvboxDarkHard'
+-- config.color_scheme = 'GruvboxDarkHard'
 -- config.color_scheme = 'Dracula'
 -- https://wezfurlong.org/wezterm/config/appearance.html#defining-your-own-colors
 config.colors = {
   background = '#1b1b1b',
   cursor_bg = '#ffffff',
-  cursor_fg = 'black'
+  cursor_fg = 'black',
+  tab_bar = {
+    background = '#1b1b1b',
+    active_tab = {
+      bg_color = '#ffffff',
+      fg_color = '#000000'
+    }
+  }
 }
 config.inactive_pane_hsb = {
   brightness = 0.5

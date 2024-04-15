@@ -48,15 +48,29 @@
 --   end
 -- })
 
-require('rose-pine').setup({
-  styles = {
-    italic = false,
-    bold = false,
-    transparency = true
+-- require('rose-pine').setup({
+--   styles = {
+--     italic = false,
+--     bold = false,
+--     transparency = true
+--   }
+-- })
+
+local nightfox = require('nightfox')
+local palettes = {
+  nordfox = {
+    comment = "#a0a0a0"
   }
+}
+
+nightfox.setup({
+  options = {
+    transparent = true
+  },
+  palettes = palettes
 })
 
-vim.cmd.colorscheme "rose-pine"
+vim.cmd.colorscheme "nordfox"
 
 -- vim.opt.list = true
 -- vim.opt.listchars = { --[[tab = '» ',--]] trail = '·', nbsp = '␣' }
@@ -183,6 +197,36 @@ vim.api.nvim_create_autocmd('LspAttach', {
     vim.keymap.set('n', '<leader>lo', builtin.lsp_outgoing_calls, opts)
     -- vim.keymap.set('n', '<leader>li', fzf_lua.lsp_incoming_calls, opts)
     -- vim.keymap.set('n', '<leader>lo', fzf_lua.lsp_outgoing_calls, opts)
+
+    -- TODO(fj): the neovim version that you are using doesn't support inlay_hint
+    -- if client.supports_method(vim.lsp.protocol.textDocument_inlayHint) then
+    --   local bufnr = ev.buf
+    --   local inlay_hints_group = vim.api.nvim_create_augroup('toggle_inlay_hints', { clear = false })
+
+    --   -- Initial inlay hint display.
+    --   -- Idk why but without the delay inlay hints aren't displayed at the very start.
+    --   vim.defer_fn(function()
+    --     local mode = vim.api.nvim_get_mode().mode
+    --     vim.lsp.inlay_hint.enable(bufnr, mode == 'n' or mode == 'v')
+    --   end, 500)
+
+    --   vim.api.nvim_create_autocmd('InsertEnter', {
+    --     group = inlay_hints_group,
+    --     desc = 'Enable inlay hints',
+    --     buffer = bufnr,
+    --     callback = function()
+    --       vim.lsp.inlay_hint.enable(bufnr, false)
+    --     end,
+    --   })
+    --   vim.api.nvim_create_autocmd('InsertLeave', {
+    --     group = inlay_hints_group,
+    --     desc = 'Disable inlay hints',
+    --     buffer = bufnr,
+    --     callback = function()
+    --       vim.lsp.inlay_hint.enable(bufnr, true)
+    --     end,
+    --   })
+    -- end
   end,
 })
 

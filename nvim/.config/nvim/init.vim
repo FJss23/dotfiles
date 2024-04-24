@@ -83,13 +83,15 @@ Plug 'https://github.com/mfussenegger/nvim-lint'
 " linting
 Plug 'https://github.com/stevearc/conform.nvim'
 " vcs
-Plug 'https://github.com/tpope/vim-fugitive'
+" Plug 'https://github.com/tpope/vim-fugitive'
 " colors
 Plug 'https://github.com/EdenEast/nightfox.nvim'
 " search
-Plug 'https://github.com/nvim-telescope/telescope.nvim' | Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' } | Plug 'nvim-telescope/telescope-ui-select.nvim'
-Plug 'https://github.com/echasnovski/mini.files', { 'branch': 'stable' }
+" Plug 'https://github.com/nvim-telescope/telescope.nvim' | Plug 'nvim-lua/plenary.nvim'
+" Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' } | Plug 'nvim-telescope/telescope-ui-select.nvim'
+Plug 'https://github.com/nvim-tree/nvim-tree.lua'
+" Plug 'https://github.com/echasnovski/mini.files', { 'branch': 'stable' }
+Plug 'https://github.com/ibhagwan/fzf-lua'
 call plug#end()
 
 autocmd FileType markdown,txt,tex,gitcommit setlocal spell

@@ -56,6 +56,28 @@
 --   }
 -- })
 
+vim.cmd [[autocmd! ColorScheme * highlight NormalFloat guibg=#1f2335]]
+vim.cmd [[autocmd! ColorScheme * highlight FloatBorder guifg=white guibg=#1f2335]]
+
+local border = {
+  { "🭽", "FloatBorder" },
+  { "▔", "FloatBorder" },
+  { "🭾", "FloatBorder" },
+  { "▕", "FloatBorder" },
+  { "🭿", "FloatBorder" },
+  { "▁", "FloatBorder" },
+  { "🭼", "FloatBorder" },
+  { "▏", "FloatBorder" },
+}
+
+local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
+
+function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
+  opts = opts or {}
+  opts.border = opts.border or border
+  return orig_util_open_floating_preview(contents, syntax, opts, ...)
+end
+
 local nightfox = require('nightfox')
 local palettes = {
   nordfox = {
@@ -75,12 +97,21 @@ vim.cmd.colorscheme "nordfox"
 -- vim.opt.list = true
 -- vim.opt.listchars = { --[[tab = '» ',--]] trail = '·', nbsp = '␣' }
 vim.opt.inccommand = 'split'
+vim.opt.guicursor = 'i:block'
 
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
 require('nvim-treesitter.configs').setup({
   highlight = {
     enable = true,
+    additional_vim_regex_highlighting = false,
+    use_languagetree = false,
+    disable = function(_, bufnr)
+      local buf_name = vim.api.nvim_buf_get_name(bufnr)
+      local file_size = vim.api.nvim_call_function("getfsize", { buf_name })
+      return file_size > 256 * 1024
+    end,
+    max_file_lines = 10000
     -- disable = { "go", "c", "lua", "javascript", "typescript", "tsx" }
   },
   indent = { enable = false },
@@ -91,8 +122,8 @@ require('nvim-treesitter.configs').setup({
 vim.g.skip_ts_context_commentstring_module = true
 
 require('treesitter-context').setup({
-  enable = false,
-  separator = "-"
+  enable = true,
+  -- separator = "-"
 })
 
 vim.keymap.set('n', '<leader>tc', ':TSContextToggle<CR>', { desc = 'Toggle TS Context' })
@@ -106,21 +137,23 @@ local function organize_imports()
   vim.lsp.buf.code_action({ context = { only = { "source.organizeImports" } }, apply = true })
 end
 
-local telescope = require('telescope')
-telescope.setup({})
-telescope.load_extension('fzf')
-telescope.load_extension('ui-select')
+-- local telescope = require('telescope')
+-- telescope.setup({})
+-- telescope.load_extension('fzf')
+-- telescope.load_extension('ui-select')
 
-local builtin = require 'telescope.builtin'
+-- local builtin = require 'telescope.builtin'
 
--- local fzf_lua = require('fzf-lua')
--- fzf_lua.setup({
---   winopts = {
---     preview = {
---       hidden = "hidden"
---     }
---   }
--- })
+local fzf_lua = require('fzf-lua')
+fzf_lua.setup({
+  "telescope",
+  winopts = {
+    split = "belowright new",
+    preview = {
+      hidden = "hidden"
+    }
+  }
+})
 
 vim.diagnostic.config({
   virtual_text = { source = "always" },
@@ -160,13 +193,13 @@ vim.api.nvim_create_autocmd('LspAttach', {
     -- See `:help vim.lsp.*` for documentation on any of the below functions
     local opts = { buffer = ev.buf }
     vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
-    vim.keymap.set('n', 'gd', builtin.lsp_definitions, opts)
-    -- vim.keymap.set('n', 'gd', fzf_lua.lsp_definitions, opts)
+    -- vim.keymap.set('n', 'gd', builtin.lsp_definitions, opts)
+    vim.keymap.set('n', 'gd', fzf_lua.lsp_definitions, opts)
     --vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
     vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
     --vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
-    vim.keymap.set('n', 'gI', builtin.lsp_implementations, opts)
-    -- vim.keymap.set('n', 'gI', fzf_lua.lsp_implementations, opts)
+    -- vim.keymap.set('n', 'gI', builtin.lsp_implementations, opts)
+    vim.keymap.set('n', 'gI', fzf_lua.lsp_implementations, opts)
     vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
     vim.keymap.set('i', '<C-k>', vim.lsp.buf.signature_help, opts)
 
@@ -177,26 +210,26 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end, opts)
 
     -- vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, opts)
-    vim.keymap.set('n', '<leader>D', builtin.lsp_type_definitions, opts)
-    -- vim.keymap.set('n', '<leader>D', fzf_lua.lsp_typedefs, opts)
+    -- vim.keymap.set('n', '<leader>D', builtin.lsp_type_definitions, opts)
+    vim.keymap.set('n', '<leader>D', fzf_lua.lsp_typedefs, opts)
     -- vim.keymap.set('n', '<leader>ds', vim.lsp.buf.document_symbol, opts)
-    -- vim.keymap.set('n', '<leader>ds', fzf_lua.lsp_document_symbols, opts)
-    vim.keymap.set('n', '<leader>ds', builtin.lsp_document_symbols, opts)
+    vim.keymap.set('n', '<leader>ds', fzf_lua.lsp_document_symbols, opts)
+    -- vim.keymap.set('n', '<leader>ds', builtin.lsp_document_symbols, opts)
 
-    vim.keymap.set('n', '<leader>ws', builtin.lsp_dynamic_workspace_symbols, opts)
-    -- vim.keymap.set('n', '<leader>ws', fzf_lua.lsp_live_workspace_symbols, opts)
-    -- vim.keymap.set('n', '<leader>dw', fzf_lua.diagnostics_workspace, opts)
+    -- vim.keymap.set('n', '<leader>ws', builtin.lsp_dynamic_workspace_symbols, opts)
+    vim.keymap.set('n', '<leader>ws', fzf_lua.lsp_live_workspace_symbols, opts)
+    vim.keymap.set('n', '<leader>dw', fzf_lua.diagnostics_workspace, opts)
     vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, opts)
-    vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, opts)
-    -- vim.keymap.set('n', '<space>ca', fzf_lua.lsp_code_actions, opts)
+    -- vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, opts)
+    vim.keymap.set('n', '<space>ca', fzf_lua.lsp_code_actions, opts)
     --vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
-    vim.keymap.set('n', 'gr', builtin.lsp_references, opts)
-    -- vim.keymap.set('n', 'gr', fzf_lua.lsp_references, opts)
+    -- vim.keymap.set('n', 'gr', builtin.lsp_references, opts)
+    vim.keymap.set('n', 'gr', fzf_lua.lsp_references, opts)
 
-    vim.keymap.set('n', '<leader>li', builtin.lsp_incoming_calls, opts)
-    vim.keymap.set('n', '<leader>lo', builtin.lsp_outgoing_calls, opts)
-    -- vim.keymap.set('n', '<leader>li', fzf_lua.lsp_incoming_calls, opts)
-    -- vim.keymap.set('n', '<leader>lo', fzf_lua.lsp_outgoing_calls, opts)
+    -- vim.keymap.set('n', '<leader>li', builtin.lsp_incoming_calls, opts)
+    -- vim.keymap.set('n', '<leader>lo', builtin.lsp_outgoing_calls, opts)
+    vim.keymap.set('n', '<leader>li', fzf_lua.lsp_incoming_calls, opts)
+    vim.keymap.set('n', '<leader>lo', fzf_lua.lsp_outgoing_calls, opts)
 
     -- TODO(fj): the neovim version that you are using doesn't support inlay_hint
     -- if client.supports_method(vim.lsp.protocol.textDocument_inlayHint) then
@@ -234,6 +267,9 @@ local cmp = require 'cmp'
 local luasnip = require 'luasnip'
 
 cmp.setup({
+  -- enabled = function()
+  --   return not cmp.config.context.in_syntax_group("Comment")
+  -- end,
   snippet = {
     -- REQUIRED - you must specify a snippet engine
     expand = function(args)
@@ -241,8 +277,8 @@ cmp.setup({
     end,
   },
   window = {
-    -- completion = cmp.config.window.bordered(),
-    -- documentation = cmp.config.window.bordered(),
+    completion = cmp.config.window.bordered(),
+    documentation = cmp.config.window.bordered(),
   },
   view = {
     entries = {
@@ -481,60 +517,86 @@ api.nvim_create_autocmd('TextYankPost', {
     dockerfile = { 'hadolint' },--]]
 -- }
 
--- local fzflua = fzf_lua
-keymap.set('n', '<leader>sf', builtin.find_files, {})
-keymap.set('n', '<leader>sh', builtin.help_tags, {})
-keymap.set('n', '<leader>sk', builtin.keymaps, {})
-keymap.set('n', '<leader>ss', builtin.builtin, {})
-keymap.set('n', '<leader>sw', builtin.grep_string, {})
-keymap.set('n', '<leader>sg', builtin.live_grep, {})
-keymap.set('n', '<leader>sd', builtin.diagnostics, {})
-keymap.set('n', '<leader>si', builtin.git_status, {})
-keymap.set('n', '<leader>sc', builtin.git_commits, {})
-keymap.set('n', '<leader>sr', builtin.git_branches, {})
-keymap.set('n', '<leader>sb', builtin.buffers, {})
-keymap.set('n', '<leader>s.', builtin.oldfiles, {})
-keymap.set('n', '<leader>sn', builtin.resume, {})
+-- keymap.set('n', '<leader>sf', builtin.find_files, {})
+-- keymap.set('n', '<leader>sh', builtin.help_tags, {})
+-- keymap.set('n', '<leader>sk', builtin.keymaps, {})
+-- keymap.set('n', '<leader>ss', builtin.builtin, {})
+-- keymap.set('n', '<leader>sw', builtin.grep_string, {})
+-- keymap.set('n', '<leader>sg', builtin.live_grep, {})
+-- keymap.set('n', '<leader>sd', builtin.diagnostics, {})
+-- keymap.set('n', '<leader>si', builtin.git_status, {})
+-- keymap.set('n', '<leader>sc', builtin.git_commits, {})
+-- keymap.set('n', '<leader>sr', builtin.git_branches, {})
+-- keymap.set('n', '<leader>sb', builtin.buffers, {})
+-- keymap.set('n', '<leader>s.', builtin.oldfiles, {})
+-- keymap.set('n', '<leader>sn', builtin.resume, {})
 
 -- Slightly advanced example of overriding default behavior and theme
-vim.keymap.set('n', '<leader>/', function()
-  -- You can pass additional configuration to Telescope to change the theme, layout, etc.
-  builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
-    winblend = 10,
-    previewer = false,
-  })
-end, { desc = '[/] Fuzzily search in current buffer' })
+-- vim.keymap.set('n', '<leader>/', function()
+--   -- You can pass additional configuration to Telescope to change the theme, layout, etc.
+--   builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
+--     winblend = 10,
+--     previewer = false,
+--   })
+-- end, { desc = '[/] Fuzzily search in current buffer' })
 
--- It's also possible to pass additional configuration options.
---  See `:help telescope.builtin.live_grep()` for information about particular keys
-vim.keymap.set('n', '<leader>s/', function()
-  builtin.live_grep {
-    grep_open_files = true,
-    prompt_title = 'Live Grep in Open Files',
+-- -- It's also possible to pass additional configuration options.
+-- --  See `:help telescope.builtin.live_grep()` for information about particular keys
+-- vim.keymap.set('n', '<leader>s/', function()
+--   builtin.live_grep {
+--     grep_open_files = true,
+--     prompt_title = 'Live Grep in Open Files',
+--   }
+-- end, { desc = '[S]earch [/] in Open Files' })
+
+-- -- Shortcut for searching your Neovim configuration files
+-- vim.keymap.set('n', '<leader>sn', function()
+--   builtin.find_files { cwd = vim.fn.stdpath 'config' }
+-- end, { desc = '[S]earch [N]eovim files' })
+
+keymap.set('n', '<leader>sf', fzf_lua.files, {})
+keymap.set('n', '<leader>sg', fzf_lua.live_grep, {})
+keymap.set('n', '<leader>sd', fzf_lua.diagnostics_document, {})
+keymap.set('n', '<leader>si', fzf_lua.git_status, {})
+keymap.set('n', '<leader>sc', fzf_lua.git_commits, {})
+keymap.set('n', '<leader>sr', fzf_lua.git_branches, {})
+keymap.set('n', '<leader>sb', fzf_lua.buffers, {})
+keymap.set('n', '<leader>s.', fzf_lua.oldfiles, {})
+keymap.set('n', '<leader>sn', fzf_lua.resume, {})
+
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
+local gwidth = vim.api.nvim_list_uis()[1].width
+local gheight = vim.api.nvim_list_uis()[1].height
+local width = 60
+local height = 20
+
+require('nvim-tree').setup({
+  view = {
+    width = width,
+    float = {
+      enable = true,
+      open_win_config = {
+        relative = "editor",
+        width = width,
+        height = height,
+        row = (gheight - height) * 0.4,
+        col = (gwidth - width) * 0.5,
+      }
+    }
+    -- side = "right"
   }
-end, { desc = '[S]earch [/] in Open Files' })
+})
 
--- Shortcut for searching your Neovim configuration files
-vim.keymap.set('n', '<leader>sn', function()
-  builtin.find_files { cwd = vim.fn.stdpath 'config' }
-end, { desc = '[S]earch [N]eovim files' })
-
--- keymap.set('n', '<leader>sf', fzf_lua.files, {})
--- keymap.set('n', '<leader>sg', fzf_lua.live_grep, {})
--- keymap.set('n', '<leader>sd', fzf_lua.diagnostics_document, {})
--- keymap.set('n', '<leader>si', fzf_lua.git_status, {})
--- keymap.set('n', '<leader>sc', fzf_lua.git_commits, {})
--- keymap.set('n', '<leader>sr', fzf_lua.git_branches, {})
--- keymap.set('n', '<leader>sb', fzf_lua.buffers, {})
-
-require('mini.files').setup({ content = { prefix = function() end } })
+-- require('mini.files').setup({ content = { prefix = function() end } })
 -- require('mini.files').setup()
 
-minifiles_toggle = function()
-  if not MiniFiles.close() then MiniFiles.open() end
-end
+-- minifiles_toggle = function()
+--   if not MiniFiles.close() then MiniFiles.open() end
+-- end
 
-keymap.set('n', '-', minifiles_toggle, {})
+keymap.set('n', '-', '<cmd>NvimTreeFindFileToggle<CR>', {})
 
 vim.g.user_emmet_leader_key = 'ç'
 vim.g.user_emmet_settings = {

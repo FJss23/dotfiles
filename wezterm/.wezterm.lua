@@ -76,7 +76,7 @@ config.font_size = 12
 config.font = wezterm.font 'JetBrainsMono Nerd Font'
 -- config.font = wezterm.font 'CodeNewRoman Nerd Font'
 config.line_height = 1.1
--- config.color_scheme = 'GruvboxDarkHard'
+config.color_scheme = 'GruvboxDarkHard'
 -- config.color_scheme = 'Dracula'
 -- https://wezfurlong.org/wezterm/config/appearance.html#defining-your-own-colors
 config.colors = {

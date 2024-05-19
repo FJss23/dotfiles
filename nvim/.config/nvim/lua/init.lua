@@ -1,61 +1,3 @@
--- require('catppuccin').setup({
---   flavour = "mocha",
---   show_end_of_buffer = true,
---   color_overrides = {
---     all = {
---       base = "#111111",
---     }
---   },
---   custom_highlights = function(_colors)
---     return {
---       StatusLine = { bg = "#252525", fg = "#ffffff" },
---       StatusLineNC = { bg = "#111111", fg = "#ffffff" },
---       WinSeparator = { fg = "#877c7c" }
---     }
---   end
--- })
-
--- vim.cmd.colorscheme "catppuccin"
--- local std_bg = "#1b1b1b"
--- require('tokyonight').setup({
---   -- on_colors = function(colors)
---   --   colors.bg = std_bg
---   -- end,
---   on_highlights = function(hl, c)
---     hl.Comment = {
---       fg = "#9bbebd"
---     }
---     -- hl.TelescopeNormal = {
---     --   bg = c.bg,
---     -- }
---     -- hl.TelescopeBorder = {
---     --   bg = c.bg,
---     -- }
---     -- hl.TelescopePromptBorder = {
---     --   bg = c.bg,
---     -- }
---     hl.WinSeparator = {
---       fg = "#877c7c"
---     }
---     -- hl.StatusLine = {
---     --   -- bg = "#414141"
---     --   bg = "#282828"
---     -- }
---     -- hl.StatusLineNC = {
---     --   bg = "#282828"
---     --   -- bg = c.bg
---     -- }
---   end
--- })
-
--- require('rose-pine').setup({
---   styles = {
---     italic = false,
---     bold = false,
---     transparency = true
---   }
--- })
-
 vim.cmd [[autocmd! ColorScheme * highlight NormalFloat guibg=#1f2335]]
 vim.cmd [[autocmd! ColorScheme * highlight FloatBorder guifg=white guibg=#1f2335]]
 
@@ -93,6 +35,7 @@ nightfox.setup({
 })
 
 vim.cmd.colorscheme "nordfox"
+-- vim.cmd.colorscheme "gruber-darker"
 
 -- vim.opt.list = true
 -- vim.opt.listchars = { --[[tab = '» ',--]] trail = '·', nbsp = '␣' }
@@ -156,7 +99,7 @@ fzf_lua.setup({
 })
 
 vim.diagnostic.config({
-  virtual_text = { source = "always" },
+  virtual_text = false, --{ source = "always" },
   signs = true,
   underline = true,
   update_in_insert = false,
@@ -169,7 +112,8 @@ vim.diagnostic.config({
   }
 })
 
-local signs = { Error = "󰅚 ", Warn = "󰀪 ", Hint = "󰌶 ", Info = " " }
+-- local signs = { Error = "󰅚 ", Warn = "󰀪 ", Hint = "󰌶 ", Info = " " }
+local signs = { Error = "» ", Warn = "» ", Hint = "» ", Info = "» " }
 for type, icon in pairs(signs) do
   local hl = "DiagnosticSign" .. type
   vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
@@ -267,9 +211,6 @@ local cmp = require 'cmp'
 local luasnip = require 'luasnip'
 
 cmp.setup({
-  -- enabled = function()
-  --   return not cmp.config.context.in_syntax_group("Comment")
-  -- end,
   snippet = {
     -- REQUIRED - you must specify a snippet engine
     expand = function(args)
@@ -306,8 +247,7 @@ cmp.setup({
   }),
   sources = cmp.config.sources({
     { name = 'nvim_lsp', keyword_length = 5, group_index = 1, max_item_count = 20 },
-    { name = 'luasnip' }, -- For vsnip users.
-    -- { name = 'path' },
+    { name = 'luasnip' }
   }, {
     { name = 'buffer' },
   }),
@@ -318,6 +258,13 @@ cmp.setup({
   }
 })
 
+cmp.setup.filetype({ 'sql' }, {
+  sources = {
+    { name = 'vim-dadbod-completion' },
+    { name = 'buffer' },
+  }
+})
+
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
@@ -325,7 +272,16 @@ local lspconfig = require('lspconfig')
 
 -- local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
 
+local getServerPath = function(package_name, server_path)
+  local mason_registry = require('mason-registry')
+  return mason_registry.get_package(package_name):get_install_path() .. server_path
+end
+
+-- local typescript_language_server_path = getServerPath('typescript-language-server', '/node_modules/typescript/lib')
+
 require('mason').setup()
+
+local vue_language_server_path = getServerPath('vue-language-server', '/node_modules/@vue/language-server')
 require("mason-lspconfig").setup_handlers({
   -- default
   function(server_name)
@@ -359,6 +315,16 @@ require("mason-lspconfig").setup_handlers({
   end,
   ['tsserver'] = function()
     lspconfig.tsserver.setup {
+      filetypes = { 'vue', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact' },
+      init_options = {
+        plugins = {
+          {
+            name = '@vue/typescript-plugin',
+            location = vue_language_server_path,
+            languages = { 'vue' }
+          },
+        },
+      },
       capabilities = capabilities,
       commands = {
         OrganizeImports = {
@@ -484,39 +450,6 @@ api.nvim_create_autocmd('TextYankPost', {
   pattern = '*',
 })
 
--- require('conform').setup({
---     formatters_by_ft = {
---         javascript = { 'prettier' },
---         javascriptreact = { 'prettier' },
---         typescript = { 'prettier' },
---         typescriptreact  = { 'prettier' },
---         html  = { 'prettier' },
---         json  = { 'prettier' },
---         yaml  = { 'prettier' },
---         css  = { 'prettier' },
---         scss  = { 'prettier' },
---         markdown  = { 'prettier' },
---         go  = { 'gofmt', 'goimports' },
---     }
--- })
---
--- api.nvim_create_autocmd('BufWritePre', {
---   pattern = "*",
---   callback = function(args)
---     require('conform').format({ bufnr = args.buf })
---   end,
--- })
-
--- require('lint').linters_by_ft = {
---     typescript = { 'eslint_d' },
---     javacript = { 'eslint_d' },
---     typescriptreact = { 'eslint_d' },
---     javascriptreact = { 'eslint_d' },
---     go = { 'golangcilint' }
---[[yaml = { 'yamllint' },
-    dockerfile = { 'hadolint' },--]]
--- }
-
 -- keymap.set('n', '<leader>sf', builtin.find_files, {})
 -- keymap.set('n', '<leader>sh', builtin.help_tags, {})
 -- keymap.set('n', '<leader>sk', builtin.keymaps, {})
@@ -589,13 +522,6 @@ require('nvim-tree').setup({
   }
 })
 
--- require('mini.files').setup({ content = { prefix = function() end } })
--- require('mini.files').setup()
-
--- minifiles_toggle = function()
---   if not MiniFiles.close() then MiniFiles.open() end
--- end
-
 keymap.set('n', '-', '<cmd>NvimTreeFindFileToggle<CR>', {})
 
 vim.g.user_emmet_leader_key = 'ç'
@@ -667,5 +593,20 @@ vim.api.nvim_create_autocmd('TermOpen', {
 })
 
 vim.keymap.set('n', '<leader>p', PeekDefinition)
+
+if vim.g.neovide then
+  vim.opt.guifont = "JetBrainsMono Nerd Font:h11"
+  vim.opt.linespace = 4
+  vim.g.neovide_cursor_animation_length = 0
+  vim.g.neovide_cursor_trail_size = 0
+end
+
+require('render-markdown').setup({
+  start_enabled = false
+})
+
+keymap.set('n', '<leader>rm', '<cmd>RenderMarkdownToggle<CR>', {})
+
+require('gitsigns').setup({})
 
 -- vim: ts=2 sts=2 sw=2 et

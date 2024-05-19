@@ -78,20 +78,23 @@ Plug 'https://github.com/RRethy/nvim-treesitter-endwise'
 Plug 'https://github.com/davidosomething/format-ts-errors.nvim'
 Plug 'https://github.com/mattn/emmet-vim'
 Plug 'https://github.com/JoosepAlviste/nvim-ts-context-commentstring'
+Plug 'https://github.com/MeanderingProgrammer/markdown.nvim'
 " format
 Plug 'https://github.com/mfussenegger/nvim-lint'
 " linting
 Plug 'https://github.com/stevearc/conform.nvim'
 " vcs
-" Plug 'https://github.com/tpope/vim-fugitive'
+Plug 'https://github.com/lewis6991/gitsigns.nvim'
+Plug 'https://github.com/kdheepak/lazygit.nvim'
 " colors
-Plug 'https://github.com/EdenEast/nightfox.nvim'
+Plug 'https://github.com/EdenEast/nightfox.nvim' | Plug 'https://github.com/blazkowolf/gruber-darker.nvim'
 " search
-" Plug 'https://github.com/nvim-telescope/telescope.nvim' | Plug 'nvim-lua/plenary.nvim'
-" Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' } | Plug 'nvim-telescope/telescope-ui-select.nvim'
 Plug 'https://github.com/nvim-tree/nvim-tree.lua'
-" Plug 'https://github.com/echasnovski/mini.files', { 'branch': 'stable' }
 Plug 'https://github.com/ibhagwan/fzf-lua'
+" database
+Plug 'https://github.com/tpope/vim-dadbod'
+Plug 'https://github.com/kristijanhusak/vim-dadbod-completion'
+Plug 'https://github.com/kristijanhusak/vim-dadbod-ui'
 call plug#end()
 
 autocmd FileType markdown,txt,tex,gitcommit setlocal spell
@@ -105,13 +108,15 @@ if executable('rg')
   set grepformat=%f:%l:%c:%m
 endif
 
+set rtp+=~/.fzf
+
 lua <<EOF
 require('init')
 EOF
 
 " hi StatusLine guibg=#0086b3 guifg=#252525
 " hi StatusLineNC guibg=#7d7d7d guifg=#252525
-" hi WinSeparator guifg=#877c7c
+hi WinSeparator guifg=#877c7c
 " hi Normal guibg=#1b1b1b
 " hi Comment guifg=#a0f1f0 guibg=#1b1b1b
 

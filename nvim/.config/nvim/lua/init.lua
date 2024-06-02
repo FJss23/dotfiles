@@ -1,24 +1,24 @@
-vim.cmd [[autocmd! ColorScheme * highlight NormalFloat guibg=#1f2335]]
-vim.cmd [[autocmd! ColorScheme * highlight FloatBorder guifg=white guibg=#1f2335]]
+-- vim.cmd [[autocmd! ColorScheme * highlight NormalFloat guibg=#1f2335]]
+-- vim.cmd [[autocmd! ColorScheme * highlight FloatBorder guifg=white guibg=#1f2335]]
 
-local border = {
-  { "🭽", "FloatBorder" },
-  { "▔", "FloatBorder" },
-  { "🭾", "FloatBorder" },
-  { "▕", "FloatBorder" },
-  { "🭿", "FloatBorder" },
-  { "▁", "FloatBorder" },
-  { "🭼", "FloatBorder" },
-  { "▏", "FloatBorder" },
-}
+-- local border = {
+--   { "🭽", "FloatBorder" },
+--   { "▔", "FloatBorder" },
+--   { "🭾", "FloatBorder" },
+--   { "▕", "FloatBorder" },
+--   { "🭿", "FloatBorder" },
+--   { "▁", "FloatBorder" },
+--   { "🭼", "FloatBorder" },
+--   { "▏", "FloatBorder" },
+-- }
 
-local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
+-- local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
 
-function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
-  opts = opts or {}
-  opts.border = opts.border or border
-  return orig_util_open_floating_preview(contents, syntax, opts, ...)
-end
+-- function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
+--   opts = opts or {}
+--   opts.border = opts.border or border
+--   return orig_util_open_floating_preview(contents, syntax, opts, ...)
+-- end
 
 local nightfox = require('nightfox')
 local palettes = {
@@ -64,10 +64,10 @@ require('nvim-treesitter.configs').setup({
 
 vim.g.skip_ts_context_commentstring_module = true
 
-require('treesitter-context').setup({
-  enable = true,
-  -- separator = "-"
-})
+-- require('treesitter-context').setup({
+-- enable = true,
+-- separator = "-"
+-- })
 
 vim.keymap.set('n', '<leader>tc', ':TSContextToggle<CR>', { desc = 'Toggle TS Context' })
 
@@ -111,6 +111,8 @@ vim.diagnostic.config({
     focusable = false,
   }
 })
+
+require("lsp-inlayhints").setup()
 
 -- local signs = { Error = "󰅚 ", Warn = "󰀪 ", Hint = "󰌶 ", Info = " " }
 local signs = { Error = "» ", Warn = "» ", Hint = "» ", Info = "» " }
@@ -175,6 +177,9 @@ vim.api.nvim_create_autocmd('LspAttach', {
     vim.keymap.set('n', '<leader>li', fzf_lua.lsp_incoming_calls, opts)
     vim.keymap.set('n', '<leader>lo', fzf_lua.lsp_outgoing_calls, opts)
 
+    local bufnr = ev.buf
+    require('lsp-inlayhints').on_attach(client, bufnr)
+
     -- TODO(fj): the neovim version that you are using doesn't support inlay_hint
     -- if client.supports_method(vim.lsp.protocol.textDocument_inlayHint) then
     --   local bufnr = ev.buf
@@ -217,10 +222,10 @@ cmp.setup({
       luasnip.lsp_expand(args.body)
     end,
   },
-  window = {
-    completion = cmp.config.window.bordered(),
-    documentation = cmp.config.window.bordered(),
-  },
+  -- window = {
+  --   completion = cmp.config.window.bordered(),
+  --   documentation = cmp.config.window.bordered(),
+  -- },
   view = {
     entries = {
       follow_cursor = true,
@@ -272,16 +277,15 @@ local lspconfig = require('lspconfig')
 
 -- local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
 
-local getServerPath = function(package_name, server_path)
-  local mason_registry = require('mason-registry')
-  return mason_registry.get_package(package_name):get_install_path() .. server_path
-end
+-- local getServerPath = function(package_name, server_path)
+--   local mason_registry = require('mason-registry')
+--   return mason_registry.get_package(package_name):get_install_path() .. server_path
+-- end
 
 -- local typescript_language_server_path = getServerPath('typescript-language-server', '/node_modules/typescript/lib')
 
 require('mason').setup()
 
-local vue_language_server_path = getServerPath('vue-language-server', '/node_modules/@vue/language-server')
 require("mason-lspconfig").setup_handlers({
   -- default
   function(server_name)
@@ -315,16 +319,7 @@ require("mason-lspconfig").setup_handlers({
   end,
   ['tsserver'] = function()
     lspconfig.tsserver.setup {
-      filetypes = { 'vue', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact' },
-      init_options = {
-        plugins = {
-          {
-            name = '@vue/typescript-plugin',
-            location = vue_language_server_path,
-            languages = { 'vue' }
-          },
-        },
-      },
+      filetypes = { 'javascript', 'typescript', 'javascriptreact', 'typescriptreact' },
       capabilities = capabilities,
       commands = {
         OrganizeImports = {
@@ -332,41 +327,31 @@ require("mason-lspconfig").setup_handlers({
           description = 'Orginze js and ts imports',
         },
       },
-      handlers = {
-        ["textDocument/publishDiagnostics"] = function(
-          _,
-          result,
-          ctx,
-          config
-        )
-          if result.diagnostics == nil then
-            return
-          end
-
-          -- ignore some tsserver diagnostics
-          local idx = 1
-          while idx <= #result.diagnostics do
-            local entry = result.diagnostics[idx]
-
-            local formatter = require('format-ts-errors')[entry.code]
-            entry.message = formatter and formatter(entry.message) or entry.message
-
-            -- codes: https://github.com/microsoft/TypeScript/blob/main/src/compiler/diagnosticMessages.json
-            if entry.code == 80001 then
-              -- { message = "File is a CommonJS module; it may be converted to an ES module.", }
-              table.remove(result.diagnostics, idx)
-            else
-              idx = idx + 1
-            end
-          end
-
-          vim.lsp.diagnostic.on_publish_diagnostics(
-            _,
-            result,
-            ctx,
-            config
-          )
-        end
+      settings = {
+        typescript = {
+          inlayHints = {
+            includeInlayParameterNameHints = 'all',
+            includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+            includeInlayFunctionParameterTypeHints = true,
+            includeInlayVariableTypeHints = true,
+            includeInlayVariableTypeHintsWhenTypeMatchesName = false,
+            includeInlayPropertyDeclarationTypeHints = true,
+            includeInlayFunctionLikeReturnTypeHints = true,
+            includeInlayEnumMemberValueHints = true,
+          }
+        },
+        javascript = {
+          inlayHints = {
+            includeInlayParameterNameHints = 'all',
+            includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+            includeInlayFunctionParameterTypeHints = true,
+            includeInlayVariableTypeHints = true,
+            includeInlayVariableTypeHintsWhenTypeMatchesName = false,
+            includeInlayPropertyDeclarationTypeHints = true,
+            includeInlayFunctionLikeReturnTypeHints = true,
+            includeInlayEnumMemberValueHints = true,
+          }
+        }
       }
     }
   end,
@@ -391,6 +376,14 @@ require("mason-lspconfig").setup_handlers({
             shadow = true,
           },
           staticcheck = true,
+          hints = {
+            assignVariableTypes = true,
+            compositeLiteralFields = true,
+            constantValues = true,
+            functionTypeParameters = true,
+            parameterNames = true,
+            rangeVariableTypes = true
+          }
         }
       },
     }
@@ -426,6 +419,9 @@ require("mason-lspconfig").setup_handlers({
   --         },
   --     }
   -- end,
+  ['jdtls'] = function()
+    -- jdtls is handled by nvim-jdtls
+  end,
 })
 
 keymap.set('n', '<leader>o', '<cmd>OrganizeImports<CR>', { silent = true })
@@ -607,6 +603,34 @@ require('render-markdown').setup({
 
 keymap.set('n', '<leader>rm', '<cmd>RenderMarkdownToggle<CR>', {})
 
-require('gitsigns').setup({})
+-- DAP configuration
+require('dapui').setup()
+require('dap-go').setup()
+
+local dap, dapui = require("dap"), require("dapui")
+
+dap.listeners.before.attach.dapui_config = function()
+  dapui.open()
+end
+dap.listeners.before.launch.dapui_config = function()
+  dapui.open()
+end
+dap.listeners.before.event_terminated.dapui_config = function()
+  dapui.close()
+end
+dap.listeners.before.event_exited.dapui_config = function()
+  dapui.close()
+end
+
+
+keymap.set('n', '<leader>dbb', dap.toggle_breakpoint)
+keymap.set('n', '<F3>', dap.continue)
+keymap.set('n', '<F4>', dap.step_into)
+keymap.set('n', '<F5>', dap.step_over)
+keymap.set('n', '<F6>', dap.step_out)
+keymap.set('n', '<F7>', dap.step_back)
+keymap.set('n', '<F8>', dap.restart)
+
+require('nvim-dap-virtual-text').setup({})
 
 -- vim: ts=2 sts=2 sw=2 et

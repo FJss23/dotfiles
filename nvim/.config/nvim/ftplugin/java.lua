@@ -12,7 +12,7 @@ end
 
 local config_jdtls_path = vim.fn.stdpath('data') .. '/mason/packages/jdtls/' .. CONFIG
 local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ':p:h:t')
-local workspace = vim.fn.expand("$HOME/.local/share/eclipse-workspace-data") .. project_name
+local workspace = vim.fn.expand("$HOME/.local/share/eclipse-workspace-data") .. "/" .. project_name
 
 -- See `:help vim.lsp.start_client` for an overview of the supported `config` options.
 local config = {
@@ -51,7 +51,7 @@ local config = {
   -- vim.fs.root requires Neovim 0.10.
   -- If you're using an earlier version, use: require('jdtls.setup').find_root({'.git', 'mvnw', 'gradlew'}),
   -- root_dir = vim.fs.root(0, { ".git", "mvnw", "gradlew", "pom.xml" }),
-  root_dir = require('jdtls.setup').find_root({ ".git", "mvnw", "gradlew", "pom.xml", ".classpath", "bulid.gradle" }),
+  root_dir = require('jdtls.setup').find_root({ ".git", "mvnw", "gradlew", "pom.xml", ".classpath", "build.gradle" }),
 
   -- Here you can configure eclipse.jdt.ls specific settings
   -- See https://github.com/eclipse/eclipse.jdt.ls/wiki/Running-the-JAVA-LS-server-from-the-command-line#initialize-request

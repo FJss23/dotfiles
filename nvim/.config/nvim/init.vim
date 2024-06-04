@@ -21,8 +21,6 @@ nnoremap <leader><leader> <c-^>
 nnoremap <leader>, :ls<CR>:b<space>
 nnoremap <leader>bk <cmd>bp\|bd! #<CR>
 
-" nnoremap <c-c> <cmd>noh<CR>
-
 nnoremap <leader>co <cmd>copen<CR>
 nnoremap <leader>ck <cmd>cclose<CR>
 nnoremap <leader>cn <cmd>cnext<CR>

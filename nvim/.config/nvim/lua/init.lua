@@ -120,9 +120,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
     vim.keymap.set('n', '<leader>li', fzf_lua.lsp_incoming_calls, opts)
     vim.keymap.set('n', '<leader>lo', fzf_lua.lsp_outgoing_calls, opts)
 
-    local bufnr = ev.buf
-    require('lsp-inlayhints').on_attach(client, bufnr)
-
     -- TODO(fj): the neovim version that you are using doesn't support inlay_hint
     -- if client.supports_method(vim.lsp.protocol.textDocument_inlayHint) then
     --   local bufnr = ev.buf

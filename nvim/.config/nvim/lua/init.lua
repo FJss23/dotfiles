@@ -1,25 +1,3 @@
--- vim.cmd [[autocmd! ColorScheme * highlight NormalFloat guibg=#1f2335]]
--- vim.cmd [[autocmd! ColorScheme * highlight FloatBorder guifg=white guibg=#1f2335]]
-
--- local border = {
---   { "🭽", "FloatBorder" },
---   { "▔", "FloatBorder" },
---   { "🭾", "FloatBorder" },
---   { "▕", "FloatBorder" },
---   { "🭿", "FloatBorder" },
---   { "▁", "FloatBorder" },
---   { "🭼", "FloatBorder" },
---   { "▏", "FloatBorder" },
--- }
-
--- local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
-
--- function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
---   opts = opts or {}
---   opts.border = opts.border or border
---   return orig_util_open_floating_preview(contents, syntax, opts, ...)
--- end
-
 local nightfox = require('nightfox')
 local palettes = {
   nordfox = {
@@ -34,11 +12,8 @@ nightfox.setup({
   palettes = palettes
 })
 
-vim.cmd.colorscheme "nordfox"
--- vim.cmd.colorscheme "gruber-darker"
-
--- vim.opt.list = true
--- vim.opt.listchars = { --[[tab = '» ',--]] trail = '·', nbsp = '␣' }
+-- vim.cmd.colorscheme "nordfox"
+vim.cmd.colorscheme "tokyonight-night"
 vim.opt.inccommand = 'split'
 vim.opt.guicursor = 'i:block'
 
@@ -55,7 +30,6 @@ require('nvim-treesitter.configs').setup({
       return file_size > 256 * 1024
     end,
     max_file_lines = 10000
-    -- disable = { "go", "c", "lua", "javascript", "typescript", "tsx" }
   },
   indent = { enable = false },
   endwise = { enable = true },
@@ -63,11 +37,6 @@ require('nvim-treesitter.configs').setup({
 -- }}}
 
 vim.g.skip_ts_context_commentstring_module = true
-
--- require('treesitter-context').setup({
--- enable = true,
--- separator = "-"
--- })
 
 vim.keymap.set('n', '<leader>tc', ':TSContextToggle<CR>', { desc = 'Toggle TS Context' })
 
@@ -79,13 +48,6 @@ local keymap = vim.keymap
 local function organize_imports()
   vim.lsp.buf.code_action({ context = { only = { "source.organizeImports" } }, apply = true })
 end
-
--- local telescope = require('telescope')
--- telescope.setup({})
--- telescope.load_extension('fzf')
--- telescope.load_extension('ui-select')
-
--- local builtin = require 'telescope.builtin'
 
 local fzf_lua = require('fzf-lua')
 fzf_lua.setup({
@@ -112,9 +74,7 @@ vim.diagnostic.config({
   }
 })
 
-require("lsp-inlayhints").setup()
 
--- local signs = { Error = "󰅚 ", Warn = "󰀪 ", Hint = "󰌶 ", Info = " " }
 local signs = { Error = "» ", Warn = "» ", Hint = "» ", Info = "» " }
 for type, icon in pairs(signs) do
   local hl = "DiagnosticSign" .. type
@@ -139,12 +99,8 @@ vim.api.nvim_create_autocmd('LspAttach', {
     -- See `:help vim.lsp.*` for documentation on any of the below functions
     local opts = { buffer = ev.buf }
     vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
-    -- vim.keymap.set('n', 'gd', builtin.lsp_definitions, opts)
     vim.keymap.set('n', 'gd', fzf_lua.lsp_definitions, opts)
-    --vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
     vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-    --vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
-    -- vim.keymap.set('n', 'gI', builtin.lsp_implementations, opts)
     vim.keymap.set('n', 'gI', fzf_lua.lsp_implementations, opts)
     vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
     vim.keymap.set('i', '<C-k>', vim.lsp.buf.signature_help, opts)
@@ -154,26 +110,13 @@ vim.api.nvim_create_autocmd('LspAttach', {
     vim.keymap.set('n', '<space>wl', function()
       print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
     end, opts)
-
-    -- vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, opts)
-    -- vim.keymap.set('n', '<leader>D', builtin.lsp_type_definitions, opts)
     vim.keymap.set('n', '<leader>D', fzf_lua.lsp_typedefs, opts)
-    -- vim.keymap.set('n', '<leader>ds', vim.lsp.buf.document_symbol, opts)
     vim.keymap.set('n', '<leader>ds', fzf_lua.lsp_document_symbols, opts)
-    -- vim.keymap.set('n', '<leader>ds', builtin.lsp_document_symbols, opts)
-
-    -- vim.keymap.set('n', '<leader>ws', builtin.lsp_dynamic_workspace_symbols, opts)
     vim.keymap.set('n', '<leader>ws', fzf_lua.lsp_live_workspace_symbols, opts)
     vim.keymap.set('n', '<leader>dw', fzf_lua.diagnostics_workspace, opts)
     vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, opts)
-    -- vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, opts)
     vim.keymap.set('n', '<space>ca', fzf_lua.lsp_code_actions, opts)
-    --vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
-    -- vim.keymap.set('n', 'gr', builtin.lsp_references, opts)
     vim.keymap.set('n', 'gr', fzf_lua.lsp_references, opts)
-
-    -- vim.keymap.set('n', '<leader>li', builtin.lsp_incoming_calls, opts)
-    -- vim.keymap.set('n', '<leader>lo', builtin.lsp_outgoing_calls, opts)
     vim.keymap.set('n', '<leader>li', fzf_lua.lsp_incoming_calls, opts)
     vim.keymap.set('n', '<leader>lo', fzf_lua.lsp_outgoing_calls, opts)
 
@@ -217,15 +160,10 @@ local luasnip = require 'luasnip'
 
 cmp.setup({
   snippet = {
-    -- REQUIRED - you must specify a snippet engine
     expand = function(args)
       luasnip.lsp_expand(args.body)
     end,
   },
-  -- window = {
-  --   completion = cmp.config.window.bordered(),
-  --   documentation = cmp.config.window.bordered(),
-  -- },
   view = {
     entries = {
       follow_cursor = true,
@@ -238,7 +176,7 @@ cmp.setup({
     ['<C-f>'] = cmp.mapping.scroll_docs(4),
     ['<C-Space>'] = cmp.mapping.complete(),
     ['<C-e>'] = cmp.mapping.abort(),
-    ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+    ['<CR>'] = cmp.mapping.confirm({ select = true }),
     ['<C-l>'] = cmp.mapping(function()
       if luasnip.expand_or_locally_jumpable() then
         luasnip.expand_or_jump()
@@ -274,15 +212,6 @@ local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
 local lspconfig = require('lspconfig')
-
--- local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
-
--- local getServerPath = function(package_name, server_path)
---   local mason_registry = require('mason-registry')
---   return mason_registry.get_package(package_name):get_install_path() .. server_path
--- end
-
--- local typescript_language_server_path = getServerPath('typescript-language-server', '/node_modules/typescript/lib')
 
 require('mason').setup()
 
@@ -355,17 +284,6 @@ require("mason-lspconfig").setup_handlers({
       }
     }
   end,
-  --[[['yamlls'] = function()
-        lspconfig.yamlls.setup {
-            capabilities = capabilities,
-            yaml = {
-                schemaStore = {
-                    url = 'https://www.schemastore.org/api/json/catalog.json',
-                    enable = true,
-                },
-            },
-        }
-    end,--]]
   ['gopls'] = function()
     lspconfig.gopls.setup {
       capabilities = capabilities,
@@ -388,37 +306,6 @@ require("mason-lspconfig").setup_handlers({
       },
     }
   end,
-  -- ['efm'] = function()
-  --     lspconfig.efm.setup {
-  --         capabilities = capabilities,
-  --         on_attach = function(client, bufnr)
-  --             vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
-  --             vim.api.nvim_create_autocmd("BufWritePre", {
-  --               group = augroup,
-  --               buffer = bufnr,
-  --               callback = function()
-  --                 vim.lsp.buf.format()
-  --               end,
-  --             })
-  --         end,
-  --         init_options = {
-  --             documentFormatting = true,
-  --             codeActions = true,
-  --         },
-  --         cmd = { 'efm-langserver', '-c', home .. '/.config/efm-langserver/config.yaml' },
-  --         filetypes = {
-  --             'javascriptreact',
-  --             'javascript',
-  --             'typescript',
-  --             'typescriptreact',
-  --             'markdown',
-  --             'css',
-  --             'scss',
-  --             'go',
-  --             'html',
-  --         },
-  --     }
-  -- end,
   ['jdtls'] = function()
     -- jdtls is handled by nvim-jdtls
   end,
@@ -445,43 +332,6 @@ api.nvim_create_autocmd('TextYankPost', {
   end,
   pattern = '*',
 })
-
--- keymap.set('n', '<leader>sf', builtin.find_files, {})
--- keymap.set('n', '<leader>sh', builtin.help_tags, {})
--- keymap.set('n', '<leader>sk', builtin.keymaps, {})
--- keymap.set('n', '<leader>ss', builtin.builtin, {})
--- keymap.set('n', '<leader>sw', builtin.grep_string, {})
--- keymap.set('n', '<leader>sg', builtin.live_grep, {})
--- keymap.set('n', '<leader>sd', builtin.diagnostics, {})
--- keymap.set('n', '<leader>si', builtin.git_status, {})
--- keymap.set('n', '<leader>sc', builtin.git_commits, {})
--- keymap.set('n', '<leader>sr', builtin.git_branches, {})
--- keymap.set('n', '<leader>sb', builtin.buffers, {})
--- keymap.set('n', '<leader>s.', builtin.oldfiles, {})
--- keymap.set('n', '<leader>sn', builtin.resume, {})
-
--- Slightly advanced example of overriding default behavior and theme
--- vim.keymap.set('n', '<leader>/', function()
---   -- You can pass additional configuration to Telescope to change the theme, layout, etc.
---   builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
---     winblend = 10,
---     previewer = false,
---   })
--- end, { desc = '[/] Fuzzily search in current buffer' })
-
--- -- It's also possible to pass additional configuration options.
--- --  See `:help telescope.builtin.live_grep()` for information about particular keys
--- vim.keymap.set('n', '<leader>s/', function()
---   builtin.live_grep {
---     grep_open_files = true,
---     prompt_title = 'Live Grep in Open Files',
---   }
--- end, { desc = '[S]earch [/] in Open Files' })
-
--- -- Shortcut for searching your Neovim configuration files
--- vim.keymap.set('n', '<leader>sn', function()
---   builtin.find_files { cwd = vim.fn.stdpath 'config' }
--- end, { desc = '[S]earch [N]eovim files' })
 
 keymap.set('n', '<leader>sf', fzf_lua.files, {})
 keymap.set('n', '<leader>sg', fzf_lua.live_grep, {})
@@ -514,7 +364,6 @@ require('nvim-tree').setup({
         col = (gwidth - width) * 0.5,
       }
     }
-    -- side = "right"
   }
 })
 
@@ -621,7 +470,6 @@ end
 dap.listeners.before.event_exited.dapui_config = function()
   dapui.close()
 end
-
 
 keymap.set('n', '<leader>dbb', dap.toggle_breakpoint)
 keymap.set('n', '<F3>', dap.continue)

@@ -80,7 +80,6 @@ Plug 'https://github.com/mattn/emmet-vim'
 Plug 'https://github.com/JoosepAlviste/nvim-ts-context-commentstring'
 Plug 'https://github.com/MeanderingProgrammer/markdown.nvim'
 Plug 'https://github.com/mfussenegger/nvim-jdtls'
-Plug 'https://github.com/lvimuser/lsp-inlayhints.nvim'
 " formatting
 Plug 'https://github.com/mfussenegger/nvim-lint'
 " linting
@@ -89,6 +88,7 @@ Plug 'https://github.com/stevearc/conform.nvim'
 Plug 'https://github.com/kdheepak/lazygit.nvim'
 " colors
 Plug 'https://github.com/EdenEast/nightfox.nvim'
+Plug 'https://github.com/folke/tokyonight.nvim'
 " search
 Plug 'https://github.com/nvim-tree/nvim-tree.lua'
 Plug 'https://github.com/ibhagwan/fzf-lua'

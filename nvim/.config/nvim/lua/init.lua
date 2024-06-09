@@ -1,16 +1,16 @@
-local nightfox = require('nightfox')
-local palettes = {
-  nordfox = {
-    comment = "#a0a0a0"
-  }
-}
+-- local nightfox = require('nightfox')
+-- local palettes = {
+--   nordfox = {
+--     comment = "#a0a0a0"
+--   }
+-- }
 
-nightfox.setup({
-  options = {
-    transparent = true
-  },
-  palettes = palettes
-})
+-- nightfox.setup({
+--   options = {
+--     transparent = true
+--   },
+--   palettes = palettes
+-- })
 
 -- vim.cmd.colorscheme "nordfox"
 vim.cmd.colorscheme "tokyonight-night"
@@ -40,7 +40,7 @@ vim.g.skip_ts_context_commentstring_module = true
 
 vim.keymap.set('n', '<leader>tc', ':TSContextToggle<CR>', { desc = 'Toggle TS Context' })
 
-local home = os.getenv('HOME')
+-- local home = os.getenv('HOME')
 local api = vim.api
 local keymap = vim.keymap
 
@@ -331,6 +331,12 @@ require('nvim-tree').setup({
         col = (gwidth - width) * 0.5,
       }
     }
+  },
+  diagnostics = {
+    enable = true
+  },
+  modified = {
+    enable = true
   }
 })
 
@@ -447,5 +453,7 @@ keymap.set('n', '<F7>', dap.step_back)
 keymap.set('n', '<F8>', dap.restart)
 
 require('nvim-dap-virtual-text').setup({})
+
+require('statusline')
 
 -- vim: ts=2 sts=2 sw=2 et

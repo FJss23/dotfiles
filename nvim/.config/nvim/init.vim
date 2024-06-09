@@ -124,7 +124,6 @@ EOF
 " hi StatusLine guibg=#0086b3 guifg=#252525
 " hi StatusLineNC guibg=#7d7d7d guifg=#252525
 hi WinSeparator guifg=#877c7c
-hi! link LspInlayHint Conceal
 " hi Normal guibg=#1b1b1b
 " hi Comment guifg=#a0f1f0 guibg=#1b1b1b
 

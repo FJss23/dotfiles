@@ -49,16 +49,16 @@ local function organize_imports()
   vim.lsp.buf.code_action({ context = { only = { "source.organizeImports" } }, apply = true })
 end
 
-local fzf_lua = require('fzf-lua')
-fzf_lua.setup({
-  "telescope",
-  winopts = {
-    split = "belowright new",
-    preview = {
-      hidden = "hidden"
-    }
-  }
-})
+-- local fzf_lua = require('fzf-lua')
+-- fzf_lua.setup({
+--   "telescope",
+--   winopts = {
+--     split = "belowright new",
+--     preview = {
+--       hidden = "hidden"
+--     }
+--   }
+-- })
 
 vim.diagnostic.config({
   virtual_text = false, --{ source = "always" },
@@ -98,10 +98,10 @@ vim.api.nvim_create_autocmd('LspAttach', {
     -- Buffer local mappings.
     -- See `:help vim.lsp.*` for documentation on any of the below functions
     local opts = { buffer = ev.buf }
-    vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
-    vim.keymap.set('n', 'gd', fzf_lua.lsp_definitions, opts)
+    -- vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
+    -- vim.keymap.set('n', 'gd', fzf_lua.lsp_definitions, opts)
     vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-    vim.keymap.set('n', 'gI', fzf_lua.lsp_implementations, opts)
+    -- vim.keymap.set('n', 'gI', fzf_lua.lsp_implementations, opts)
     vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
     vim.keymap.set('i', '<C-k>', vim.lsp.buf.signature_help, opts)
 
@@ -110,15 +110,21 @@ vim.api.nvim_create_autocmd('LspAttach', {
     vim.keymap.set('n', '<space>wl', function()
       print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
     end, opts)
-    vim.keymap.set('n', '<leader>D', fzf_lua.lsp_typedefs, opts)
-    vim.keymap.set('n', '<leader>ds', fzf_lua.lsp_document_symbols, opts)
-    vim.keymap.set('n', '<leader>ws', fzf_lua.lsp_live_workspace_symbols, opts)
-    vim.keymap.set('n', '<leader>dw', fzf_lua.diagnostics_workspace, opts)
+    -- vim.keymap.set('n', '<leader>D', fzf_lua.lsp_typedefs, opts)
+    -- vim.keymap.set('n', '<leader>ds', fzf_lua.lsp_document_symbols, opts)
+    -- vim.keymap.set('n', '<leader>ws', fzf_lua.lsp_live_workspace_symbols, opts)
+    -- vim.keymap.set('n', '<leader>dw', fzf_lua.diagnostics_workspace, opts)
     vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, opts)
-    vim.keymap.set('n', '<space>ca', fzf_lua.lsp_code_actions, opts)
-    vim.keymap.set('n', 'gr', fzf_lua.lsp_references, opts)
-    vim.keymap.set('n', '<leader>li', fzf_lua.lsp_incoming_calls, opts)
-    vim.keymap.set('n', '<leader>lo', fzf_lua.lsp_outgoing_calls, opts)
+    -- vim.keymap.set('n', '<space>ca', fzf_lua.lsp_code_actions, opts)
+    vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, opts)
+    -- vim.keymap.set('n', 'gr', fzf_lua.lsp_references, opts)
+    -- vim.keymap.set('n', '<leader>li', fzf_lua.lsp_incoming_calls, opts)
+    -- vim.keymap.set('n', '<leader>lo', fzf_lua.lsp_outgoing_calls, opts)
+    -- Lua
+    vim.keymap.set('n', 'gD', '<CMD>Glance definitions<CR>')
+    vim.keymap.set('n', 'gR', '<CMD>Glance references<CR>')
+    vim.keymap.set('n', 'gY', '<CMD>Glance type_definitions<CR>')
+    vim.keymap.set('n', 'gM', '<CMD>Glance implementations<CR>')
   end,
 })
 
@@ -300,47 +306,57 @@ api.nvim_create_autocmd('TextYankPost', {
   pattern = '*',
 })
 
-keymap.set('n', '<leader>sf', fzf_lua.files, {})
-keymap.set('n', '<leader>sg', fzf_lua.live_grep, {})
-keymap.set('n', '<leader>sd', fzf_lua.diagnostics_document, {})
-keymap.set('n', '<leader>si', fzf_lua.git_status, {})
-keymap.set('n', '<leader>sc', fzf_lua.git_commits, {})
-keymap.set('n', '<leader>sr', fzf_lua.git_branches, {})
-keymap.set('n', '<leader>sb', fzf_lua.buffers, {})
-keymap.set('n', '<leader>s.', fzf_lua.oldfiles, {})
-keymap.set('n', '<leader>sn', fzf_lua.resume, {})
+keymap.set('n', '<leader>sf', "<cmd>Pick files too='git'<cr>", {})
+keymap.set('n', '<leader>sg', "<cmd>Pick grep_live<cr>", {})
+keymap.set('n', '<leader>sb', "<cmd>Pick buffers<cr>", {})
+keymap.set('n', '<leader>sn', "<cmd>Pick resume<cr>", {})
+-- keymap.set('n', '<leader>sd', "<cmd>Pick diagnostics<cr>", {})
+-- keymap.set('n', '<leader>si', "<cmd>Pick git_hunks<cr>", {})
+-- keymap.set('n', '<leader>sc', "<cmd>Pick git_commits<cr>", {})
+-- keymap.set('n', '<leader>sr', "<cmd>Pick git_branches<cr>", {})
+-- keymap.set('n', '<leader>s.', "<cmd>Pick oldfiles<cr>", {})
 
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
+-- keymap.set('n', '<leader>sf', fzf_lua.files, {})
+-- keymap.set('n', '<leader>sg', fzf_lua.live_grep, {})
+-- keymap.set('n', '<leader>sd', fzf_lua.diagnostics_document, {})
+-- keymap.set('n', '<leader>si', fzf_lua.git_status, {})
+-- keymap.set('n', '<leader>sc', fzf_lua.git_commits, {})
+-- keymap.set('n', '<leader>sr', fzf_lua.git_branches, {})
+-- keymap.set('n', '<leader>sb', fzf_lua.buffers, {})
+-- keymap.set('n', '<leader>s.', fzf_lua.oldfiles, {})
+-- keymap.set('n', '<leader>sn', fzf_lua.resume, {})
 
-local gwidth = vim.api.nvim_list_uis()[1].width
-local gheight = vim.api.nvim_list_uis()[1].height
-local width = 60
-local height = 20
+-- vim.g.loaded_netrw = 1
+-- vim.g.loaded_netrwPlugin = 1
 
-require('nvim-tree').setup({
-  view = {
-    width = width,
-    float = {
-      enable = true,
-      open_win_config = {
-        relative = "editor",
-        width = width,
-        height = height,
-        row = (gheight - height) * 0.4,
-        col = (gwidth - width) * 0.5,
-      }
-    }
-  },
-  diagnostics = {
-    enable = true
-  },
-  modified = {
-    enable = true
-  }
-})
+-- local gwidth = vim.api.nvim_list_uis()[1].width
+-- local gheight = vim.api.nvim_list_uis()[1].height
+-- local width = 60
+-- local height = 20
 
-keymap.set('n', '-', '<cmd>NvimTreeFindFileToggle<CR>', {})
+-- require('nvim-tree').setup({
+--   view = {
+--     width = width,
+--     float = {
+--       enable = true,
+--       open_win_config = {
+--         relative = "editor",
+--         width = width,
+--         height = height,
+--         row = (gheight - height) * 0.4,
+--         col = (gwidth - width) * 0.5,
+--       }
+--     }
+--   },
+--   diagnostics = {
+--     enable = true
+--   },
+--   modified = {
+--     enable = true
+--   }
+-- })
+
+-- keymap.set('n', '-', '<cmd>NvimTreeFindFileToggle<CR>', {})
 
 vim.g.user_emmet_leader_key = 'ç'
 vim.g.user_emmet_settings = {
@@ -419,9 +435,9 @@ if vim.g.neovide then
   vim.g.neovide_cursor_trail_size = 0
 end
 
-require('render-markdown').setup({
-  start_enabled = false
-})
+-- require('render-markdown').setup({
+--   start_enabled = false
+-- })
 
 keymap.set('n', '<leader>rm', '<cmd>RenderMarkdownToggle<CR>', {})
 
@@ -452,8 +468,28 @@ keymap.set('n', '<F6>', dap.step_out)
 keymap.set('n', '<F7>', dap.step_back)
 keymap.set('n', '<F8>', dap.restart)
 
-require('nvim-dap-virtual-text').setup({})
+-- require('nvim-dap-virtual-text').setup({})
 
 require('statusline')
 
+require('oil').setup({
+  columns = {
+    "icon",
+    "permissions",
+    "size",
+    "mtime"
+  },
+  view_options = {
+    show_hidden = true
+  }
+})
+
+vim.keymap.set("n", "-", "<cmd>lua require('oil').toggle_float()<cr>", {})
+
+require('glance').setup()
+
+require('mini.pick').setup()
+-- require('mini.extra').setup()
+
+-- require('trouble').setup()
 -- vim: ts=2 sts=2 sw=2 et

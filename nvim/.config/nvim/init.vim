@@ -70,35 +70,35 @@ Plug 'https://github.com/williamboman/mason.nvim'
 Plug 'williamboman/mason-lspconfig.nvim' 
 Plug 'https://github.com/hrsh7th/cmp-nvim-lsp' 
 Plug 'hrsh7th/nvim-cmp'
+Plug 'dnlhc/glance.nvim'
 " utility
 Plug 'https://github.com/L3MON4D3/LuaSnip', {'tag': 'v2.*', 'do': 'make install_jsregexp'}
 Plug 'https://github.com/tpope/vim-commentary'
 Plug 'https://github.com/nvim-treesitter/nvim-treesitter'
 Plug 'https://github.com/mattn/emmet-vim'
 Plug 'https://github.com/JoosepAlviste/nvim-ts-context-commentstring'
-Plug 'https://github.com/MeanderingProgrammer/markdown.nvim'
+" Plug 'https//github.com/MeanderingProgrammer/markdown.nvim'
 Plug 'https://github.com/mfussenegger/nvim-jdtls'
 " formatting
 Plug 'https://github.com/mfussenegger/nvim-lint'
 " linting
 Plug 'https://github.com/stevearc/conform.nvim'
-" git
-Plug 'https://github.com/kdheepak/lazygit.nvim'
 " colors
-Plug 'https://github.com/EdenEast/nightfox.nvim'
 Plug 'https://github.com/folke/tokyonight.nvim'
 " search
-Plug 'https://github.com/nvim-tree/nvim-tree.lua'
+Plug 'https://github.com/stevearc/oil.nvim'
 Plug 'https://github.com/ibhagwan/fzf-lua'
+Plug 'echasnovski/mini.pick', { 'branch': 'stable' }
+" Plug 'echasnovski/mini.extra', { 'branch': 'stable' }
 " database
-Plug 'https://github.com/tpope/vim-dadbod'
-Plug 'https://github.com/kristijanhusak/vim-dadbod-completion'
-Plug 'https://github.com/kristijanhusak/vim-dadbod-ui'
+" Plug 'https://github.com/tpope/vim-dadbod'
+" Plug 'https://github.com/kristijanhusak/vim-dadbod-completion'
+" Plug 'https://github.com/kristijanhusak/vim-dadbod-ui'
 " tests
 Plug 'https://github.com/vim-test/vim-test'
 " debug
 Plug 'https://github.com/mfussenegger/nvim-dap'
-Plug 'https://github.com/theHamsta/nvim-dap-virtual-text'
+" Plug 'https://github.com/theHamsta/nvim-dap-virtual-text'
 Plug 'https://github.com/rcarriga/nvim-dap-ui'
 Plug 'https://github.com/nvim-neotest/nvim-nio'
 Plug 'https://github.com/leoluz/nvim-dap-go'
@@ -115,7 +115,7 @@ if executable('rg')
   set grepformat=%f:%l:%c:%m
 endif
 
-set rtp+=~/.fzf
+" set rtp+=~/.fzf
 
 lua <<EOF
 require('init')

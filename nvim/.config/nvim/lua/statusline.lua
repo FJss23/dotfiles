@@ -29,13 +29,13 @@ local function lsp()
 
   local lsp_info = "["
   if count["errors"] > 0 then
-    lsp_info = lsp_info .. "%#DiagnosticError#E" .. count["errors"] .. "%#StatusLine# "
+    lsp_info = lsp_info .. "%#DiagnosticError#E" .. count["errors"] .. "%#StatusLine#"
   end
   if count["warnings"] > 0 then
-    lsp_info = lsp_info .. "%#DiagnosticWarn#W" .. count["warnings"] .. "%#StatusLine# "
+    lsp_info = lsp_info .. "%#DiagnosticWarn#W" .. count["warnings"] .. "%#StatusLine#"
   end
   if count["hints"] > 0 then
-    lsp_info = lsp_info .. "%#DiagnosticHint#H" .. count["hints"] .. "%#StatusLine# "
+    lsp_info = lsp_info .. "%#DiagnosticHint#H" .. count["hints"] .. "%#StatusLine#"
   end
   if count["info"] > 0 then
     lsp_info = lsp_info .. "%#DiagnosticInfo#I" .. count["info"] .. "%#StatusLine#"

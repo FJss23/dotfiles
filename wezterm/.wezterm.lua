@@ -222,7 +222,14 @@ config.keys = {
     mods = 'LEADER',
     action = act.SwitchToWorkspace { name = 'default', },
   },
-  -- Switch to a monitoring workspace, which will have `top` launched into it
+  {
+    key = 'g',
+    mods = 'LEADER',
+    action = act.SwitchToWorkspace {
+      name = 'git',
+      spawn = { args = { 'lazygit' }, },
+    },
+  },
   {
     key = 'u',
     mods = 'LEADER',

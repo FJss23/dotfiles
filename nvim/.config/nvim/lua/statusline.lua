@@ -60,26 +60,36 @@ end
 local function branch_name()
   local branch = vim.fn.system("git branch --show-current 2> /dev/null | tr -d '\n'")
   if branch ~= "" then
-    return branch
+    return " " .. branch .. " |"
   else
     return ""
   end
+end
+
+local function get_active_lsp()
+  local client_name = ""
+  for _, client in ipairs(vim.lsp.get_active_clients()) do
+    if client ~= '' then
+      client_name = client_name .. " " .. client.name
+    end
+  end
+  return client_name
 end
 
 statusline = {}
 
 statusline.active = function()
   return table.concat {
-    " ",
     branch_name(),
-    " |",
     filepath(),
     filename(),
     "%m%r",
     "%=",
-    lsp(),
+    get_active_lsp(),
     " ",
     "%{ &ff != 'unix' ? '['.&ff.'] ' : '' }",
+    lsp(),
+    " ",
     filetype(),
     lineinfo()
   }

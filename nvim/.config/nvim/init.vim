@@ -70,15 +70,18 @@ Plug 'https://github.com/williamboman/mason.nvim'
 Plug 'williamboman/mason-lspconfig.nvim' 
 Plug 'https://github.com/hrsh7th/cmp-nvim-lsp' 
 Plug 'hrsh7th/nvim-cmp'
-Plug 'dnlhc/glance.nvim'
+Plug 'https://github.com/dnlhc/glance.nvim'
 " utility
 Plug 'https://github.com/L3MON4D3/LuaSnip', {'tag': 'v2.*', 'do': 'make install_jsregexp'}
 Plug 'https://github.com/tpope/vim-commentary'
 Plug 'https://github.com/nvim-treesitter/nvim-treesitter'
 Plug 'https://github.com/mattn/emmet-vim'
 Plug 'https://github.com/JoosepAlviste/nvim-ts-context-commentstring'
-" Plug 'https//github.com/MeanderingProgrammer/markdown.nvim'
 Plug 'https://github.com/mfussenegger/nvim-jdtls'
+Plug 'https://github.com/echasnovski/mini.indentscope'
+Plug 'https://github.com/nvim-lua/plenary.nvim'
+Plug 'https://github.com/pmizio/typescript-tools.nvim'
+Plug 'https://github.com/ray-x/go.nvim'
 " formatting
 Plug 'https://github.com/mfussenegger/nvim-lint'
 " linting
@@ -86,22 +89,13 @@ Plug 'https://github.com/stevearc/conform.nvim'
 " colors
 Plug 'https://github.com/folke/tokyonight.nvim'
 " search
-Plug 'https://github.com/stevearc/oil.nvim'
-Plug 'https://github.com/ibhagwan/fzf-lua'
-Plug 'echasnovski/mini.pick', { 'branch': 'stable' }
-" Plug 'echasnovski/mini.extra', { 'branch': 'stable' }
+Plug 'https://github.com/nvim-telescope/telescope.nvim', { 'tag': '0.1.8' }
+Plug 'https://github.com/nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
+Plug 'https://github.com/nvim-tree/nvim-tree.lua'
 " database
-" Plug 'https://github.com/tpope/vim-dadbod'
-" Plug 'https://github.com/kristijanhusak/vim-dadbod-completion'
-" Plug 'https://github.com/kristijanhusak/vim-dadbod-ui'
+Plug 'https://github.com/tpope/vim-dadbod'
 " tests
 Plug 'https://github.com/vim-test/vim-test'
-" debug
-Plug 'https://github.com/mfussenegger/nvim-dap'
-" Plug 'https://github.com/theHamsta/nvim-dap-virtual-text'
-Plug 'https://github.com/rcarriga/nvim-dap-ui'
-Plug 'https://github.com/nvim-neotest/nvim-nio'
-Plug 'https://github.com/leoluz/nvim-dap-go'
 call plug#end()
 
 autocmd FileType markdown,txt,tex,gitcommit setlocal spell
@@ -109,6 +103,16 @@ autocmd FileType markdown,txt,tex,gitcommit setlocal spell
 filetype plugin indent on
 
 highlight! link EndOfBuffer Comment
+
+let test#strategy = "wezterm"
+
+nnoremap <leader>sw :execute "vimgrep /" . expand("<cword>") . "/j **" <Bar> cw<CR>
+
+nmap <silent> <leader>te :TestNearest<CR>
+nmap <silent> <leader>tf :TestFile<CR>
+nmap <silent> <leader>ta :TestSuite<CR>
+nmap <silent> <leader>tl :TestLast<CR>
+nmap <silent> <leader>tg :TestVisit<CR>
 
 if executable('rg')
   set grepprg=rg\ -H\ --no-heading\ --vimgrep
@@ -124,6 +128,7 @@ EOF
 " hi StatusLine guibg=#0086b3 guifg=#252525
 " hi StatusLineNC guibg=#7d7d7d guifg=#252525
 hi WinSeparator guifg=#877c7c
+hi! link MiniIndentscopeSymbol Comment
 " hi Normal guibg=#1b1b1b
 " hi Comment guifg=#a0f1f0 guibg=#1b1b1b
 

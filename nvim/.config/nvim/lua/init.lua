@@ -75,11 +75,13 @@ vim.diagnostic.config({
 })
 
 
-local signs = { Error = "» ", Warn = "» ", Hint = "» ", Info = "» " }
+local signs = { Error = "»", Warn = "»", Hint = "»", Info = "»" }
 for type, icon in pairs(signs) do
   local hl = "DiagnosticSign" .. type
   vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
 end
+
+local builtin = require('telescope.builtin')
 
 keymap.set('n', 'dp', vim.diagnostic.goto_prev)
 keymap.set('n', 'dn', vim.diagnostic.goto_next)
@@ -98,10 +100,10 @@ vim.api.nvim_create_autocmd('LspAttach', {
     -- Buffer local mappings.
     -- See `:help vim.lsp.*` for documentation on any of the below functions
     local opts = { buffer = ev.buf }
-    -- vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
-    -- vim.keymap.set('n', 'gd', fzf_lua.lsp_definitions, opts)
+    -- vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts) GLANCE
+    -- vim.keymap.set('n', 'gd', fzf_lua.lsp_definitions, opts) GLANCE
     vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-    -- vim.keymap.set('n', 'gI', fzf_lua.lsp_implementations, opts)
+    -- vim.keymap.set('n', 'gI', fzf_lua.lsp_implementations, opts) GLANCE
     vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
     vim.keymap.set('i', '<C-k>', vim.lsp.buf.signature_help, opts)
 
@@ -110,16 +112,16 @@ vim.api.nvim_create_autocmd('LspAttach', {
     vim.keymap.set('n', '<space>wl', function()
       print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
     end, opts)
-    -- vim.keymap.set('n', '<leader>D', fzf_lua.lsp_typedefs, opts)
-    -- vim.keymap.set('n', '<leader>ds', fzf_lua.lsp_document_symbols, opts)
-    -- vim.keymap.set('n', '<leader>ws', fzf_lua.lsp_live_workspace_symbols, opts)
+    -- vim.keymap.set('n', '<leader>D', fzf_lua.lsp_typedefs, opts) GLANCE
+    vim.keymap.set('n', '<leader>ds', builtin.lsp_document_symbols, opts)
+    vim.keymap.set('n', '<leader>ws', builtin.lsp_dynamic_workspace_symbols, opts)
     -- vim.keymap.set('n', '<leader>dw', fzf_lua.diagnostics_workspace, opts)
     vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, opts)
     -- vim.keymap.set('n', '<space>ca', fzf_lua.lsp_code_actions, opts)
     vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, opts)
     -- vim.keymap.set('n', 'gr', fzf_lua.lsp_references, opts)
-    -- vim.keymap.set('n', '<leader>li', fzf_lua.lsp_incoming_calls, opts)
-    -- vim.keymap.set('n', '<leader>lo', fzf_lua.lsp_outgoing_calls, opts)
+    vim.keymap.set('n', '<leader>li', builtin.lsp_incoming_calls, opts)
+    vim.keymap.set('n', '<leader>lo', builtin.lsp_outgoing_calls, opts)
     -- Lua
     vim.keymap.set('n', 'gD', '<CMD>Glance definitions<CR>')
     vim.keymap.set('n', 'gR', '<CMD>Glance references<CR>')
@@ -219,66 +221,66 @@ require("mason-lspconfig").setup_handlers({
       }
     }
   end,
-  ['tsserver'] = function()
-    lspconfig.tsserver.setup {
-      filetypes = { 'javascript', 'typescript', 'javascriptreact', 'typescriptreact' },
-      capabilities = capabilities,
-      commands = {
-        OrganizeImports = {
-          organize_imports,
-          description = 'Orginze js and ts imports',
-        },
-      },
-      settings = {
-        typescript = {
-          inlayHints = {
-            includeInlayParameterNameHints = 'all',
-            includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-            includeInlayFunctionParameterTypeHints = true,
-            includeInlayVariableTypeHints = true,
-            includeInlayVariableTypeHintsWhenTypeMatchesName = false,
-            includeInlayPropertyDeclarationTypeHints = true,
-            includeInlayFunctionLikeReturnTypeHints = true,
-            includeInlayEnumMemberValueHints = true,
-          }
-        },
-        javascript = {
-          inlayHints = {
-            includeInlayParameterNameHints = 'all',
-            includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-            includeInlayFunctionParameterTypeHints = true,
-            includeInlayVariableTypeHints = true,
-            includeInlayVariableTypeHintsWhenTypeMatchesName = false,
-            includeInlayPropertyDeclarationTypeHints = true,
-            includeInlayFunctionLikeReturnTypeHints = true,
-            includeInlayEnumMemberValueHints = true,
-          }
-        }
-      }
-    }
-  end,
-  ['gopls'] = function()
-    lspconfig.gopls.setup {
-      capabilities = capabilities,
-      settings = {
-        gopls = {
-          analyses = {
-            unusedparams = true,
-            shadow = true,
-          },
-          staticcheck = true,
-          hints = {
-            assignVariableTypes = true,
-            compositeLiteralFields = true,
-            constantValues = true,
-            functionTypeParameters = true,
-            parameterNames = true,
-            rangeVariableTypes = true
-          }
-        }
-      },
-    }
-  end,
+  -- ['tsserver'] = function()
+  --   lspconfig.tsserver.setup {
+  --     filetypes = { 'javascript', 'typescript', 'javascriptreact', 'typescriptreact' },
+  --     capabilities = capabilities,
+  --     commands = {
+  --       OrganizeImports = {
+  --         organize_imports,
+  --         description = 'Orginze js and ts imports',
+  --       },
+  --     },
+  --     settings = {
+  --       typescript = {
+  --         inlayHints = {
+  --           includeInlayParameterNameHints = 'all',
+  --           includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+  --           includeInlayFunctionParameterTypeHints = true,
+  --           includeInlayVariableTypeHints = true,
+  --           includeInlayVariableTypeHintsWhenTypeMatchesName = false,
+  --           includeInlayPropertyDeclarationTypeHints = true,
+  --           includeInlayFunctionLikeReturnTypeHints = true,
+  --           includeInlayEnumMemberValueHints = true,
+  --         }
+  --       },
+  --       javascript = {
+  --         inlayHints = {
+  --           includeInlayParameterNameHints = 'all',
+  --           includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+  --           includeInlayFunctionParameterTypeHints = true,
+  --           includeInlayVariableTypeHints = true,
+  --           includeInlayVariableTypeHintsWhenTypeMatchesName = false,
+  --           includeInlayPropertyDeclarationTypeHints = true,
+  --           includeInlayFunctionLikeReturnTypeHints = true,
+  --           includeInlayEnumMemberValueHints = true,
+  --         }
+  --       }
+  --     }
+  --   }
+  -- end,
+  -- ['gopls'] = function()
+  --   lspconfig.gopls.setup {
+  --     capabilities = capabilities,
+  --     settings = {
+  --       gopls = {
+  --         analyses = {
+  --           unusedparams = true,
+  --           shadow = true,
+  --         },
+  --         staticcheck = true,
+  --         hints = {
+  --           assignVariableTypes = true,
+  --           compositeLiteralFields = true,
+  --           constantValues = true,
+  --           functionTypeParameters = true,
+  --           parameterNames = true,
+  --           rangeVariableTypes = true
+  --         }
+  --       }
+  --     },
+  --   }
+  -- end,
   ['jdtls'] = function()
     -- jdtls is handled by nvim-jdtls
   end,
@@ -306,15 +308,15 @@ api.nvim_create_autocmd('TextYankPost', {
   pattern = '*',
 })
 
-keymap.set('n', '<leader>sf', "<cmd>Pick files too='git'<cr>", {})
-keymap.set('n', '<leader>sg', "<cmd>Pick grep_live<cr>", {})
-keymap.set('n', '<leader>sb', "<cmd>Pick buffers<cr>", {})
-keymap.set('n', '<leader>sn', "<cmd>Pick resume<cr>", {})
--- keymap.set('n', '<leader>sd', "<cmd>Pick diagnostics<cr>", {})
--- keymap.set('n', '<leader>si', "<cmd>Pick git_hunks<cr>", {})
--- keymap.set('n', '<leader>sc', "<cmd>Pick git_commits<cr>", {})
--- keymap.set('n', '<leader>sr', "<cmd>Pick git_branches<cr>", {})
--- keymap.set('n', '<leader>s.', "<cmd>Pick oldfiles<cr>", {})
+keymap.set('n', '<leader>sf', builtin.find_files, {})
+keymap.set('n', '<leader>sg', builtin.live_grep, {})
+keymap.set('n', '<leader>sd', builtin.diagnostics, {})
+keymap.set('n', '<leader>si', builtin.git_status, {})
+keymap.set('n', '<leader>sc', builtin.git_commits, {})
+keymap.set('n', '<leader>sr', builtin.git_branches, {})
+keymap.set('n', '<leader>sb', builtin.buffers, {})
+keymap.set('n', '<leader>s.', builtin.oldfiles, {})
+keymap.set('n', '<leader>sn', builtin.resume, {})
 
 -- keymap.set('n', '<leader>sf', fzf_lua.files, {})
 -- keymap.set('n', '<leader>sg', fzf_lua.live_grep, {})
@@ -326,37 +328,37 @@ keymap.set('n', '<leader>sn', "<cmd>Pick resume<cr>", {})
 -- keymap.set('n', '<leader>s.', fzf_lua.oldfiles, {})
 -- keymap.set('n', '<leader>sn', fzf_lua.resume, {})
 
--- vim.g.loaded_netrw = 1
--- vim.g.loaded_netrwPlugin = 1
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
 
--- local gwidth = vim.api.nvim_list_uis()[1].width
--- local gheight = vim.api.nvim_list_uis()[1].height
--- local width = 60
--- local height = 20
+local gwidth = vim.api.nvim_list_uis()[1].width
+local gheight = vim.api.nvim_list_uis()[1].height
+local width = 60
+local height = 20
 
--- require('nvim-tree').setup({
---   view = {
---     width = width,
---     float = {
---       enable = true,
---       open_win_config = {
---         relative = "editor",
---         width = width,
---         height = height,
---         row = (gheight - height) * 0.4,
---         col = (gwidth - width) * 0.5,
---       }
---     }
---   },
---   diagnostics = {
---     enable = true
---   },
---   modified = {
---     enable = true
---   }
--- })
+require('nvim-tree').setup({
+  view = {
+    width = width,
+    float = {
+      enable = true,
+      open_win_config = {
+        relative = "editor",
+        width = width,
+        height = height,
+        row = (gheight - height) * 0.4,
+        col = (gwidth - width) * 0.5,
+      }
+    }
+  },
+  diagnostics = {
+    enable = true
+  },
+  modified = {
+    enable = true
+  }
+})
 
--- keymap.set('n', '-', '<cmd>NvimTreeFindFileToggle<CR>', {})
+keymap.set('n', '-', '<cmd>NvimTreeFindFileToggle<CR>', {})
 
 vim.g.user_emmet_leader_key = 'ç'
 vim.g.user_emmet_settings = {
@@ -435,61 +437,37 @@ if vim.g.neovide then
   vim.g.neovide_cursor_trail_size = 0
 end
 
--- require('render-markdown').setup({
---   start_enabled = false
--- })
-
-keymap.set('n', '<leader>rm', '<cmd>RenderMarkdownToggle<CR>', {})
-
--- DAP configuration
-require('dapui').setup()
-require('dap-go').setup()
-
-local dap, dapui = require("dap"), require("dapui")
-
-dap.listeners.before.attach.dapui_config = function()
-  dapui.open()
-end
-dap.listeners.before.launch.dapui_config = function()
-  dapui.open()
-end
-dap.listeners.before.event_terminated.dapui_config = function()
-  dapui.close()
-end
-dap.listeners.before.event_exited.dapui_config = function()
-  dapui.close()
-end
-
-keymap.set('n', '<leader>dbb', dap.toggle_breakpoint)
-keymap.set('n', '<F3>', dap.continue)
-keymap.set('n', '<F4>', dap.step_into)
-keymap.set('n', '<F5>', dap.step_over)
-keymap.set('n', '<F6>', dap.step_out)
-keymap.set('n', '<F7>', dap.step_back)
-keymap.set('n', '<F8>', dap.restart)
-
--- require('nvim-dap-virtual-text').setup({})
-
 require('statusline')
-
-require('oil').setup({
-  columns = {
-    "icon",
-    "permissions",
-    "size",
-    "mtime"
-  },
-  view_options = {
-    show_hidden = true
-  }
-})
-
-vim.keymap.set("n", "-", "<cmd>lua require('oil').toggle_float()<cr>", {})
 
 require('glance').setup()
 
-require('mini.pick').setup()
--- require('mini.extra').setup()
+require('telescope').setup({})
+require('telescope').load_extension('fzf')
 
--- require('trouble').setup()
+require('mini.indentscope').setup({
+  draw = {
+    delay = 0
+  }
+})
+
+require('typescript-tools').setup({})
+
+-- Run gofmt + goimports on save
+local format_sync_group = vim.api.nvim_create_augroup("goimports", {})
+vim.api.nvim_create_autocmd("BufWritePre", {
+  pattern = "*.go",
+  callback = function()
+    require('go.format').goimports()
+  end,
+  group = format_sync_group
+})
+
+require('go').setup({
+  lsp_cfg = false
+})
+
+local cfg = require('go.lsp').config() -- config() return a go.nvim gopls setup
+
+require('lspconfig').gopls.setup(cfg)
+
 -- vim: ts=2 sts=2 sw=2 et

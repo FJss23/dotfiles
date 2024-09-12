@@ -81,6 +81,7 @@ for type, icon in pairs(signs) do
   vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
 end
 
+require('telescope').setup({})
 local builtin = require('telescope.builtin')
 
 keymap.set('n', 'dp', vim.diagnostic.goto_prev)
@@ -281,9 +282,9 @@ require("mason-lspconfig").setup_handlers({
   --     },
   --   }
   -- end,
-  ['jdtls'] = function()
-    -- jdtls is handled by nvim-jdtls
-  end,
+  -- ['jdtls'] = function()
+  -- jdtls is handled by nvim-jdtls
+  -- end,
 })
 
 keymap.set('n', '<leader>o', '<cmd>OrganizeImports<CR>', { silent = true })
@@ -292,7 +293,7 @@ local function preview_location_callback(_, result)
   if result == nil or vim.tbl_isempty(result) then
     return nil
   end
-  vim.lsp.util.preview_location(result[1])
+  vim.lsp.util.preview_location(result[1], {})
 end
 
 function PeekDefinition()
@@ -396,19 +397,33 @@ require('conform').setup({
   },
 })
 
-api.nvim_create_autocmd('BufWritePre', {
-  pattern = "*",
-  callback = function(args)
-    require('conform').format({ bufnr = args.buf })
-  end,
-})
+vim.api.nvim_create_user_command("Format", function(args)
+  local range = nil
+  if args.count ~= -1 then
+    local end_line = vim.api.nvim_buf_get_lines(0, args.line2 - 1, args.line2, true)[1]
+    range = {
+      start = { args.line1, 0 },
+      ["end"] = { args.line2, end_line:len() },
+    }
+  end
+  require("conform").format({ async = true, lsp_format = "fallback", range = range })
+end, { range = true })
+
+vim.keymap.set('n', '<leader>f', '<cmd>Format<CR>')
+
+-- api.nvim_create_autocmd('BufWritePre', {
+--   pattern = "*",
+--   callback = function(args)
+--     require('conform').format({ bufnr = args.buf })
+--   end,
+-- })
 
 require('lint').linters_by_ft = {
   typescript = { 'eslint' },
   javacript = { 'eslint' },
   typescriptreact = { 'eslint' },
   javascriptreact = { 'eslint' },
-  go = { 'golangcilint' },
+  -- go = { 'golangcilint' },
 }
 
 local lint_augroup = api.nvim_create_augroup('lint', { clear = true })
@@ -441,7 +456,6 @@ require('statusline')
 
 require('glance').setup()
 
-require('telescope').setup({})
 require('telescope').load_extension('fzf')
 
 require('mini.indentscope').setup({
@@ -450,7 +464,19 @@ require('mini.indentscope').setup({
   }
 })
 
-require('typescript-tools').setup({})
+require('typescript-tools').setup({
+  on_attach =
+      function(client, _bufnr)
+        client.server_capabilities.documentFormattingProvider = false
+        client.server_capabilities.documentRangeFormattingProvider = false
+      end,
+  settings = {
+    jsx_close_tag = {
+      enable = true,
+      filetypes = { "javascriptreact", "typescriptreact" },
+    }
+  }
+})
 
 -- Run gofmt + goimports on save
 local format_sync_group = vim.api.nvim_create_augroup("goimports", {})
@@ -469,5 +495,22 @@ require('go').setup({
 local cfg = require('go.lsp').config() -- config() return a go.nvim gopls setup
 
 require('lspconfig').gopls.setup(cfg)
+
+require('substitute').setup({})
+-- Lua
+vim.keymap.set("n", "s", require('substitute').operator, { noremap = true })
+vim.keymap.set("n", "ss", require('substitute').line, { noremap = true })
+vim.keymap.set("n", "S", require('substitute').eol, { noremap = true })
+vim.keymap.set("x", "s", require('substitute').visual, { noremap = true })
+
+require("better_escape").setup({})
+
+require('nvim-ts-autotag').setup({})
+
+require('arrow').setup({})
+
+vim.keymap.set("n", "H", require("arrow.persist").previous)
+vim.keymap.set("n", "L", require("arrow.persist").next)
+vim.keymap.set("n", "<C-s>", require("arrow.persist").toggle)
 
 -- vim: ts=2 sts=2 sw=2 et

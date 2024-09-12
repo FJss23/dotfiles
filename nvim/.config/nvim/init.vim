@@ -5,7 +5,7 @@ inoremap qw {
 inoremap wq }
 inoremap qq [
 inoremap ww ]
-inoremap jk <Esc>
+" inoremap jk <Esc>
 nnoremap <leader>j <cmd>w<cr>
 nnoremap <leader>q <cmd>q<cr>
 
@@ -81,6 +81,12 @@ Plug 'https://github.com/echasnovski/mini.indentscope'
 Plug 'https://github.com/nvim-lua/plenary.nvim'
 Plug 'https://github.com/pmizio/typescript-tools.nvim'
 Plug 'https://github.com/ray-x/go.nvim'
+Plug 'https://github.com/gbprod/substitute.nvim'
+Plug 'https://github.com/max397574/better-escape.nvim'
+Plug 'https://github.com/wellle/targets.vim'
+Plug 'https://github.com/nvim-treesitter/nvim-treesitter-textobjects'
+Plug 'https://github.com/otavioschwanck/arrow.nvim'
+Plug 'https://github.com/windwp/nvim-ts-autotag'
 " formatting
 Plug 'https://github.com/mfussenegger/nvim-lint'
 " linting
@@ -108,7 +114,7 @@ let test#strategy = "wezterm"
 nnoremap <leader>sw :execute "vimgrep /" . expand("<cword>") . "/j **" <Bar> cw<CR>
 
 nmap <silent> <leader>te :TestNearest<CR>
-nmap <silent> <leader>tf :TestFile<CR>
+  nmap <silent> <leader>tf :TestFile<CR>
 nmap <silent> <leader>ta :TestSuite<CR>
 nmap <silent> <leader>tl :TestLast<CR>
 nmap <silent> <leader>tg :TestVisit<CR>

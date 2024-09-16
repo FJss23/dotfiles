@@ -66,11 +66,8 @@ set number
 call plug#begin('~/.local/share/nvim/plugged')
 " lsp
 Plug 'https://github.com/neovim/nvim-lspconfig'
-Plug 'https://github.com/williamboman/mason.nvim' 
-Plug 'williamboman/mason-lspconfig.nvim' 
-Plug 'https://github.com/hrsh7th/cmp-nvim-lsp' 
-Plug 'hrsh7th/nvim-cmp'
-Plug 'https://github.com/dnlhc/glance.nvim'
+Plug 'https://github.com/williamboman/mason.nvim' | Plug 'williamboman/mason-lspconfig.nvim' 
+Plug 'https://github.com/hrsh7th/cmp-nvim-lsp' | Plug 'hrsh7th/nvim-cmp'
 " utility
 Plug 'https://github.com/L3MON4D3/LuaSnip', {'tag': 'v2.*', 'do': 'make install_jsregexp'}
 Plug 'https://github.com/tpope/vim-commentary'
@@ -79,8 +76,7 @@ Plug 'https://github.com/mattn/emmet-vim'
 Plug 'https://github.com/JoosepAlviste/nvim-ts-context-commentstring'
 Plug 'https://github.com/echasnovski/mini.indentscope'
 Plug 'https://github.com/nvim-lua/plenary.nvim'
-Plug 'https://github.com/pmizio/typescript-tools.nvim'
-Plug 'https://github.com/ray-x/go.nvim'
+Plug 'https://github.com/chentoast/marks.nvim'
 Plug 'https://github.com/gbprod/substitute.nvim'
 Plug 'https://github.com/max397574/better-escape.nvim'
 Plug 'https://github.com/wellle/targets.vim'
@@ -97,8 +93,6 @@ Plug 'https://github.com/folke/tokyonight.nvim'
 Plug 'https://github.com/nvim-telescope/telescope.nvim', { 'tag': '0.1.8' }
 Plug 'https://github.com/nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
 Plug 'https://github.com/nvim-tree/nvim-tree.lua'
-" database
-Plug 'https://github.com/tpope/vim-dadbod'
 " tests
 Plug 'https://github.com/vim-test/vim-test'
 call plug#end()

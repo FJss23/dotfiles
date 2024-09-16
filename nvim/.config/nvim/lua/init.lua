@@ -13,11 +13,11 @@
 -- })
 
 -- vim.cmd.colorscheme "nordfox"
-vim.cmd.colorscheme "tokyonight-night"
+-- vim.cmd.colorscheme "tokyonight-night"
 vim.opt.inccommand = 'split'
 vim.opt.guicursor = 'i:block'
 
-vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
+-- vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
 require('nvim-treesitter.configs').setup({
   highlight = {
@@ -123,11 +123,19 @@ vim.api.nvim_create_autocmd('LspAttach', {
     -- vim.keymap.set('n', 'gr', fzf_lua.lsp_references, opts)
     vim.keymap.set('n', '<leader>li', builtin.lsp_incoming_calls, opts)
     vim.keymap.set('n', '<leader>lo', builtin.lsp_outgoing_calls, opts)
-    -- Lua
-    vim.keymap.set('n', 'gD', '<CMD>Glance definitions<CR>')
-    vim.keymap.set('n', 'gR', '<CMD>Glance references<CR>')
-    vim.keymap.set('n', 'gY', '<CMD>Glance type_definitions<CR>')
-    vim.keymap.set('n', 'gM', '<CMD>Glance implementations<CR>')
+
+    vim.keymap.set('n', 'gD', builtin.lsp_definitions, opts)
+    vim.keymap.set('n', 'gR', builtin.lsp_references, opts)
+    vim.keymap.set('n', 'gY', builtin.lsp_type_definitions, opts)
+    vim.keymap.set('n', 'gS', builtin.lsp_document_symbols, opts)
+    vim.keymap.set('n', 'gM', vim.lsp.buf.implementation, opts)
+
+    if client and client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint and client.server_capabilities.codeLensProvider then
+      vim.keymap.set('n', '<leader>th', function()
+        vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
+        vim.lsp.codelens.refresh({ buffer = ev.bufnr, client = client })
+      end)
+    end
   end,
 })
 
@@ -177,13 +185,6 @@ cmp.setup({
   }
 })
 
-cmp.setup.filetype({ 'sql' }, {
-  sources = {
-    { name = 'vim-dadbod-completion' },
-    { name = 'buffer' },
-  }
-})
-
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
@@ -217,71 +218,75 @@ require("mason-lspconfig").setup_handlers({
           },
           telemetry = {
             enable = false
+          },
+          hint = {
+            enable = true
           }
         }
       }
     }
   end,
-  -- ['tsserver'] = function()
-  --   lspconfig.tsserver.setup {
-  --     filetypes = { 'javascript', 'typescript', 'javascriptreact', 'typescriptreact' },
-  --     capabilities = capabilities,
-  --     commands = {
-  --       OrganizeImports = {
-  --         organize_imports,
-  --         description = 'Orginze js and ts imports',
-  --       },
-  --     },
-  --     settings = {
-  --       typescript = {
-  --         inlayHints = {
-  --           includeInlayParameterNameHints = 'all',
-  --           includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-  --           includeInlayFunctionParameterTypeHints = true,
-  --           includeInlayVariableTypeHints = true,
-  --           includeInlayVariableTypeHintsWhenTypeMatchesName = false,
-  --           includeInlayPropertyDeclarationTypeHints = true,
-  --           includeInlayFunctionLikeReturnTypeHints = true,
-  --           includeInlayEnumMemberValueHints = true,
-  --         }
-  --       },
-  --       javascript = {
-  --         inlayHints = {
-  --           includeInlayParameterNameHints = 'all',
-  --           includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-  --           includeInlayFunctionParameterTypeHints = true,
-  --           includeInlayVariableTypeHints = true,
-  --           includeInlayVariableTypeHintsWhenTypeMatchesName = false,
-  --           includeInlayPropertyDeclarationTypeHints = true,
-  --           includeInlayFunctionLikeReturnTypeHints = true,
-  --           includeInlayEnumMemberValueHints = true,
-  --         }
-  --       }
-  --     }
-  --   }
-  -- end,
-  -- ['gopls'] = function()
-  --   lspconfig.gopls.setup {
-  --     capabilities = capabilities,
-  --     settings = {
-  --       gopls = {
-  --         analyses = {
-  --           unusedparams = true,
-  --           shadow = true,
-  --         },
-  --         staticcheck = true,
-  --         hints = {
-  --           assignVariableTypes = true,
-  --           compositeLiteralFields = true,
-  --           constantValues = true,
-  --           functionTypeParameters = true,
-  --           parameterNames = true,
-  --           rangeVariableTypes = true
-  --         }
-  --       }
-  --     },
-  --   }
-  -- end,
+  ['tsserver'] = function()
+    lspconfig.tsserver.setup {
+      filetypes = { 'javascript', 'typescript', 'javascriptreact', 'typescriptreact' },
+      capabilities = capabilities,
+      commands = {
+        OrganizeImports = {
+          organize_imports,
+          description = 'Orginze js and ts imports',
+        },
+      },
+      settings = {
+        typescript = {
+          inlayHints = {
+            includeInlayParameterNameHints = 'all',
+            includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+            includeInlayFunctionParameterTypeHints = true,
+            includeInlayVariableTypeHints = true,
+            includeInlayVariableTypeHintsWhenTypeMatchesName = false,
+            includeInlayPropertyDeclarationTypeHints = true,
+            includeInlayFunctionLikeReturnTypeHints = true,
+            includeInlayEnumMemberValueHints = true,
+          }
+        },
+        javascript = {
+          inlayHints = {
+            includeInlayParameterNameHints = 'all',
+            includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+            includeInlayFunctionParameterTypeHints = true,
+            includeInlayVariableTypeHints = true,
+            includeInlayVariableTypeHintsWhenTypeMatchesName = false,
+            includeInlayPropertyDeclarationTypeHints = true,
+            includeInlayFunctionLikeReturnTypeHints = true,
+            includeInlayEnumMemberValueHints = true,
+          }
+        }
+      }
+    }
+  end,
+  ['gopls'] = function()
+    lspconfig.gopls.setup {
+      capabilities = capabilities,
+      settings = {
+        gopls = {
+          analyses = {
+            unusedparams = true,
+            shadow = true,
+          },
+          staticcheck = true,
+          hints = {
+            assignVariableTypes = true,
+            compositeLiteralFields = true,
+            compositeLiteralTypes = true,
+            constantValues = true,
+            functionTypeParameters = true,
+            parameterNames = true,
+            rangeVariableTypes = true
+          }
+        }
+      },
+    }
+  end,
   -- ['jdtls'] = function()
   -- jdtls is handled by nvim-jdtls
   -- end,
@@ -359,7 +364,7 @@ require('nvim-tree').setup({
   }
 })
 
-keymap.set('n', '-', '<cmd>NvimTreeFindFileToggle<CR>', {})
+keymap.set('n', '<leader>nt', '<cmd>NvimTreeFindFileToggle<CR>', {})
 
 vim.g.user_emmet_leader_key = 'ç'
 vim.g.user_emmet_settings = {
@@ -423,7 +428,7 @@ require('lint').linters_by_ft = {
   javacript = { 'eslint' },
   typescriptreact = { 'eslint' },
   javascriptreact = { 'eslint' },
-  -- go = { 'golangcilint' },
+  go = { 'golangcilint' },
 }
 
 local lint_augroup = api.nvim_create_augroup('lint', { clear = true })
@@ -454,8 +459,6 @@ end
 
 require('statusline')
 
-require('glance').setup()
-
 require('telescope').load_extension('fzf')
 
 require('mini.indentscope').setup({
@@ -464,39 +467,44 @@ require('mini.indentscope').setup({
   }
 })
 
-require('typescript-tools').setup({
-  on_attach =
-      function(client, _bufnr)
-        client.server_capabilities.documentFormattingProvider = false
-        client.server_capabilities.documentRangeFormattingProvider = false
-      end,
-  settings = {
-    jsx_close_tag = {
-      enable = true,
-      filetypes = { "javascriptreact", "typescriptreact" },
-    }
+-- require('typescript-tools').setup({
+--   on_attach =
+--       function(client, _bufnr)
+--         client.server_capabilities.documentFormattingProvider = false
+--         client.server_capabilities.documentRangeFormattingProvider = false
+--       end,
+--   settings = {
+--     jsx_close_tag = {
+--       enable = true,
+--       filetypes = { "javascriptreact", "typescriptreact" },
+--     }
+--   }
+-- })
+
+-- Run gofmt + goimports on save
+-- local format_sync_group = vim.api.nvim_create_augroup("goimports", {})
+-- vim.api.nvim_create_autocmd("BufWritePre", {
+--   pattern = "*.go",
+--   callback = function()
+--     require('go.format').goimports()
+--   end,
+--   group = format_sync_group
+-- })
+
+-- require('go').setup({
+--   lsp_cfg = false
+-- })
+
+-- local cfg = require('go.lsp').config() -- config() return a go.nvim gopls setup
+
+-- require('lspconfig').gopls.setup(cfg)
+
+require('substitute').setup({
+  range = {
+    prefix = "ç"
   }
 })
 
--- Run gofmt + goimports on save
-local format_sync_group = vim.api.nvim_create_augroup("goimports", {})
-vim.api.nvim_create_autocmd("BufWritePre", {
-  pattern = "*.go",
-  callback = function()
-    require('go.format').goimports()
-  end,
-  group = format_sync_group
-})
-
-require('go').setup({
-  lsp_cfg = false
-})
-
-local cfg = require('go.lsp').config() -- config() return a go.nvim gopls setup
-
-require('lspconfig').gopls.setup(cfg)
-
-require('substitute').setup({})
 -- Lua
 vim.keymap.set("n", "s", require('substitute').operator, { noremap = true })
 vim.keymap.set("n", "ss", require('substitute').line, { noremap = true })
@@ -507,10 +515,14 @@ require("better_escape").setup({})
 
 require('nvim-ts-autotag').setup({})
 
-require('arrow').setup({})
+require('arrow').setup({
+  leader_key = "-"
+})
 
 vim.keymap.set("n", "H", require("arrow.persist").previous)
 vim.keymap.set("n", "L", require("arrow.persist").next)
 vim.keymap.set("n", "<C-s>", require("arrow.persist").toggle)
+
+require('marks').setup({})
 
 -- vim: ts=2 sts=2 sw=2 et

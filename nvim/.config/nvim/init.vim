@@ -70,25 +70,24 @@ Plug 'https://github.com/williamboman/mason.nvim' | Plug 'williamboman/mason-lsp
 Plug 'https://github.com/hrsh7th/cmp-nvim-lsp' | Plug 'hrsh7th/nvim-cmp'
 " utility
 Plug 'https://github.com/L3MON4D3/LuaSnip', {'tag': 'v2.*', 'do': 'make install_jsregexp'}
-Plug 'https://github.com/tpope/vim-commentary'
 Plug 'https://github.com/nvim-treesitter/nvim-treesitter'
 Plug 'https://github.com/mattn/emmet-vim'
 Plug 'https://github.com/JoosepAlviste/nvim-ts-context-commentstring'
 Plug 'https://github.com/echasnovski/mini.indentscope'
 Plug 'https://github.com/nvim-lua/plenary.nvim'
 Plug 'https://github.com/chentoast/marks.nvim'
-Plug 'https://github.com/gbprod/substitute.nvim'
 Plug 'https://github.com/max397574/better-escape.nvim'
 Plug 'https://github.com/wellle/targets.vim'
 Plug 'https://github.com/nvim-treesitter/nvim-treesitter-textobjects'
 Plug 'https://github.com/otavioschwanck/arrow.nvim'
 Plug 'https://github.com/windwp/nvim-ts-autotag'
+Plug 'https://github.com/nvim-treesitter/nvim-treesitter-context'
 " formatting
 Plug 'https://github.com/mfussenegger/nvim-lint'
 " linting
 Plug 'https://github.com/stevearc/conform.nvim'
 " colors
-Plug 'https://github.com/folke/tokyonight.nvim'
+Plug 'https://github.com/catppuccin/nvim', { 'as': 'catppuccin' }
 " search
 Plug 'https://github.com/nvim-telescope/telescope.nvim', { 'tag': '0.1.8' }
 Plug 'https://github.com/nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
@@ -108,7 +107,7 @@ let test#strategy = "wezterm"
 nnoremap <leader>sw :execute "vimgrep /" . expand("<cword>") . "/j **" <Bar> cw<CR>
 
 nmap <silent> <leader>te :TestNearest<CR>
-  nmap <silent> <leader>tf :TestFile<CR>
+nmap <silent> <leader>tf :TestFile<CR>
 nmap <silent> <leader>ta :TestSuite<CR>
 nmap <silent> <leader>tl :TestLast<CR>
 nmap <silent> <leader>tg :TestVisit<CR>

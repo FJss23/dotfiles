@@ -12,8 +12,8 @@
 --   palettes = palettes
 -- })
 
-vim.cmd.colorscheme "catppuccin"
--- vim.cmd.colorscheme "tokyonight-night"
+-- vim.cmd.colorscheme "catppuccin"
+vim.cmd.colorscheme "kanagawa"
 vim.opt.inccommand = 'split'
 vim.opt.guicursor = 'i:block'
 
@@ -97,8 +97,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
     local client = vim.lsp.get_client_by_id(ev.data.client_id)
     client.server_capabilities.semanticTokensProvider = nil
-
-    -- Buffer local mappings.
     -- See `:help vim.lsp.*` for documentation on any of the below functions
     local opts = { buffer = ev.buf }
     -- vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts) GLANCE
@@ -461,11 +459,16 @@ require('statusline')
 
 require('telescope').load_extension('fzf')
 
-require('mini.indentscope').setup({
-  draw = {
-    delay = 0
-  }
+require("ibl").setup({
+  indent = { char = "▏" },
+  scope = { enabled = false }
 })
+
+-- require('mini.indentscope').setup({
+--   draw = {
+--     delay = 0
+--   }
+-- })
 
 -- require('typescript-tools').setup({
 --   on_attach =

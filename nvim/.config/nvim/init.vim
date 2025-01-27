@@ -73,7 +73,8 @@ Plug 'https://github.com/L3MON4D3/LuaSnip', {'tag': 'v2.*', 'do': 'make install_
 Plug 'https://github.com/nvim-treesitter/nvim-treesitter'
 Plug 'https://github.com/mattn/emmet-vim'
 Plug 'https://github.com/JoosepAlviste/nvim-ts-context-commentstring'
-Plug 'https://github.com/echasnovski/mini.indentscope'
+Plug 'https://github.com/lukas-reineke/indent-blankline.nvim'
+"Plug 'https://github.com/echasnovski/mini.indentscope'
 Plug 'https://github.com/nvim-lua/plenary.nvim'
 Plug 'https://github.com/chentoast/marks.nvim'
 Plug 'https://github.com/max397574/better-escape.nvim'
@@ -88,6 +89,7 @@ Plug 'https://github.com/mfussenegger/nvim-lint'
 Plug 'https://github.com/stevearc/conform.nvim'
 " colors
 Plug 'https://github.com/catppuccin/nvim', { 'as': 'catppuccin' }
+Plug 'https://github.com/rebelot/kanagawa.nvim'
 " search
 Plug 'https://github.com/nvim-telescope/telescope.nvim', { 'tag': '0.1.8' }
 Plug 'https://github.com/nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
@@ -126,7 +128,7 @@ EOF
 " hi StatusLine guibg=#0086b3 guifg=#252525
 " hi StatusLineNC guibg=#7d7d7d guifg=#252525
 hi WinSeparator guifg=#877c7c
-hi! link MiniIndentscopeSymbol Comment
+"hi! link MiniIndentscopeSymbol Comment
 " hi Normal guibg=#1b1b1b
 " hi Comment guifg=#a0f1f0 guibg=#1b1b1b
 

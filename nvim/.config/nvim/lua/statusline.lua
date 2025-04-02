@@ -80,11 +80,11 @@ statusline = {}
 
 statusline.active = function()
   return table.concat {
-    branch_name(),
     filepath(),
     filename(),
     "%m%r",
     "%=",
+    branch_name(),
     get_active_lsp(),
     " ",
     "%{ &ff != 'unix' ? '['.&ff.'] ' : '' }",

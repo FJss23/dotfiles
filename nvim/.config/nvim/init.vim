@@ -71,17 +71,11 @@ Plug 'https://github.com/hrsh7th/cmp-nvim-lsp' | Plug 'hrsh7th/nvim-cmp'
 " utility
 Plug 'https://github.com/L3MON4D3/LuaSnip', {'tag': 'v2.*', 'do': 'make install_jsregexp'}
 Plug 'https://github.com/nvim-treesitter/nvim-treesitter'
-Plug 'https://github.com/mattn/emmet-vim'
 Plug 'https://github.com/JoosepAlviste/nvim-ts-context-commentstring'
-Plug 'https://github.com/lukas-reineke/indent-blankline.nvim'
-"Plug 'https://github.com/echasnovski/mini.indentscope'
-Plug 'https://github.com/nvim-lua/plenary.nvim'
 Plug 'https://github.com/chentoast/marks.nvim'
 Plug 'https://github.com/max397574/better-escape.nvim'
 Plug 'https://github.com/wellle/targets.vim'
 Plug 'https://github.com/nvim-treesitter/nvim-treesitter-textobjects'
-Plug 'https://github.com/otavioschwanck/arrow.nvim'
-Plug 'https://github.com/windwp/nvim-ts-autotag'
 Plug 'https://github.com/nvim-treesitter/nvim-treesitter-context'
 " formatting
 Plug 'https://github.com/mfussenegger/nvim-lint'
@@ -89,13 +83,21 @@ Plug 'https://github.com/mfussenegger/nvim-lint'
 Plug 'https://github.com/stevearc/conform.nvim'
 " colors
 Plug 'https://github.com/catppuccin/nvim', { 'as': 'catppuccin' }
-Plug 'https://github.com/rebelot/kanagawa.nvim'
+Plug 'https://github.com/rjshkhr/shadow.nvim'
 " search
-Plug 'https://github.com/nvim-telescope/telescope.nvim', { 'tag': '0.1.8' }
-Plug 'https://github.com/nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
+Plug 'https://github.com/otavioschwanck/arrow.nvim'
+Plug 'https://github.com/ibhagwan/fzf-lua' 
 Plug 'https://github.com/nvim-tree/nvim-tree.lua'
 " tests
 Plug 'https://github.com/vim-test/vim-test'
+" sql
+Plug 'https://github.com/tpope/vim-dadbod'
+Plug 'https://github.com/kristijanhusak/vim-dadbod-ui'
+Plug 'https://github.com/kristijanhusak/vim-dadbod-completion'
+" web
+Plug 'https://github.com/mattn/emmet-vim'
+Plug 'https://github.com/windwp/nvim-ts-autotag'
+Plug 'https://github.com/mistweaverco/kulala.nvim'
 call plug#end()
 
 autocmd FileType markdown,txt,tex,gitcommit setlocal spell
@@ -119,7 +121,7 @@ if executable('rg')
   set grepformat=%f:%l:%c:%m
 endif
 
-" set rtp+=~/.fzf
+ set rtp+=~/.fzf
 
 lua <<EOF
 require('init')

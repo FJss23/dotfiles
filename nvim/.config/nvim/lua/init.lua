@@ -12,8 +12,8 @@
 --   palettes = palettes
 -- })
 
--- vim.cmd.colorscheme "catppuccin"
-vim.cmd.colorscheme "kanagawa"
+vim.cmd.colorscheme "catppuccin"
+-- vim.cmd.colorscheme "shadow"
 vim.opt.inccommand = 'split'
 vim.opt.guicursor = 'i:block'
 
@@ -49,16 +49,16 @@ local function organize_imports()
   vim.lsp.buf.code_action({ context = { only = { "source.organizeImports" } }, apply = true })
 end
 
--- local fzf_lua = require('fzf-lua')
--- fzf_lua.setup({
---   "telescope",
---   winopts = {
---     split = "belowright new",
---     preview = {
---       hidden = "hidden"
---     }
---   }
--- })
+local fzf_lua = require('fzf-lua')
+fzf_lua.setup({
+  "telescope",
+  winopts = {
+    split = "belowright new",
+    preview = {
+      hidden = "hidden"
+    }
+  }
+})
 
 vim.diagnostic.config({
   virtual_text = false, --{ source = "always" },
@@ -81,8 +81,8 @@ for type, icon in pairs(signs) do
   vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
 end
 
-require('telescope').setup({})
-local builtin = require('telescope.builtin')
+-- require('telescope').setup({})
+-- local builtin = require('telescope.builtin')
 
 keymap.set('n', 'dp', vim.diagnostic.goto_prev)
 keymap.set('n', 'dn', vim.diagnostic.goto_next)
@@ -96,13 +96,15 @@ vim.api.nvim_create_autocmd('LspAttach', {
     vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
 
     local client = vim.lsp.get_client_by_id(ev.data.client_id)
-    client.server_capabilities.semanticTokensProvider = nil
+    if client ~= nil then
+      client.server_capabilities.semanticTokensProvider = nil
+    end
     -- See `:help vim.lsp.*` for documentation on any of the below functions
     local opts = { buffer = ev.buf }
-    -- vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts) GLANCE
-    -- vim.keymap.set('n', 'gd', fzf_lua.lsp_definitions, opts) GLANCE
+    vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)    -- GLANCE
+    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)     -- GLANCE
     vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-    -- vim.keymap.set('n', 'gI', fzf_lua.lsp_implementations, opts) GLANCE
+    vim.keymap.set('n', 'gI', vim.lsp.buf.implementation, opts) -- GLANCE
     vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
     vim.keymap.set('i', '<C-k>', vim.lsp.buf.signature_help, opts)
 
@@ -111,22 +113,22 @@ vim.api.nvim_create_autocmd('LspAttach', {
     vim.keymap.set('n', '<space>wl', function()
       print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
     end, opts)
-    -- vim.keymap.set('n', '<leader>D', fzf_lua.lsp_typedefs, opts) GLANCE
-    vim.keymap.set('n', '<leader>ds', builtin.lsp_document_symbols, opts)
-    vim.keymap.set('n', '<leader>ws', builtin.lsp_dynamic_workspace_symbols, opts)
-    -- vim.keymap.set('n', '<leader>dw', fzf_lua.diagnostics_workspace, opts)
+    vim.keymap.set('n', '<leader>D', fzf_lua.lsp_typedefs, opts) -- GLANCE
+    -- vim.keymap.set('n', '<leader>ds', builtin.lsp_document_symbols, opts)
+    -- vim.keymap.set('n', '<leader>ws', builtin.lsp_dynamic_workspace_symbols, opts)
+    vim.keymap.set('n', '<leader>dw', fzf_lua.diagnostics_workspace, opts)
     vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, opts)
-    -- vim.keymap.set('n', '<space>ca', fzf_lua.lsp_code_actions, opts)
-    vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, opts)
-    -- vim.keymap.set('n', 'gr', fzf_lua.lsp_references, opts)
-    vim.keymap.set('n', '<leader>li', builtin.lsp_incoming_calls, opts)
-    vim.keymap.set('n', '<leader>lo', builtin.lsp_outgoing_calls, opts)
+    vim.keymap.set('n', '<space>ca', fzf_lua.lsp_code_actions, opts)
+    -- vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, opts)
+    vim.keymap.set('n', 'gr', fzf_lua.lsp_references, opts)
+    -- vim.keymap.set('n', '<leader>li', builtin.lsp_incoming_calls, opts)
+    -- vim.keymap.set('n', '<leader>lo', builtin.lsp_outgoing_calls, opts)
 
-    vim.keymap.set('n', 'gD', builtin.lsp_definitions, opts)
-    vim.keymap.set('n', 'gR', builtin.lsp_references, opts)
-    vim.keymap.set('n', 'gY', builtin.lsp_type_definitions, opts)
-    vim.keymap.set('n', 'gS', builtin.lsp_document_symbols, opts)
-    vim.keymap.set('n', 'gM', vim.lsp.buf.implementation, opts)
+    -- vim.keymap.set('n', 'gD', builtin.lsp_definitions, opts)
+    -- vim.keymap.set('n', 'gR', builtin.lsp_references, opts)
+    -- vim.keymap.set('n', 'gY', builtin.lsp_type_definitions, opts)
+    -- vim.keymap.set('n', 'gS', builtin.lsp_document_symbols, opts)
+    -- vim.keymap.set('n', 'gM', vim.lsp.buf.implementation, opts)
 
     if client and client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint and client.server_capabilities.codeLensProvider then
       vim.keymap.set('n', '<leader>th', function()
@@ -312,48 +314,48 @@ api.nvim_create_autocmd('TextYankPost', {
   pattern = '*',
 })
 
-keymap.set('n', '<leader>sf', builtin.find_files, {})
-keymap.set('n', '<leader>sg', builtin.live_grep, {})
-keymap.set('n', '<leader>sd', builtin.diagnostics, {})
-keymap.set('n', '<leader>si', builtin.git_status, {})
-keymap.set('n', '<leader>sc', builtin.git_commits, {})
-keymap.set('n', '<leader>sr', builtin.git_branches, {})
-keymap.set('n', '<leader>sb', builtin.buffers, {})
-keymap.set('n', '<leader>s.', builtin.oldfiles, {})
-keymap.set('n', '<leader>sn', builtin.resume, {})
+-- keymap.set('n', '<leader>sf', builtin.find_files, {})
+-- keymap.set('n', '<leader>sg', builtin.live_grep, {})
+-- keymap.set('n', '<leader>sd', builtin.diagnostics, {})
+-- keymap.set('n', '<leader>si', builtin.git_status, {})
+-- keymap.set('n', '<leader>sc', builtin.git_commits, {})
+-- keymap.set('n', '<leader>sr', builtin.git_branches, {})
+-- keymap.set('n', '<leader>sb', builtin.buffers, {})
+-- keymap.set('n', '<leader>s.', builtin.oldfiles, {})
+-- keymap.set('n', '<leader>sn', builtin.resume, {})
 
--- keymap.set('n', '<leader>sf', fzf_lua.files, {})
--- keymap.set('n', '<leader>sg', fzf_lua.live_grep, {})
--- keymap.set('n', '<leader>sd', fzf_lua.diagnostics_document, {})
--- keymap.set('n', '<leader>si', fzf_lua.git_status, {})
--- keymap.set('n', '<leader>sc', fzf_lua.git_commits, {})
--- keymap.set('n', '<leader>sr', fzf_lua.git_branches, {})
--- keymap.set('n', '<leader>sb', fzf_lua.buffers, {})
--- keymap.set('n', '<leader>s.', fzf_lua.oldfiles, {})
--- keymap.set('n', '<leader>sn', fzf_lua.resume, {})
+keymap.set('n', '<leader>sf', fzf_lua.files, {})
+keymap.set('n', '<leader>sg', fzf_lua.live_grep, {})
+keymap.set('n', '<leader>sd', fzf_lua.diagnostics_document, {})
+keymap.set('n', '<leader>si', fzf_lua.git_status, {})
+keymap.set('n', '<leader>sc', fzf_lua.git_commits, {})
+keymap.set('n', '<leader>sr', fzf_lua.git_branches, {})
+keymap.set('n', '<leader>sb', fzf_lua.buffers, {})
+keymap.set('n', '<leader>s.', fzf_lua.oldfiles, {})
+keymap.set('n', '<leader>sn', fzf_lua.resume, {})
 
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
-local gwidth = vim.api.nvim_list_uis()[1].width
-local gheight = vim.api.nvim_list_uis()[1].height
-local width = 60
-local height = 20
+-- local gwidth = vim.api.nvim_list_uis()[1].width
+-- local gheight = vim.api.nvim_list_uis()[1].height
+-- local width = 60
+-- local height = 20
 
 require('nvim-tree').setup({
-  view = {
-    width = width,
-    float = {
-      enable = true,
-      open_win_config = {
-        relative = "editor",
-        width = width,
-        height = height,
-        row = (gheight - height) * 0.4,
-        col = (gwidth - width) * 0.5,
-      }
-    }
-  },
+  -- view = {
+  --   width = width,
+  --   float = {
+  --     enable = true,
+  --     open_win_config = {
+  --       relative = "editor",
+  --       width = width,
+  --       height = height,
+  --       row = (gheight - height) * 0.4,
+  --       col = (gwidth - width) * 0.5,
+  --     }
+  --   }
+  -- },
   diagnostics = {
     enable = true
   },
@@ -448,21 +450,14 @@ vim.api.nvim_create_autocmd('TermOpen', {
 
 vim.keymap.set('n', '<leader>p', PeekDefinition)
 
-if vim.g.neovide then
-  vim.opt.guifont = "JetBrainsMono Nerd Font:h11"
-  vim.opt.linespace = 4
-  vim.g.neovide_cursor_animation_length = 0
-  vim.g.neovide_cursor_trail_size = 0
-end
-
 require('statusline')
 
-require('telescope').load_extension('fzf')
+-- require('telescope').load_extension('fzf')
 
-require("ibl").setup({
-  indent = { char = "▏" },
-  scope = { enabled = false }
-})
+-- require("ibl").setup({
+--   indent = { char = "▏" },
+--   scope = { enabled = false }
+-- })
 
 -- require('mini.indentscope').setup({
 --   draw = {

@@ -513,4 +513,16 @@ require('marks').setup({})
 
 require('treesitter-context').setup {}
 
+require('grug-far').setup({})
+
+vim.keymap.set({ 'n', 'x' }, '<leader>st', function()
+  require('grug-far').open({ prefills = { search = vim.fn.expand("<cword>") } })
+end, { desc = 'grug-far: Search within range' })
+
+vim.keymap.set({ 'n', 'x' }, '<leader>si', function()
+  require('grug-far').with_visual_selection({
+    startInInsertMode = false
+  })
+end, { desc = 'grug-far: Search within range' })
+
 -- vim: ts=2 sts=2 sw=2 et

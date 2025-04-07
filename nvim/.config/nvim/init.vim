@@ -88,6 +88,7 @@ Plug 'https://github.com/rjshkhr/shadow.nvim'
 Plug 'https://github.com/otavioschwanck/arrow.nvim'
 Plug 'https://github.com/ibhagwan/fzf-lua' 
 Plug 'https://github.com/nvim-tree/nvim-tree.lua'
+Plug 'https://github.com/MagicDuck/grug-far.nvim'
 " tests
 Plug 'https://github.com/vim-test/vim-test'
 " sql

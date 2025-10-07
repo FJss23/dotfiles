@@ -12,8 +12,8 @@
 --   palettes = palettes
 -- })
 
-vim.cmd.colorscheme "catppuccin"
--- vim.cmd.colorscheme "shadow"
+vim.cmd.colorscheme "tokyonight-night"
+vim.opt.background = "dark"
 vim.opt.inccommand = 'split'
 vim.opt.guicursor = 'i:block'
 
@@ -524,5 +524,7 @@ vim.keymap.set({ 'n', 'x' }, '<leader>si', function()
     startInInsertMode = false
   })
 end, { desc = 'grug-far: Search within range' })
+
+require('fyler').setup({})
 
 -- vim: ts=2 sts=2 sw=2 et

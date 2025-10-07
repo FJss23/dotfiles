@@ -82,13 +82,13 @@ Plug 'https://github.com/mfussenegger/nvim-lint'
 " linting
 Plug 'https://github.com/stevearc/conform.nvim'
 " colors
-Plug 'https://github.com/catppuccin/nvim', { 'as': 'catppuccin' }
-Plug 'https://github.com/rjshkhr/shadow.nvim'
+Plug 'https://github.com/folke/tokyonight.nvim'
 " search
 Plug 'https://github.com/otavioschwanck/arrow.nvim'
 Plug 'https://github.com/ibhagwan/fzf-lua' 
 Plug 'https://github.com/nvim-tree/nvim-tree.lua'
 Plug 'https://github.com/MagicDuck/grug-far.nvim'
+Plug 'https://github.com/A7Lavinraj/fyler.nvim'
 " tests
 Plug 'https://github.com/vim-test/vim-test'
 " sql

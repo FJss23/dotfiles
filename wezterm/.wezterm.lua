@@ -76,21 +76,22 @@ config.font_size = 12
 config.font = wezterm.font 'JetBrainsMono Nerd Font'
 -- config.font = wezterm.font 'CodeNewRoman Nerd Font'
 config.line_height = 1.1
-config.color_scheme = 'GruvboxDarkHard'
+-- config.color_scheme = 'GruvboxDarkHard'
+config.color_scheme = 'tokyonight_night'
 -- config.color_scheme = 'Dracula'
 -- https://wezfurlong.org/wezterm/config/appearance.html#defining-your-own-colors
-config.colors = {
-  background = '#1b1b1b',
-  cursor_bg = '#ffffff',
-  cursor_fg = 'black',
-  tab_bar = {
-    background = '#1b1b1b',
-    active_tab = {
-      bg_color = '#ffffff',
-      fg_color = '#000000'
-    }
-  }
-}
+-- config.colors = {
+--   background = '#1b1b1b',
+--   cursor_bg = '#ffffff',
+--   cursor_fg = 'black',
+--   tab_bar = {
+--     background = '#1b1b1b',
+--     active_tab = {
+--       bg_color = '#ffffff',
+--       fg_color = '#000000'
+--     }
+--   }
+-- }
 config.inactive_pane_hsb = {
   brightness = 0.5
 }
